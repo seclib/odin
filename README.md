@@ -18,13 +18,13 @@ _No place left behind._
 
 ![Orbital HUD, a tracked live globe, FLIR terrain — then OPEN SOURCED](docs/media/hero-open-source-reveal.gif)
 
-<a href="https://www.youtube.com/@bilawalsidhu">
-  <img src="docs/media/youtube-popular-videos.png" alt="The God's Eye View video series on YouTube" width="100%">
-</a>
 
-▶️ **From the project behind the viral God's Eye View series** _(formerly WorldView)_ — [5M+ on YouTube](https://youtube.com/playlist?list=PL6qSg2I-7_koPbDnSMo0QeeHX_RknA2uv&si=nBGYMoHWQw41v93Q) · [25M+ across socials](https://www.google.com/search?q=god%27s+eye+view) · 🏆 **Reached #1 on GitHub Trending**
 
-⚡ **Start without API keys.** Run locally with Docker Compose or Node.js. 18 of 20 layers work keyless out of the box. **[→ Quick Start](#-quick-start)**
+**From the project behind the viral God's Eye View series** _(formerly WorldView)_ — [5M+ on YouTube](https://youtube.com/playlist?list=PL6qSg2I-7_koPbDnSMo0QeeHX_RknA2uv&si=nBGYMoHWQw41v93Q) · [25M+ across socials](https://www.google.com/search?q=god%27s+eye+view) ·
+
+**Reached #1 on GitHub Trending**
+
+**Start without API keys.** Run locally with Docker Compose or Node.js. 18 of 20 layers work keyless out of the box. **[→ Quick Start](#-quick-start)**
 
 </div>
 
@@ -38,7 +38,7 @@ _No place left behind._
 
 ---
 
-## 🏛️ Lineage, Fork & Seclib Modifications
+## Lineage, Fork & Seclib Modifications
 
 Odin is an independently maintained fork of the open-source project **God's Eye View**, initially designed by Bilawal Sidhu and Sameh Khamis (Halfpixel).
 
@@ -73,7 +73,7 @@ All changes maintain backward compatibility with original God's Eye View scene f
 
 ---
 
-## ⚠️ Capabilities & Real-World Limitations
+## Capabilities & Real-World Limitations
 
 Odin provides situational awareness by fusing disparate public data feeds into a unified 3D visualization. Understanding the distinction between live signals, mathematical estimates, and simulations is essential:
 
@@ -158,7 +158,7 @@ Open **`http://localhost:4173`**.
 
 ---
 
-## 🛠️ Configuration & Troubleshooting
+## Configuration & Troubleshooting
 
 ### In-App Configuration (Provider Settings)
 
@@ -199,7 +199,7 @@ Key environment configurations:
 
 ---
 
-## 🛰️ What's on the Globe
+## What's on the Globe
 
 Twenty layers and map sources. **Eighteen have a keyless path.** Some offer additional capabilities with a provider key. (🟢 no key · 🟡 free key · 🔴 metered.)
 
@@ -232,7 +232,7 @@ _Legend:_ 🟢 **No key needed** · 🟡 **Free signup key** · 🔴 **Metered /
 
 ---
 
-## 🤖 AI Capabilities: Local ETHAN & Cloud Models
+## AI Capabilities: Local ETHAN & Cloud Models
 
 Odin provides intelligence synthesis, spatial entity question-answering, and hands-free voice operations.
 
@@ -260,7 +260,7 @@ Odin functions as a full MCP tool server. AI coding agents and desktop clients (
 
 ---
 
-## 🔒 Privacy, Security Model & Network Communications
+## Privacy, Security Model & Network Communications
 
 Odin is designed with a defense-in-depth architecture:
 
@@ -292,7 +292,7 @@ Odin visualizes physical infrastructure, machines, vehicles, environmental event
 
 ---
 
-## 📜 Licenses & Intellectual Property Boundaries
+## Licenses & Intellectual Property Boundaries
 
 Odin respects upstream authorship and rigorously delineates software licensing from data rights:
 
@@ -308,7 +308,7 @@ See [NOTICE.md](NOTICE.md) for the complete legal notice and attribution breakdo
 
 ---
 
-## 🤝 Contributing, Vulnerability Reporting & Updates
+## Contributing, Vulnerability Reporting & Updates
 
 ### Contributing Code
 
