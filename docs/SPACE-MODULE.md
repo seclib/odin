@@ -15,8 +15,22 @@ handle backoff, check output versions, and explicitly says APIs may not be
 embedded in a website under NASA CORS policy. A server proxy feeding Odin's
 web UI would still embed that API in the website; this change does not use a
 proxy to work around that restriction. The UI therefore makes no orbital or
-position claims. Revisit only after JPL confirms an authorized web integration
-method. Until then, users can open the official [Horizons web application](https://ssd.jpl.nasa.gov/horizons/).
+position claims. It links to the official [Horizons web application](https://ssd.jpl.nasa.gov/horizons/)
+for queries outside Odin.
+
+The official [Horizons API reference](https://ssd-api.jpl.nasa.gov/doc/horizons.html)
+documents version 1.3 (June 2025), a GET endpoint at
+`https://ssd.jpl.nasa.gov/api/horizons.api`, and JSON output by default. Object
+selection uses `COMMAND`; `MAKE_EPHEM` and `EPHEM_TYPE` select ephemeris output
+(`OBSERVER`, `VECTORS`, `ELEMENTS`, `SPK`, or `APPROACH`). `CENTER` chooses the
+observer/origin, and `START_TIME`, `STOP_TIME`, `STEP_SIZE` or `TLIST` define
+times; `TLIST` allows up to 10,000 discrete times, subject to URL length limits.
+The reference's Mars example uses `COMMAND=499`, `EPHEM_TYPE=OBSERVER`,
+`CENTER=500@399`, a date range, `STEP_SIZE` and `QUANTITIES`. This is the
+documented parameter surface, not evidence that Odin is authorized to embed
+the API. See JPL's [API policy](https://ssd-api.jpl.nasa.gov/doc/) for fair-use
+requirements and the website embedding restriction. Revisit only if JPL
+confirms an authorized web integration method.
 
 The NASA Images API search is public and keyless. The implementation limits
 each query to 12 image records, bounds response size and request time, caches
