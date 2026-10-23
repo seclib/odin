@@ -1,8 +1,9 @@
 import {
   normalizeFeedType,
   isVideoFeedType,
+  normalizeCctvMediaMode,
 } from '../../../src/sources/cctvTypes.js';
-export { normalizeFeedType, isVideoFeedType };
+export { normalizeFeedType, isVideoFeedType, normalizeCctvMediaMode };
 import { directionToHeading } from '../../../src/data/directionText.js';
 import { haversineKm } from '../common/geo.js';
 /**
@@ -592,6 +593,14 @@ export function normalizeSourceItem(item) {
     mountHeightM: toFiniteNumber(item.mountHeightM),
     groundElevationM: toFiniteNumber(item.groundElevationM),
     feedType: normalizeFeedType(item.feedType || item.type || ''),
+    mediaMode: String(item.mediaMode || '')
+      .trim()
+      .toLowerCase(),
+    externalUrl:
+      typeof item.externalUrl === 'string' &&
+      /^https:\/\//i.test(item.externalUrl.trim())
+        ? item.externalUrl.trim()
+        : '',
     url: typeof item.url === 'string' ? item.url : '',
     snapshotUrl: typeof item.snapshotUrl === 'string' ? item.snapshotUrl : '',
     license: String(item.license || item.licenseNote || ''),

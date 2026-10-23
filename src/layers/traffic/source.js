@@ -10,7 +10,101 @@ import { tileToBBox, tilesForBounds } from '../../data/tomtomTiles.js';
 import { clipTileLine } from '../../sources/openFreeMap.js';
 import { createOpenFreeMapSource } from '../../sources/openFreeMap.js';
 import { validTileBounds } from '../../sources/vectorTiles.js';
+import { readResponseJsonCapped } from '../../sources/httpBody.js';
 export { normalizeOverpassRoads } from '../../sources/overpassRoads.js';
+
+const ROAD_DISRUPTIONS_ENDPOINT = '/api/road-disruptions';
+const ROAD_DISRUPTIONS_MAX_FEATURES = 2500;
+const ROAD_DISRUPTIONS_MAX_BYTES = 4 * 1024 * 1024;
+
+export function validateRoadDisruptionSnapshot(payload, now = Date.now()) {
+  if (
+    !Array.isArray(payload?.features) ||
+    payload.features.length > ROAD_DISRUPTIONS_MAX_FEATURES
+  )
+    return null;
+  if (!Number.isFinite(payload.fetchedAt) || payload.fetchedAt > now + 60_000)
+    return null;
+  const features = [];
+  for (const row of payload.features) {
+    const coordinates = Array.isArray(row?.coordinates) ? row.coordinates : [];
+    const validCoordinates =
+      coordinates.length >= 2 &&
+      coordinates.length <= 5000 &&
+      coordinates.every(
+        (point) =>
+          Array.isArray(point) &&
+          Number.isFinite(point[0]) &&
+          Number.isFinite(point[1]) &&
+          Math.abs(point[0]) <= 180 &&
+          Math.abs(point[1]) <= 90,
+      );
+    if (
+      !row?.id ||
+      !validCoordinates ||
+      !Number.isFinite(row.startAt) ||
+      !Number.isFinite(row.endAt) ||
+      !Number.isFinite(row.updatedAt)
+    )
+      continue;
+    if (row.endAt < now || now - row.updatedAt > 45 * 24 * 60 * 60 * 1000)
+      continue;
+    features.push({
+      id: String(row.id).slice(0, 80),
+      route: String(row.route || '').slice(0, 80),
+      title: String(row.title || '').slice(0, 240),
+      detail: String(row.detail || '').slice(0, 1200),
+      municipality: String(row.municipality || '').slice(0, 120),
+      direction: String(row.direction || '').slice(0, 80),
+      restriction: String(row.restriction || '').slice(0, 300),
+      startAt: row.startAt,
+      endAt: row.endAt,
+      updatedAt: row.updatedAt,
+      status: row.startAt > now ? 'scheduled' : 'active',
+      coordinates: coordinates.map(([lon, lat]) => [lon, lat]),
+    });
+  }
+  return {
+    features,
+    fetchedAt: payload.fetchedAt,
+    sourceUpdatedAt: Number.isFinite(payload.sourceUpdatedAt)
+      ? payload.sourceUpdatedAt
+      : null,
+    stale: payload.stale === true || now - payload.fetchedAt > 10 * 60 * 1000,
+  };
+}
+
+export function createRoadDisruptionsSource({
+  fetchImpl = (...args) => globalThis.fetch(...args),
+  now = () => Date.now(),
+} = {}) {
+  return {
+    async getSnapshot({ signal } = {}) {
+      const response = await fetchImpl(ROAD_DISRUPTIONS_ENDPOINT, {
+        signal,
+        cache: 'no-store',
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok)
+        throw new Error(`Road disruptions HTTP ${response.status}`);
+      const declaredLength = Number(response.headers?.get?.('content-length'));
+      if (
+        Number.isFinite(declaredLength) &&
+        declaredLength > ROAD_DISRUPTIONS_MAX_BYTES
+      )
+        throw new Error('Road disruptions response exceeds size cap');
+      const payload = await readResponseJsonCapped(
+        response,
+        ROAD_DISRUPTIONS_MAX_BYTES,
+        signal,
+      );
+      if (signal?.aborted) throw signal.reason;
+      const snapshot = validateRoadDisruptionSnapshot(payload, now());
+      if (!snapshot) throw new Error('Malformed road disruptions response');
+      return snapshot;
+    },
+  };
+}
 
 /** Shrink only the detail footprint, centered on the look-at fetch box, to fit 16 tiles. */
 export function trafficDetailBounds(box) {
@@ -87,8 +181,10 @@ export function createTrafficSource({
   mapTiles = createOpenFreeMapSource({ fetchImpl: tileFetchImpl }),
 } = {}) {
   const flow = createFlowTileSource({ fetchImpl });
+  const disruptions = createRoadDisruptionsSource({ fetchImpl });
   const api = {
     ...flow,
+    getRoadDisruptions: disruptions.getSnapshot,
     prefetch: () => mapTiles.getMetadata().catch(() => {}),
     resetFlowTileCache() {
       flow.resetFlowTileCache();

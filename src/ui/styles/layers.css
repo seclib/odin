@@ -5,7 +5,7 @@
   bottom: var(--left-stack-safe-bottom, 4vh);
   left: var(--left-stack-x);
   z-index: 100;
-  width: 360px;
+  width: min(420px, calc(100vw - 2 * var(--left-stack-x)));
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -17,7 +17,7 @@
 }
 
 #data-panel {
-  --panel-expanded-width: 280px;
+  --panel-expanded-width: clamp(320px, 24vw, 420px);
   position: fixed;
   top: calc(var(--left-stack-top) + var(--left-stack-gap));
   left: var(--left-stack-x);
@@ -35,6 +35,7 @@
 }
 
 #data-panel.active {
+  z-index: 140;
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
@@ -149,7 +150,7 @@
   z-index: 110;
   top: var(--right-stack-safe-top, 26vh);
   right: var(--right-rail-x);
-  width: 330px;
+  width: clamp(340px, 26vw, 440px);
   max-height: var(--right-stack-max-height, 70vh);
   display: flex;
   flex-direction: column;
@@ -159,6 +160,11 @@
   transition:
     top var(--transition-fast),
     max-height var(--transition-fast);
+}
+
+#right-context-rail:has(> [data-panel-id]:focus-within),
+#right-context-rail:has(> [data-panel-id]:hover) {
+  z-index: 140;
 }
 #right-context-rail > #pp-toggles,
 #right-context-rail > #cctv-panel:not(.panel-floating),

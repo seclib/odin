@@ -26,3 +26,26 @@ export function normalizeFeedType(value) {
 export function isVideoFeedType(feedType) {
   return feedType === 'mp4' || feedType === 'webm' || feedType === 'hls';
 }
+
+const MEDIA_MODES = new Set([
+  'continuous-video',
+  'still-image',
+  'periodic-image',
+  'periodic-loop',
+  'video-clip',
+  'external-embed',
+]);
+
+/** Describe the delivery mode without inferring that a URL is currently live. */
+export function normalizeCctvMediaMode(value, feedType, externalUrl = '') {
+  const explicit = String(value || '')
+    .trim()
+    .toLowerCase();
+  if (externalUrl) return 'external-embed';
+  if (MEDIA_MODES.has(explicit)) return explicit;
+  const type = normalizeFeedType(feedType);
+  if (type === 'hls' || type === 'mjpeg') return 'continuous-video';
+  if (type === 'image') return 'still-image';
+  if (type === 'mp4' || type === 'webm') return 'video-clip';
+  return 'still-image';
+}

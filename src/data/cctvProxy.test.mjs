@@ -55,6 +55,23 @@ test('CCTV upstream frame fetch returns a valid image response', async () => {
   assert.deepEqual(result?.body, Buffer.from([1, 2, 3]));
 });
 
+test('snapshot capture time is exposed only when the source explicitly supplies it', async () => {
+  const capturedAt = '2026-10-23T10:15:00Z';
+  const explicit = await fetchCctvImageFromUpstream('https://example.com/frame.jpg', {
+    fetchImpl: async () => new Response(Uint8Array.from([1]), {
+      headers: { 'Content-Type': 'image/jpeg', 'X-Camera-Captured-At': capturedAt },
+    }),
+  });
+  assert.equal(explicit.capturedAt, Date.parse(capturedAt));
+
+  const modifiedOnly = await fetchCctvImageFromUpstream('https://example.com/frame.jpg', {
+    fetchImpl: async () => new Response(Uint8Array.from([1]), {
+      headers: { 'Content-Type': 'image/jpeg', 'Last-Modified': capturedAt },
+    }),
+  });
+  assert.equal(modifiedOnly.capturedAt, null, 'Last-Modified is not asserted to be a capture timestamp');
+});
+
 test('CCTV upstream frame fetch rejects a declared oversize body without draining it', async () => {
   const chunkBytes = 64 * 1024;
   let pulled = 0;
@@ -247,7 +264,7 @@ test('the snapshot deadline remains active after headers while reading a stalled
 });
 
 test('rejected snapshot responses abort the upstream download', async () => {
-  for (const [status, contentType] of [[503, 'image/jpeg'], [200, 'text/html']]) {
+  for (const [status, contentType] of [[403, 'text/html'], [503, 'image/jpeg'], [200, 'text/html']]) {
     let signal;
     const result = await fetchCctvImageFromUpstream('https://example.com/frame.jpg', {
       fetchImpl: async (_url, init) => {
@@ -258,4 +275,11 @@ test('rejected snapshot responses abort the upstream download', async () => {
     assert.equal(result, null);
     assert.equal(signal.aborted, true);
   }
+});
+
+test('network exceptions are treated as an unverified frame, never a healthy camera', async () => {
+  const result = await fetchCctvImageFromUpstream('https://example.com/frame.jpg', {
+    fetchImpl: async () => { throw new TypeError('network unavailable'); },
+  });
+  assert.equal(result, null);
 });

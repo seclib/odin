@@ -550,7 +550,14 @@ export async function fetchCctvImageFromUpstream(
     }
     const body = await readCappedResponseBytes(upstream, maxBytes);
     if (!body) return null;
-    return { ok: true, body, contentType };
+    const rawCaptureTime = upstream.headers.get('x-camera-captured-at');
+    const captureTimeMs = rawCaptureTime ? Date.parse(rawCaptureTime) : NaN;
+    return {
+      ok: true,
+      body,
+      contentType,
+      capturedAt: Number.isFinite(captureTimeMs) ? captureTimeMs : null,
+    };
   } catch {
     return null;
   } finally {

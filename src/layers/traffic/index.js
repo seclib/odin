@@ -11,6 +11,7 @@ import { createControls } from './controls.js';
 import { createLifecycle } from './lifecycle.js';
 import { createRetention } from './retention.js';
 import { createState } from './state.js';
+import { createRoadDisruptionOverlay } from './disruptionOverlay.js';
 
 /** Construct one layer with its own scene state and supplied application services. */
 export function createTrafficLayer({ services, source }) {
@@ -27,6 +28,17 @@ export function createTrafficLayer({ services, source }) {
   const state = createState({ services });
   const parts = {};
   const context = { state, services, parts, source };
+  parts.disruptions = createRoadDisruptionOverlay({
+    source: {
+      getSnapshot:
+        source.getRoadDisruptions ||
+        (async () => ({ features: [], fetchedAt: Date.now(), stale: false })),
+    },
+    services,
+    onStatus(status) {
+      state._roadDisruptions = status;
+    },
+  });
   parts.style = createStyle(context);
   parts.timing = createTiming(context);
   parts.model = createModel(context);
@@ -58,6 +70,7 @@ export function createTrafficLayer({ services, source }) {
       getTrafficTimingDiagnostics: parts.timing.getTrafficTimingDiagnostics,
       deriveTrafficFlowError: parts.flow.deriveTrafficFlowError,
       trafficFeedPresentation: parts.model.trafficFeedPresentation,
+      getTrafficDisruptionsStatus: parts.disruptions.getStatus,
     },
   );
 }

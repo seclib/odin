@@ -24,12 +24,19 @@ export function createHealth({ state: layerState, services, parts, source }) {
         if (!id) continue;
         next.set(id, {
           status: String(row.status || '').toLowerCase() || 'unknown',
+          availability:
+            String(row.availability || '').toLowerCase() || 'unknown',
           sourceKind: String(
             row.sourceKind || row.feedType || '',
           ).toLowerCase(),
           label: String(row.label || row.provider || ''),
           message: String(row.message || ''),
           updatedAt: parts.model.safeNumber(row.updatedAt, now),
+          checkedAt: parts.model.safeNumber(
+            row.checkedAt ?? row.updatedAt,
+            NaN,
+          ),
+          capturedAt: parts.model.safeNumber(row.capturedAt, NaN),
         });
       }
       layerState._healthById = next;

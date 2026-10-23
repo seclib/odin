@@ -1,5 +1,12 @@
 import { t, tn } from '../i18n/index.js';
-import { cctvSourceLabelText, cctvSourceMessageText } from './cctvFrames.js';
+import {
+  cctvSourceLabelText,
+  cctvSourceMessageText,
+  cctvSourceStatusLabel,
+  cctvMediaModeLabel,
+  cctvCheckedAtLabel,
+  cctvCapturedAtLabel,
+} from './cctvFrames.js';
 
 import { createCctvVideoSurface } from './cctvVideo.js';
 export function _calBadgeLabel(badge) {
@@ -29,6 +36,13 @@ export function _renderCctvState(state) {
   const enabled = !!state?.enabled && !!this.actions.isEnabled();
   const activeId = state?.activeCameraId || '';
   const activeCamera = state?.activeCamera || null;
+  if (this._cctvExternalLink) {
+    const externalUrl = String(activeCamera?.externalUrl || '');
+    const isHttps = /^https:\/\//i.test(externalUrl);
+    this._cctvExternalLink.hidden = !enabled || !isHttps;
+    if (isHttps) this._cctvExternalLink.href = externalUrl;
+    else this._cctvExternalLink.removeAttribute('href');
+  }
 
   // Auto-expand the panel when the active camera CHANGES to a new non-null
   // id while the layer is enabled. Covers click-on-globe, panel controls,
@@ -157,6 +171,12 @@ export function _renderCctvState(state) {
       const statusMsg = activeCamera.sourceMessage
         ? ` · ${cctvSourceMessageText(activeCamera.sourceMessage)}`
         : '';
+      const mediaLabel = cctvMediaModeLabel(activeCamera.mediaMode);
+      const availability = cctvSourceStatusLabel(
+        activeCamera.sourceAvailability || 'unknown',
+      );
+      const checkedLabel = cctvCheckedAtLabel(activeCamera.sourceCheckedAt);
+      const capturedLabel = cctvCapturedAtLabel(activeCamera.sourceCapturedAt);
       // A partner-supplied feed inside a pack names its owner here.
       const credit = activeCamera.credit ? ` · ${activeCamera.credit}` : '';
       const calBadge = activeCamera.calBadge
@@ -174,7 +194,7 @@ export function _renderCctvState(state) {
           projection: projLabel,
           calBadge: calBadge ? ` · ${calBadge}` : '',
           provider,
-          status: `${credit}${statusMsg}`,
+          status: ` · ${mediaLabel} · ${availability} · ${checkedLabel}${capturedLabel ? ` · ${capturedLabel}` : ''}${credit}${statusMsg}`,
         },
       );
     } else if (cameras.length > 0) {

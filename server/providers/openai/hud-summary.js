@@ -80,7 +80,7 @@ async function handleHudSummary(req, res) {
     let response;
     let data = {};
     try {
-      response = await fetch(`${ethanBaseUrl()}/v1/plugins/gods-eye-view/ai/hud-summary`, {
+      response = await fetch(`${ethanBaseUrl()}/v1/plugins/odin/ai/hud-summary`, {
         method: 'POST',
         headers,
         body: JSON.stringify(context),

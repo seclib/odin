@@ -242,6 +242,13 @@ export const DATA_CREDITS = [
       '(<a href="https://www.ontario.ca/page/open-government-licence-ontario" target="_blank" rel="noopener">Open Government Licence - Ontario</a>)',
   },
   {
+    key: 'quebec-roadworks',
+    html:
+      'Roadworks and scheduled lane closures (Québec): ' +
+      '<a href="https://www.donneesquebec.ca/recherche/dataset/travaux-routiers" target="_blank" rel="noopener">Ministère des Transports et de la Mobilité durable</a> ' +
+      '· Données Québec · CC BY 4.0',
+  },
+  {
     key: 'fintraffic-cctv',
     html:
       'CCTV cameras &amp; frames (Finland): Fintraffic / ' +

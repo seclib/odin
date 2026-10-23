@@ -140,6 +140,14 @@ export function createPresentation({
       mountHeightM: camera.mountHeightM,
       active: isActive,
       feedType: camera.feedType,
+      mediaMode: camera.mediaMode || (camera.externalUrl
+        ? 'external-embed'
+        : ['hls', 'mjpeg'].includes(String(camera.feedType || '').toLowerCase())
+          ? 'continuous-video'
+          : ['mp4', 'webm'].includes(String(camera.feedType || '').toLowerCase())
+            ? 'video-clip'
+            : 'still-image'),
+      externalUrl: camera.externalUrl || '',
       isVideo:
         parts.model.isVideoFeedType(camera.feedType) &&
         record.projection?.mode !== 'image',
@@ -148,6 +156,13 @@ export function createPresentation({
         camera.sourceKind ||
         (camera.feedConfigured ? 'configured' : 'seed'),
       sourceStatus: health?.status || 'unknown',
+      sourceAvailability: health?.availability || 'unknown',
+      sourceCheckedAt: Number.isFinite(health?.checkedAt)
+        ? health.checkedAt
+        : null,
+      sourceCapturedAt: Number.isFinite(health?.capturedAt)
+        ? health.capturedAt
+        : null,
       sourceMessage: health?.message || '',
       sourceLabel: health?.label || camera.provider || '',
       credit: camera.credit || '',

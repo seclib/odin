@@ -2,6 +2,7 @@ import { createCctvCatalog } from './cctv/catalog.js';
 import {
   normalizeFeedType,
   isVideoFeedType,
+  normalizeCctvMediaMode,
   toFiniteNumber,
 } from './cctv/normalize.js';
 import {
@@ -19,6 +20,7 @@ import {
 import { sanitizeCctvRangeHeader } from './cctv/range.js';
 import { createHlsPuller } from './cctv/stream.js';
 import { googleServerApiKey } from './places/google-key.js';
+import { cctvAvailability } from './cctv/availability.js';
 export { CCTV_FRAME_FETCH_TIMEOUT_MS, fetchCctvImageFromUpstream };
 /**
  * Vite plugin: CCTV camera proxy with source registry, frame/media serving,
@@ -59,6 +61,10 @@ export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
       label: patch.label || prev.label || '',
       message: patch.message || prev.message || '',
       updatedAt: Date.now(),
+      checkedAt: Date.now(),
+      capturedAt: Object.hasOwn(patch, 'capturedAt')
+        ? patch.capturedAt
+        : (prev.capturedAt ?? null),
     });
   };
 
@@ -71,6 +77,11 @@ export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
     return {
       id: cameraId,
       feedType,
+      mediaMode: normalizeCctvMediaMode(
+        source?.mediaMode,
+        feedType,
+        source?.externalUrl,
+      ),
       mediaUrl: isVideoFeedType(feedType)
         ? `/api/cctv/media/${encodeURIComponent(cameraId)}`
         : null,
@@ -161,6 +172,12 @@ export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
               mountHeightM: source.mountHeightM,
               groundElevationM: source.groundElevationM,
               feedType: normalizeFeedType(source.feedType),
+              mediaMode: normalizeCctvMediaMode(
+                source.mediaMode,
+                source.feedType,
+                source.externalUrl,
+              ),
+              externalUrl: source.externalUrl || '',
               sourceKind:
                 source.sourceKind || (source.url ? 'configured' : 'fallback'),
               poseSource: source.poseSource,
@@ -181,11 +198,15 @@ export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
         }
 
         if (url.pathname === '/health') {
+          const cameras = listHealth().map((camera) => ({
+            ...camera,
+            availability: cctvAvailability(camera),
+          }));
           res.writeHead(200, {
             'Content-Type': 'application/json',
             'Cache-Control': 'no-store',
           });
-          res.end(JSON.stringify({ cameras: listHealth() }));
+          res.end(JSON.stringify({ cameras }));
           return;
         }
 
@@ -383,6 +404,13 @@ export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
               return;
             }
             const contentType = upstream.headers.get('content-type') || '';
+            const captureHeader = upstream.headers.get('x-camera-captured-at');
+            const captureTimestamp = captureHeader
+              ? Date.parse(captureHeader)
+              : NaN;
+            const capturedAt = Number.isFinite(captureTimestamp)
+              ? captureTimestamp
+              : null;
             if (!upstream.ok) {
               try {
                 await upstream.body?.cancel();
@@ -428,6 +456,7 @@ export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
                 message: isVideoFeedType(feedType)
                   ? 'Live stream connected'
                   : 'Snapshot feed connected',
+                capturedAt,
               });
             }
 
@@ -514,6 +543,7 @@ export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
             sourceKind: 'snapshot',
             label: source?.provider || 'Configured source',
             message: 'Upstream snapshot active',
+            capturedAt: upstreamImage.capturedAt,
           });
           res.writeHead(200, {
             'Content-Type': upstreamImage.contentType,

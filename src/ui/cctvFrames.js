@@ -1,5 +1,18 @@
 import { msg, t } from '../i18n/index.js';
 
+export const CCTV_HEALTH_STALE_AFTER_MS = 5 * 60 * 1000;
+
+/** A stale check preserves its last result; it does not imply feed failure. */
+export function cctvHealthFreshness(
+  checkedAt,
+  now = Date.now(),
+  staleAfterMs = CCTV_HEALTH_STALE_AFTER_MS,
+) {
+  if (!Number.isFinite(checkedAt) || checkedAt <= 0) return 'unknown';
+  if (checkedAt > now || now - checkedAt > staleAfterMs) return 'stale';
+  return 'fresh';
+}
+
 /**
  * Display text for the CCTV source health the server reports
  * (server/providers/cctv.js `setHealth`). The server keeps its English codes
@@ -19,10 +32,47 @@ const SOURCE_KIND_LABELS = Object.freeze({
 });
 
 const SOURCE_STATUS_LABELS = Object.freeze({
+  available: msg('AVAILABLE'),
+  unavailable: msg('UNAVAILABLE'),
+  fallback: msg('FALLBACK ACTIVE'),
   degraded: msg('DEGRADED'),
   error: msg('ERROR'),
   unknown: msg('UNKNOWN'),
 });
+
+const MEDIA_MODE_LABELS = Object.freeze({
+  'continuous-video': msg('CONTINUOUS VIDEO'),
+  'still-image': msg('STILL IMAGE'),
+  'periodic-image': msg('PERIODIC IMAGE'),
+  'periodic-loop': msg('PERIODIC VIDEO LOOP'),
+  'video-clip': msg('VIDEO CLIP'),
+  'external-embed': msg('EXTERNAL EMBED'),
+});
+
+export function cctvMediaModeLabel(mode) {
+  const key = String(mode || 'still-image').toLowerCase();
+  return MEDIA_MODE_LABELS[key] ? t(MEDIA_MODE_LABELS[key]) : key.toUpperCase();
+}
+
+export function cctvCheckedAtLabel(checkedAt, now = Date.now()) {
+  const freshness = cctvHealthFreshness(checkedAt, now);
+  if (freshness === 'unknown') return t('CHECK NOT YET PERFORMED');
+  const time = new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'short',
+    timeStyle: 'medium',
+  }).format(new Date(checkedAt));
+  return `${freshness === 'stale' ? t('LAST CHECK STALE') : t('LAST CHECK')} · ${time}`;
+}
+
+export function cctvCapturedAtLabel(capturedAt) {
+  if (!Number.isFinite(capturedAt) || capturedAt <= 0) return '';
+  const stale = cctvHealthFreshness(capturedAt) === 'stale';
+  const time = new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'short',
+    timeStyle: 'medium',
+  }).format(new Date(capturedAt));
+  return `${t(stale ? 'CAPTURE TIME STALE' : 'CAPTURE TIME')} · ${time}`;
+}
 
 const SOURCE_MESSAGES = Object.freeze({
   'Live HLS connected': msg('Live HLS connected'),
@@ -165,6 +215,8 @@ export function _syncCctvSourceBadge(activeCamera, enabled) {
   if (!this._cctvSourceBadge) return;
   if (!enabled || !activeCamera) {
     this._cctvSourceBadge.textContent = t('SOURCE · UNKNOWN');
+    this._cctvSourceBadge.title = '';
+    this._cctvSourceBadge.setAttribute('aria-label', t('SOURCE · UNKNOWN'));
     this._cctvSourceBadge.dataset.frameState = 'idle';
     return;
   }
@@ -180,10 +232,19 @@ export function _syncCctvSourceBadge(activeCamera, enabled) {
     this._cctvSourceBadge.dataset.frameState = 'error';
     return;
   }
-  const kind = cctvSourceKindLabel(
-    activeCamera.sourceKind || activeCamera.feedType || 'unknown',
+  const kind = cctvMediaModeLabel(activeCamera.mediaMode);
+  const status = cctvSourceStatusLabel(
+    activeCamera.sourceAvailability || activeCamera.sourceStatus || 'unknown',
   );
-  const status = cctvSourceStatusLabel(activeCamera.sourceStatus || 'unknown');
+  const checkedAt = cctvCheckedAtLabel(activeCamera.sourceCheckedAt);
+  const capturedAt = cctvCapturedAtLabel(activeCamera.sourceCapturedAt);
   this._cctvSourceBadge.textContent = `${kind} · ${status}`;
+  this._cctvSourceBadge.title = [checkedAt, capturedAt]
+    .filter(Boolean)
+    .join(' · ');
+  this._cctvSourceBadge.setAttribute(
+    'aria-label',
+    [kind, status, checkedAt, capturedAt].filter(Boolean).join(' · '),
+  );
   this._cctvSourceBadge.dataset.frameState = 'ready';
 }

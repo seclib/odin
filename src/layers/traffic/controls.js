@@ -44,6 +44,13 @@ export function createControls({ state: layerState, services, parts, source }) {
     if (layerState._detailError) notes.push(t('Detailed roads unavailable'));
     else if (layerState._detailLimited)
       notes.push(t('Reduced detail coverage'));
+    const disruptions = layerState._roadDisruptions;
+    if (disruptions?.freshness === 'fresh')
+      notes.push(t('Québec road works: {count}', { count: disruptions.count }));
+    else if (disruptions?.freshness === 'stale')
+      notes.push(t('Québec road works data stale'));
+    else if (disruptions?.freshness === 'unavailable')
+      notes.push(t('Québec road works unavailable'));
     return notes.join(' · ');
   }
 

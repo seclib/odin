@@ -31,6 +31,7 @@ export function createLifecycle({
       // Add permanently — toggle with .show to avoid destroy-on-remove errors
       viewer.scene.primitives.add(layerState._pointCollection);
       layerState._pointCollection.show = false;
+      parts.disruptions?.init?.(viewer);
       layerState._dots = [];
       layerState._roads = [];
       layerState._count = 0;
@@ -84,6 +85,7 @@ export function createLifecycle({
       holdContinuousRender('traffic'); // per-frame animator (perf wave 2)
       layerState._lastAnimTime = 0;
       layerState._pointCollection.show = true;
+      parts.disruptions?.enable?.();
 
       layerState._preRenderRemover = viewer.scene.preRender.addEventListener(
         parts.animation.animate,
@@ -160,6 +162,7 @@ export function createLifecycle({
       // A stale outage from the last session would misreport a fresh enable —
       // the next load re-derives feed health from real evidence.
       layerState._flowError = null;
+      parts.disruptions?.disable?.();
 
       layerState._surfaceFrameRemover?.();
       layerState._surfaceFrameRemover = null;
@@ -196,6 +199,7 @@ export function createLifecycle({
         layerState._pointCollection = null;
       }
       parts.rendering.removeHeatLines();
+      parts.disruptions?.destroy?.();
       layerState._tileCache.clear();
       resetFlowTileCache();
       layerState._count = 0;

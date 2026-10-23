@@ -115,6 +115,7 @@
 #right-context-rail > .panel-floating {
   position: fixed;
   inset: auto;
+  min-width: 0;
   /* Above every docked rail panel; keep in step with PANEL_Z_FLOATING_FLOOR. */
   z-index: 111;
   max-height: calc(100vh - 12px);

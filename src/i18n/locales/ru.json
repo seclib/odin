@@ -2956,5 +2956,20 @@
   "USB work abandoned after a stalled transfer": "Работа с USB прервана: передача данных зависла",
   "SDR decoder did not start; receiver stopped": "Декодер SDR не запустился; приёмник остановлен",
   "SDR decoder stopped responding; receiver stopped": "Декодер SDR перестал отвечать; приёмник остановлен",
-  "SDR decoder fell behind; receiver stopped": "Декодер SDR не успевает; приёмник остановлен"
+  "SDR decoder fell behind; receiver stopped": "Декодер SDR не успевает; приёмник остановлен",
+  "Québec road works: {count}": "Дорожные работы в Квебеке: {count}",
+  "Québec road works data stale": "Данные о дорожных работах в Квебеке устарели",
+  "Québec road works unavailable": "Данные о дорожных работах в Квебеке недоступны",
+  "AVAILABLE": "ДОСТУПНА",
+  "FALLBACK ACTIVE": "РЕЗЕРВНАЯ КАМЕРА АКТИВНА",
+  "CONTINUOUS VIDEO": "НЕПРЕРЫВНОЕ ВИДЕО",
+  "STILL IMAGE": "СТАТИЧЕСКОЕ ИЗОБРАЖЕНИЕ",
+  "PERIODIC IMAGE": "ПЕРИОДИЧЕСКОЕ ИЗОБРАЖЕНИЕ",
+  "PERIODIC VIDEO LOOP": "ПЕРИОДИЧЕСКИЙ ВИДЕОЦИКЛ",
+  "VIDEO CLIP": "ВИДЕОКЛИП",
+  "EXTERNAL EMBED": "ВНЕШНЯЯ ВСТАВКА",
+  "CHECK NOT YET PERFORMED": "ПРОВЕРКА ЕЩЁ НЕ ВЫПОЛНЕНА",
+  "LAST CHECK STALE": "ПОСЛЕДНЯЯ ПРОВЕРКА УСТАРЕЛА",
+  "LAST CHECK": "ПОСЛЕДНЯЯ ПРОВЕРКА",
+  "OPEN OFFICIAL CAMERA PAGE": "ОТКРЫТЬ ОФИЦИАЛЬНУЮ СТРАНИЦУ КАМЕРЫ"
 }

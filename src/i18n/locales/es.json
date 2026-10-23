@@ -2889,5 +2889,20 @@
   "USB work abandoned after a stalled transfer": "Trabajo USB cancelado tras una transferencia bloqueada",
   "SDR decoder did not start; receiver stopped": "El decodificador SDR no arrancó; receptor detenido",
   "SDR decoder stopped responding; receiver stopped": "El decodificador SDR dejó de responder; receptor detenido",
-  "SDR decoder fell behind; receiver stopped": "El decodificador SDR se quedó atrás; receptor detenido"
+  "SDR decoder fell behind; receiver stopped": "El decodificador SDR se quedó atrás; receptor detenido",
+  "Québec road works: {count}": "Obras viales de Quebec: {count}",
+  "Québec road works data stale": "Datos de obras viales de Quebec desactualizados",
+  "Québec road works unavailable": "Obras viales de Quebec no disponibles",
+  "AVAILABLE": "DISPONIBLE",
+  "FALLBACK ACTIVE": "CÁMARA DE RESPALDO ACTIVA",
+  "CONTINUOUS VIDEO": "VÍDEO CONTINUO",
+  "STILL IMAGE": "IMAGEN FIJA",
+  "PERIODIC IMAGE": "IMAGEN PERIÓDICA",
+  "PERIODIC VIDEO LOOP": "BUCLE DE VÍDEO PERIÓDICO",
+  "VIDEO CLIP": "CLIP DE VÍDEO",
+  "EXTERNAL EMBED": "INTEGRACIÓN EXTERNA",
+  "CHECK NOT YET PERFORMED": "VERIFICACIÓN PENDIENTE",
+  "LAST CHECK STALE": "ÚLTIMA VERIFICACIÓN DESACTUALIZADA",
+  "LAST CHECK": "ÚLTIMA VERIFICACIÓN",
+  "OPEN OFFICIAL CAMERA PAGE": "ABRIR LA PÁGINA OFICIAL DE LA CÁMARA"
 }

@@ -570,18 +570,18 @@ export function panelRuntime(config) {
     if (started) return;
     started = true;
     // i18n-ignore: host-panel script, no app catalogs
-    say("Loading God's Eye View…");
+    say('Loading Odin…');
     startApp(url, view).catch((error) =>
       // i18n-ignore: host-panel script, no app catalogs
-      say(`God's Eye View could not load here: ${error?.message || error}.`),
+      say(`Odin could not load here: ${error?.message || error}.`),
     );
     setTimeout(() => {
       if (!ready)
         say(
           // i18n-ignore: see above
-          "God's Eye View did not load here" +
+          'Odin did not load here' +
             (blocked ? ` (${blocked})` : '') +
-            ". Use Open in God's Eye View above.",
+            '. Use Open in Odin above.',
         );
     }, config.loadTimeoutMs);
   }
@@ -662,7 +662,7 @@ export function panelRuntime(config) {
     (error) =>
       say(
         // i18n-ignore: host-panel script, no app catalogs
-        "This client did not accept the God's Eye View panel" +
+        'This client did not accept the Odin panel' +
           (error?.message ? `: ${error.message}` : '.'),
       ),
   );
