@@ -92,11 +92,15 @@
   },
   "space-providers": {
     "runtime": "node",
-    "exports": ["./server/providers/space"],
+    "exports": [
+      "./server/providers/space",
+      "./server/providers/space/nasa-images"
+    ],
     "modules": [
       "server/providers/space.js",
       "server/providers/space/celestrak.js",
       "server/providers/space/launch-library.js",
+      "server/providers/space/nasa-images.js",
       "server/providers/common/http.js",
       "src/data/spaceProviderRequests.js",
       "src/sources/httpBody.js",
@@ -2404,6 +2408,9 @@
       "src/maps/imageryHost.js",
       "src/ui/recentImagery.js",
       "src/ui/imageryBoxTool.js",
+      "src/ui/spaceGallery.js",
+      "src/layers/space/model.js",
+      "src/layers/space/source.js",
       "src/voice/pointerContext.js",
       "src/voice/pointerReticle.js",
       "src/voice/deixis.js",

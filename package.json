@@ -97,6 +97,9 @@
     "./server/providers/space": {
       "node": "./server/providers/space.js"
     },
+    "./server/providers/space/nasa-images": {
+      "node": "./server/providers/space/nasa-images.js"
+    },
     "./sources/space": "./src/data/spaceProviderRequests.js",
     "./server/providers/terrain": {
       "node": "./server/providers/terrain.js"

@@ -20,7 +20,7 @@ _No place left behind._
 
 
 
-**From the project behind the viral God's Eye View series** _(formerly WorldView)_ — [5M+ on YouTube](https://youtube.com/playlist?list=PL6qSg2I-7_koPbDnSMo0QeeHX_RknA2uv&si=nBGYMoHWQw41v93Q) · [25M+ across socials](https://www.google.com/search?q=god%27s+eye+view) ·
+**From the project behind the viral God's Eye View series** _(formerly WorldView)_ [25M+ across socials](https://www.google.com/search?q=god%27s+eye+view) ·
 
 **Reached #1 on GitHub Trending**
 
