@@ -108,7 +108,7 @@ Odin provides situational awareness by fusing disparate public data feeds into a
 
 ---
 
-## ⚡ Quick Start
+##  Quick Start
 
 You can run Odin immediately **without API keys**. The default basemap uses Esri satellite imagery and keyless elevation. 18 of the 20 layers are functional without any account.
 
@@ -252,7 +252,7 @@ For private, disconnected, or security-sensitive installations, Odin integrates 
   - _Annotate:_ "Outline the state of Texas", "Measure distance from LAX to JFK".
   - _Analyze:_ "How many tankers are in the English Channel?", "Show military flights above 30,000 feet".
   - _Control:_ "Switch to FLIR thermal mode", "Enter cockpit of nearest aircraft".
-  - **✍️ Or draw it yourself** — DISPLAY ▸ **Draw**: pick Area, Line or Pin, click the vertices on the real world, double-click to finish, label it. Same whiteboard, same persistence, no microphone needed.
+  - ** Or draw it yourself** — DISPLAY ▸ **Draw**: pick Area, Line or Pin, click the vertices on the real world, double-click to finish, label it. Same whiteboard, same persistence, no microphone needed.
 
 ### 3. Model Context Protocol (MCP) Server
 
