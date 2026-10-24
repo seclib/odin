@@ -493,6 +493,156 @@
 .space-gallery-provenance {
   justify-self: end;
 }
+.space-planetarium {
+  width: min(96vw, 1500px);
+  height: min(94vh, 1000px);
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+  color: #d7e9fa;
+  border: 1px solid rgba(98, 181, 255, 0.34);
+  border-radius: 10px;
+  background: #050a12;
+  box-shadow: 0 24px 100px rgba(0, 0, 0, 0.78);
+}
+.space-planetarium::backdrop {
+  background: rgba(0, 4, 10, 0.88);
+  backdrop-filter: blur(5px);
+}
+.space-planetarium-shell {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  width: 100%;
+  height: 100%;
+}
+.space-planetarium-header,
+.space-planetarium-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  background: rgba(7, 17, 29, 0.96);
+}
+.space-planetarium-header {
+  align-items: center;
+  border-bottom: 1px solid rgba(98, 181, 255, 0.2);
+}
+.space-planetarium-header h2 {
+  margin: 0;
+  color: #8fcfff;
+  font:
+    600 12px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.14em;
+}
+.space-planetarium-header p,
+.space-planetarium-provenance {
+  margin: 5px 0 0;
+  color: #9fb2c8;
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.04em;
+}
+.space-planetarium-header button {
+  width: 34px;
+  height: 34px;
+  color: #d7e9fa;
+  border: 1px solid rgba(98, 181, 255, 0.26);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 22px;
+  cursor: pointer;
+}
+.space-planetarium-layer-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  color: #9fb2c8;
+  background: rgba(6, 14, 24, 0.96);
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.1em;
+}
+.space-planetarium-layer-control select {
+  max-width: 100%;
+  padding: 6px 8px;
+  color: #d7e9fa;
+  border: 1px solid rgba(98, 181, 255, 0.3);
+  border-radius: 4px;
+  background: #081522;
+  font: inherit;
+  letter-spacing: 0.04em;
+}
+.space-planetarium-canvas,
+.space-planetarium-canvas .cesium-widget,
+.space-planetarium-canvas canvas {
+  width: 100%;
+  height: 100%;
+}
+.space-planetarium-canvas {
+  min-height: 0;
+  overflow: hidden;
+  background: #02050a;
+}
+.space-planetarium-canvas .cesium-widget {
+  position: relative;
+  overflow: hidden;
+}
+.space-planetarium-canvas canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  outline: none;
+}
+.space-planetarium-canvas .cesium-widget-credits {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  z-index: 2;
+  color: #d7e9fa;
+  font-size: 9px;
+  text-shadow: 0 1px 3px #000;
+}
+.space-planetarium-footer {
+  align-items: start;
+  border-top: 1px solid rgba(98, 181, 255, 0.2);
+}
+.space-planetarium-footer [role='status'] {
+  min-width: 190px;
+  color: #8fcfff;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+}
+.space-planetarium-provenance {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+  margin: 0;
+  text-align: right;
+}
+.space-planetarium-provenance a {
+  color: #78caff;
+}
+@media (max-width: 720px) {
+  .space-planetarium {
+    width: 100vw;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+  .space-planetarium-footer {
+    flex-direction: column;
+  }
+  .space-planetarium-provenance {
+    justify-items: start;
+    text-align: left;
+  }
+}
 #space-mission-panel {
   width: 100%;
   margin-top: 8px;

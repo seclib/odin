@@ -32,7 +32,7 @@ _No place left behind._
 
 <div align="center">
 
-**[Quick Start](#-quick-start) · [Lineage & Modifications](#-lineage-fork--seclib-modifications) · [Capabilities & Limitations](#-capabilities--real-world-limitations) · [What's on the Globe](#-whats-on-the-globe) · [AI Functions](#-ai-capabilities-local-ethan--cloud-models) · [Privacy & Security](#-privacy-security-model--network-communications) · [Licenses](NOTICE.md) · [Contributing](CONTRIBUTING.md)**
+**[Quick Start](#-quick-start) · [Lineage & Modifications](#-lineage-fork--seclib-modifications) · [Capabilities & Limitations](#-capabilities--real-world-limitations) · [Data Sources & Dependencies](#-data-sources--external-dependencies) · [What's on the Globe](#-whats-on-the-globe) · [AI Functions](#-ai-capabilities-local-ethan--cloud-models) · [Privacy & Security](#-privacy-security-model--network-communications) · [Licenses](NOTICE.md) · [Contributing](CONTRIBUTING.md)**
 
 </div>
 
@@ -231,6 +231,48 @@ Twenty layers and map sources. **Eighteen have a keyless path.** Some offer addi
 _Legend:_ 🟢 **No key needed** · 🟡 **Free signup key** · 🔴 **Metered / Paid key**
 
 ---
+
+## Data Sources & External Dependencies
+
+Odin unifies **public, open data feeds** with **local rendering**. The MIT license covers the application code only — it does NOT extend to third-party data or visual assets. Each provider keeps its own license and terms.
+
+### Live Sources (fetched at runtime)
+
+| Source | Used for | License / terms |
+| --- | --- | --- |
+| NOAA GFS (wind) | Global wind model | Public domain (NOAA open data on AWS) |
+| ECMWF IFS (wind) | Alternative wind model | CC BY 4.0 + ECMWF Terms of Use |
+| NOAA nowCOAST | Radar, cloud IR, lightning | Public domain |
+| OpenSky Network | ADS-B aircraft positions | Free tier; terms apply |
+| adsb.lol | Filtered ADS-B (military, sheriff flights) | Free; terms apply |
+| AISStream.io | Marine vessel tracking | Free tier; terms apply |
+| CelesTrak | Orbital element sets (TLEs) | Public NASA data |
+| USGS Seismology | Global earthquake data | Public domain |
+| NASA FIRMS | Active fire detection | Public domain (citation requested) |
+| OpenStreetMap | Road network, bikeshare, transit | ODbL 1.0 |
+| TomTom Flow | Traffic flow speeds | Terms apply (see `docs/OSRM-FOSSGIS.md`) |
+| Mapillary / KartaView / Panoramax | Street-level imagery | Mixed licenses; see DATA_SOURCES.md |
+| Radio Browser | Geolocated radio stations | Free; terms apply |
+| GTFS-Realtime feeds | Live transit positions | Operator terms |
+| GBFS feeds | Bikeshare availability | Operator terms (see DATA_SOURCES.md) |
+| OSRM / FOSSGIS | Routing and turn-by-turn | Free; ODbL |
+| Launch Library 2 | Rocket launch schedules | Free tier; terms apply |
+| TeleGeography submarine cable map (bundled) | Cable map visualization | [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/) — NonCommercial + ShareAlike |
+
+### Bundled Data (stored in the repository)
+
+- **`src/data/local_data/`** — bundled datasets (TeleGeography cable map, OpenStreetMap extracts, event imagery, etc.)
+- **`public/models/`** — 3D models with individual licenses (see [`public/models/README.md`](public/models/README.md))
+
+### External Dependencies
+
+- **npm packages** — recorded in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and `package-lock.json`
+- **Cesium ion** — optional access token for 3D tiles; free tier available
+- **Google Maps Platform** — optional API key for 3D tiles and Street View
+- **Cloud AI providers** — OpenAI (optional) for cloud voice and scene summaries; local ETHAN for sovereign alternatives
+
+> [!CAUTION]
+> **License boundaries:** The MIT license covers source code only. Bundled data (TeleGeography CC BY-NC-SA 3.0, Bhote Koshi event imagery CC BY-NC 4.0) is non-commercial. Remove any dataset whose license does not fit your use, or obtain the required authorization. See [NOTICE.md](NOTICE.md) for full details.
 
 ## AI Capabilities: Local ETHAN & Cloud Models
 

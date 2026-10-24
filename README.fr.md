@@ -35,7 +35,7 @@ _Aucun recoin négligé._
 
 <div align="center">
 
-**[Démarrage rapide](#-démarrage-rapide) · [Origine & Modifications](#-origine-fork--modifications-seclib) · [Capacités & Limites](#-capacités--limites-techniques-réelles) · [Couches de données](#-ce-qui-est-affiché-sur-le-globe) · [Fonctions IA](#-capacités-ia-ethan-local--modèles-cloud) · [Confidentialité & Sécurité](#-confidentialité-modèle-de-sécurité--communications-réseau) · [Licences](NOTICE.md) · [Contributions](CONTRIBUTING.md)**
+**[Démarrage rapide](#-démarrage-rapide) · [Sources de données](#-sources-de-données-et-dépendances-extérieures) · [Origine & Modifications](#-origine-fork--modifications-seclib) · [Capacités & Limites](#-capacités--limites-techniques-réelles) · [Couches de données](#-ce-qui-est-affiché-sur-le-globe) · [Fonctions IA](#-capacités-ia-ethan-local--modèles-cloud) · [Confidentialité & Sécurité](#-confidentialité-modèle-de-sécurité--communications-réseau) · [Licences](NOTICE.md) · [Contributions](CONTRIBUTING.md)**
 
 </div>
 
@@ -236,6 +236,48 @@ Vingt couches de données intégrées dans une console orbitale. **Dix-huit couc
 _Légende :_ 🟢 **Sans clé nécessaire** · 🟡 **Clé gratuite sur inscription** · 🔴 **Payant / Facturé à l'usage**
 
 ---
+
+## 🔌 Sources de données et dépendances externes
+
+Odin unifie des **flux de données ouverts du domaine public** avec le **rendu local**. La licence MIT ne couvre que le code de l'application — elle n'étend pas aux données tierces ni aux actifs visuels. Chaque fournisseur conserve ses propres licences et conditions.
+
+### Sources en direct (récupérées à l'exécution)
+
+| Source | Utilisé pour | Licence / conditions |
+| --- | --- | --- |
+| NOAA GFS (vent) | Modèle global des vents | Domaine public (données NOAA sur AWS) |
+| ECMWF IFS (vent) | Modèle alternatif des vents | CC BY 4.0 + Conditions d'utilisation ECMWF |
+| NOAA nowCOAST | Radar, images IR nuages, foudre | Domaine public |
+| OpenSky Network | Positions ADS-B (aéronefs) | Niveau gratuit ; conditions s'appliquent |
+| adsb.lol | ADS-B filtré (militaires, vols de la garde civile) | Gratuit ; conditions s'appliquent |
+| AISStream.io | Suivi des navires maritimes | Niveau gratuit ; conditions s'appliquent |
+| CelesTrak | Éléments orbitales (TLE) | Données publiques de la NASA |
+| USGS Seismology | Données sismiques mondiales | Domaine public |
+| NASA FIRMS | Détection de feux actifs | Domaine public (citation demandée) |
+| OpenStreetMap | Réseau routier, covoiturage, transport | ODbL 1.0 |
+| TomTom Flow | Vitesses de circulation | Conditions d'utilisation (voir `docs/OSRM-FOSSGIS.md`) |
+| Mapillary / KartaView / Panoramax | Imagerie de niveau de rue | Licences mixtes ; voir DATA_SOURCES.md |
+| Radio Browser | Stations radio géolocalisées | Gratuit ; conditions s'appliquent |
+| Flux GTFS-Realtime | Positions de transport en direct | Conditions des opérateurs |
+| Flux GBFS | Disponibilité des vélos partagés | Conditions des opérateurs (voir DATA_SOURCES.md) |
+| OSRM / FOSSGIS | Routage et navigation étape par étape | Gratuit ; ODbL |
+| Launch Library 2 | Calendrier des lancements | Niveau gratuit ; conditions s'appliquent |
+| Carte des câbles sous-marins TeleGeography (intégrée) | Visualisation de la carte des câbles | [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/) — NonCommercial + ShareAlike |
+
+### Données intégrées (stockées dans le dépôt)
+
+- **`src/data/local_data/`** — jeux de données intégrés (carte des câbles TeleGeography, extraits OpenStreetMap, images d'événements, etc.)
+- **`public/models/`** — modèles 3D avec licences individuelles (voir [`public/models/README.md`](public/models/README.md))
+
+### Dépendances externes
+
+- **Paquets npm** — enregistrés dans [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) et `package-lock.json`
+- **Cesium ion** — jeton d'accès optionnel pour les tuiles 3D ; niveau gratuit disponible
+- **Google Maps Platform** — clé API optionnelle pour les tuiles 3D et Street View
+- **Fournisseurs IA cloud** — OpenAI (optionnel) pour la voix cloud et les résumés de scène ; ETHAN local pour les alternatives souveraines
+
+> [!CAUTION]
+> **Frontières légales :** la licence MIT ne couvre que le code source. Les données intégrées (carte TeleGeography CC BY-NC-SA 3.0, images événement Bhote Koshi CC BY-NC 4.0) sont à usage non commercial. Supprimez toute donnée dont la licence ne correspond pas à votre usage, ou obtenez l'autorisation requise. Voir [NOTICE.md](NOTICE.md) pour les détails complets.
 
 ## 🤖 Capacités IA : ETHAN Local & Modèles Cloud
 

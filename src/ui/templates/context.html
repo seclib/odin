@@ -110,6 +110,7 @@
             </div>
           </div>
           <section id="space-gallery" class="space-gallery" aria-labelledby="space-gallery-title">
+            <button id="open-mars-explorer" class="panel-layer-toggle" type="button" data-i18n>EXPLORE MARS IN 3D</button>
             <div class="space-gallery-heading">
               <strong id="space-gallery-title" data-i18n>NASA IMAGE ARCHIVE</strong>
               <span data-i18n>STILL IMAGES · NOT LIVE</span>
@@ -119,7 +120,7 @@
               <input id="space-gallery-query" type="search" value="Mars" minlength="2" maxlength="100" required autocomplete="off" />
               <button class="panel-layer-toggle" type="submit" data-i18n>SEARCH</button>
             </form>
-            <div class="space-gallery-presets" aria-label="Suggested searches">
+            <div class="space-gallery-presets" aria-label="Suggested searches" data-i18n-aria-label>
               <button type="button" data-space-query="Mars" data-i18n>MARS</button>
               <button type="button" data-space-query="asteroid" data-i18n>ASTEROIDS</button>
               <button type="button" data-space-query="space mission" data-i18n>MISSIONS</button>
@@ -265,5 +266,34 @@
       </div>
     </div>
   </aside>
+
+  <dialog id="space-planetarium-dialog" class="space-planetarium" aria-labelledby="space-planetarium-title">
+    <div class="space-planetarium-shell">
+      <header class="space-planetarium-header">
+        <div>
+          <h2 id="space-planetarium-title" data-i18n>MARS SURFACE EXPLORER</h2>
+          <p data-i18n>INTERACTIVE GLOBE · NASA MARS TREK GLOBAL MAP LAYERS</p>
+        </div>
+        <button id="close-mars-explorer" type="button" aria-label="Close Mars explorer" data-i18n-aria-label>×</button>
+      </header>
+      <div class="space-planetarium-layer-control">
+        <label for="mars-explorer-layer" data-i18n>MAP LAYER</label>
+        <select id="mars-explorer-layer" aria-label="Select Mars map layer" data-i18n-aria-label>
+          <option value="mars-mgs-mola-global-463m" data-i18n>GLOBAL MOLA SHADE · 463 M/PIXEL</option>
+          <option value="mars-mgs-moc-global-color" data-i18n>MGS MOC GLOBAL MOSAIC · SCALE UNSPECIFIED</option>
+        </select>
+      </div>
+      <div id="mars-explorer-canvas" class="space-planetarium-canvas" aria-label="Interactive 3D globe of Mars" data-i18n-aria-label></div>
+      <footer class="space-planetarium-footer">
+        <div id="mars-explorer-status" role="status" aria-live="polite" data-i18n>Preparing Mars map tiles…</div>
+        <div class="space-planetarium-provenance">
+          <span id="mars-explorer-layer-name" data-i18n>MGS MOLA Global Color Hillshade</span>
+          <span id="mars-explorer-layer-scale" data-i18n>SCALE: 463 M/PIXEL · FROM CATALOG IDENTIFIER</span>
+          <span id="mars-explorer-layer-credit" data-i18n>NASA/USGS MOLA · NASA Mars Trek WMTS · EPSG:104905 EQUIRECTANGULAR</span>
+          <a id="mars-explorer-catalog-link" href="https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars" target="_blank" rel="noopener noreferrer" data-i18n>NASA Mars Trek layer catalog and WMTS metadata</a>
+        </div>
+      </footer>
+    </div>
+  </dialog>
 
   <div id="scene-runtime"></div>

@@ -151,6 +151,10 @@ export const DATA_CREDITS = [
     html: 'Earthquakes: Data courtesy of the U.S. Geological Survey',
   },
   {
+    key: 'singapore-lta-traffic-images',
+    html: 'Periodic traffic-camera images: <a href="https://data.gov.sg/datasets/d_6cdb6b405b25aaaacbaf7689bcc6fae0/view" target="_blank" rel="noopener">Land Transport Authority (LTA), Singapore · data.gov.sg Open Data Licence</a>',
+  },
+  {
     key: 'nasa-gibs',
     html:
       'Recent imagery: We acknowledge the use of imagery provided by services from ' +

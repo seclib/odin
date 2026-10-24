@@ -5,6 +5,7 @@ import { initGeoFileImport } from '../ui/geoFileImport.js';
 import { initImageryBoxTool } from '../ui/imageryBoxTool.js';
 import { createRecentImageryPanel } from '../ui/recentImagery.js';
 import { initSpaceGallery } from '../ui/spaceGallery.js';
+import { initSpacePlanetarium } from '../ui/spacePlanetarium.js';
 import { initGevVoiceCommands } from '../voice/gevRealtime.js';
 import { installViews, isEmbeddedInline } from './embed.js';
 import { installScopeMask, destroyScopeMask } from '../scopeMask.js';
@@ -35,6 +36,8 @@ export function createApplicationTools({
   const { dataManager } = data;
   const spaceGallery = initSpaceGallery();
   defer(() => spaceGallery.destroy());
+  const spacePlanetarium = initSpacePlanetarium();
+  defer(() => spacePlanetarium.destroy());
   const sceneDirector = new SceneDirector(viewer, styleManager, dataManager, {
     dataPacks: sceneDataPacks,
     isMapStackAvailable: (id) =>

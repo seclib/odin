@@ -19,7 +19,7 @@ export function normalizeNASAImageItem(item) {
   if (!nasaId || data?.media_type !== 'image') return null;
   return {
     id: nasaId,
-    title: typeof data.title === 'string' ? data.title : 'Untitled NASA image',
+    title: typeof data.title === 'string' ? data.title : null,
     previewUrl,
     catalogDate:
       typeof data.date_created === 'string' ? data.date_created : null,

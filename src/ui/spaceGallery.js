@@ -1,4 +1,5 @@
 import { createSpaceImageSource } from '../layers/space/source.js';
+import { t, tn } from '../i18n/index.js';
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -23,6 +24,7 @@ export function initSpaceGallery({
   const render = (items) => {
     results.replaceChildren();
     for (const item of items) {
+      const title = item.title || t('Untitled NASA image');
       const card = element('article', 'space-gallery-card');
       const link = element('a', 'space-gallery-image-link');
       link.href = item.sourceUrl;
@@ -30,15 +32,15 @@ export function initSpaceGallery({
       link.rel = 'noopener noreferrer';
       link.setAttribute(
         'aria-label',
-        `Open NASA archive record: ${item.title}`,
+        t('Open NASA archive record: {title}', { title }),
       );
       const image = element('img', 'space-gallery-image');
       image.src = item.previewUrl;
-      image.alt = item.title;
+      image.alt = title;
       image.loading = 'lazy';
       image.referrerPolicy = 'no-referrer';
       link.append(image);
-      card.append(link, element('strong', 'space-gallery-title', item.title));
+      card.append(link, element('strong', 'space-gallery-title', title));
       const metadata = element('div', 'space-gallery-meta');
       metadata.append(element('span', '', `Credit: ${item.credit}`));
       if (item.catalogDate)
@@ -67,7 +69,7 @@ export function initSpaceGallery({
     controller?.abort();
     const requestController = new AbortController();
     controller = requestController;
-    status.textContent = 'Searching NASA archive…';
+    status.textContent = t('Searching NASA archive…');
     results.replaceChildren();
     try {
       const response = await source.search(query, {
@@ -76,12 +78,12 @@ export function initSpaceGallery({
       if (destroyed || requestController.signal.aborted) return;
       render(response.items);
       status.textContent = response.items.length
-        ? `${response.items.length} archive image${response.items.length === 1 ? '' : 's'} shown${response.totalHits === null ? '' : ` · ${response.totalHits} catalog matches`}.`
-        : 'No NASA archive images found for this search.';
+        ? `${tn(response.items.length, '{count} archive image shown.', '{count} archive images shown.')} ${response.totalHits === null ? '' : t('({count} catalog matches)', { count: response.totalHits })}`.trim()
+        : t('No NASA archive images found for this search.');
     } catch (error) {
       if (destroyed || requestController.signal.aborted) return;
       status.textContent =
-        error?.message || 'NASA image archive is unavailable.';
+        error?.message || t('NASA image archive is unavailable.');
     }
   };
   const onSubmit = (event) => {

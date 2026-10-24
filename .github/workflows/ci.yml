@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24.14.0
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run check:boundaries
+      - run: npm test
+      - run: npm run build
+
+  street-level-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24.14.0
+          cache: npm
+      - run: npm ci
+      - name: Build production bundle for fixture QA
+        env:
+          MAPILLARY_CLIENT_TOKEN: 'MLY|0|qa-fixture'
+        run: npm run build
+      - name: Start production preview
+        env:
+          MAPILLARY_CLIENT_TOKEN: 'MLY|0|qa-fixture'
+        run: |
+          npx vite preview --port 4173 --strictPort > /tmp/odin-vite-preview.log 2>&1 &
+          echo $! > /tmp/odin-vite-preview.pid
+      - name: Wait for production preview
+        run: |
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/odin-vite-preview.log
+          exit 1
+      - name: Run street-level browser fixtures
+        env:
+          QA_FAIL_ON_RETRY: '1'
+        run: npm run qa:street-level:fixtures -- --strict
+      - name: Upload browser QA evidence
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: street-level-browser-qa
+          path: qa-artifacts/
+          if-no-files-found: ignore
+
+  windows-onboarding:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24.14.0
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run check:boundaries
+      - run: npm run build

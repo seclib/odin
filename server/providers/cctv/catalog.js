@@ -5,6 +5,7 @@ import { allocateSourceCap, resolveCatalogCap } from './cap.js';
 import { loadGroundHeights, joinGroundHeights } from './groundHeights.js';
 import { cameraRegion, normalizeSourceItem } from './normalize.js';
 import { loadLithuaniaSources } from './lithuania.js';
+import { loadSingaporeSourcesFromOpenData } from './singapore.js';
 import {
   loadAustinSourcesFromOpenData,
   loadCaltransSourcesFromOpenData,
@@ -136,6 +137,11 @@ const LIVE_PACKS = [
     name: 'toronto',
     enabled: () => envEnabled('CCTV_TORONTO_ENABLED'),
     load: loadTorontoSourcesFromOpenData,
+  },
+  {
+    name: 'singapore-lta',
+    enabled: () => envEnabled('CCTV_SINGAPORE_ENABLED'),
+    load: loadSingaporeSourcesFromOpenData,
   },
   {
     // Opt-in until the Via Lietuva open-data terms are confirmed to cover the

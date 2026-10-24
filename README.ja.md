@@ -35,7 +35,7 @@ _見落とされる場所はどこにもありません。_
 
 <div align="center">
 
-**[クイックスタート](#-クイックスタート) · [系譜と変更点](#-系譜フォークと-seclib-による変更点) · [機能と制約](#-機能と実際の技術的制約) · [地球上のデータ](#-地球上のデータレイヤー) · [AI 機能](#-ai-機能ローカル-ethan-とクラウドモデル) · [プライバシーとセキュリティ](#-プライバシーセキュリティモデルネットワーク通信) · [ライセンス](NOTICE.md) · [貢献方法](CONTRIBUTING.md)**
+**[クイックスタート](#-クイックスタート) · [系譜と変更点](#-系譜フォークと-seclib-による変更点) · [機能と制約](#-機能と実際の技術的制約) · [データソースと依存関係](#-データソースと外部依存関係) · [地球上のデータ](#-地球上のデータレイヤー) · [AI 機能](#-ai-機能ローカル-ethan-とクラウドモデル) · [プライバシーとセキュリティ](#-プライバシーセキュリティモデルネットワーク通信) · [ライセンス](NOTICE.md) · [貢献方法](CONTRIBUTING.md)**
 
 </div>
 
@@ -290,6 +290,48 @@ Odin は物理インフラ、機器、航空機・船舶、自然現象、公共
 - **個人追跡の完全拒絶：** 人の顔認識、ナンバープレートからの個人特定、個人を追跡する機能は一切含まれておらず、そのような Pull Request も受け入れられません。
 
 ---
+
+## 🗂️ データソースと外部依存関係
+
+Odin は**公開オープンデータフィード**と**ローカルレンダリング**を統合します。MIT ライセンスはアプリケーションコードのみをカバーし、外部データやビジュアルアセットには適用されません。各プロバイダーは独自のライセンスと規約を保持します。
+
+### ライブソース（実行時に取得）
+
+| ソース | 用途 | ライセンス / 規約 |
+| --- | --- | --- |
+| NOAA GFS（風） | グローバル風モデル | 公共分野（NOAA の AWS データ） |
+| ECMWF IFS（風） | 代替風モデル | CC BY 4.0 + ECMWF 利用規約 |
+| NOAA nowCOAST | レーダー、雲の赤外線、落雷 | 公共分野 |
+| OpenSky Network | ADS-B 航空機位置 | フリーティア ; 規約適用 |
+| adsb.lol | フィルタリング済み ADS-B（軍、警察飛行） | フリー ; 規約適用 |
+| AISStream.io | 船舶追跡 | フリーティア ; 規約適用 |
+| CelesTrak | 軌道要素（TLE） | NASA 公開データ |
+| USGS Seismology | グローバル地震データ | 公共分野 |
+| NASA FIRMS | 活火山検知 | 公共分野（引用を要求） |
+| OpenStreetMap | 道路網、自転車シェア、交通 | ODbL 1.0 |
+| TomTom Flow | 交通流速度 | 利用規約適用（`docs/OSRM-FOSSGIS.md` 参照） |
+| Mapillary / KartaView / Panoramax | ストリートレベル映像 | 混合ライセンス ; DATA_SOURCES.md 参照 |
+| Radio Browser | 地理位置情報付きラジオ局 | フリー ; 規約適用 |
+| GTFS-Realtime フィード | リアルタイム公共交通車両位置 | オペレーター規約 |
+| GBFS フィード | 自転車シェア可否 | オペレーター規約（DATA_SOURCES.md 参照） |
+| OSRM / FOSSGIS | 経路とターン別ナビゲーション | フリー ; ODbL |
+| Launch Library 2 | ロケット打ち上げスケジュール | フリーティア ; 規約適用 |
+| TeleGeography 海底ケーブルマップ（同梱） | ケーブルマップ可視化 | [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/) — 非営利 + 継承 |
+
+### 同梱データ（リポジトリに格納）
+
+- **`src/data/local_data/`** — 同梱データセット（TeleGeography ケーブルマップ、OpenStreetMap 抽出、イベント映像など）
+- **`public/models/`** — 個別のライセンスを持つ 3D モデル（[`public/models/README.md`](public/models/README.md) 参照）
+
+### 外部依存関係
+
+- **npm パッケージ** — [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) および `package-lock.json` に記録
+- **Cesium ion** — 3D タイル用オプションアクセストークン ; フリー tier 可用
+- **Google Maps Platform** — 3D タイルとストリートビュー用オプション API キー
+- **クラウド AI プロバイダー** — OpenAI（任意）クラウドボイスおよびシーンのサマリー用 ; ソブリン代替としてローカル ETHAN
+
+> [!CAUTION]
+> **ライセンス境界：** MIT ライセンスはソースコードのみをカバーします。同梱データ（TeleGeography CC BY-NC-SA 3.0、Bhote Koshi イベント映像 CC BY-NC 4.0）は非商用です。使用に合わないデータセットは削除するか、必要な許可を取得してください。詳細は [NOTICE.md](NOTICE.md) を参照。
 
 ## 📜 ライセンスと知的財産権の境界
 

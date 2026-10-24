@@ -21,6 +21,7 @@ import { sanitizeCctvRangeHeader } from './cctv/range.js';
 import { createHlsPuller } from './cctv/stream.js';
 import { googleServerApiKey } from './places/google-key.js';
 import { cctvAvailability } from './cctv/availability.js';
+import { fetchSingaporeCameraSnapshot } from './cctv/singapore.js';
 export { CCTV_FRAME_FETCH_TIMEOUT_MS, fetchCctvImageFromUpstream };
 /**
  * Vite plugin: CCTV camera proxy with source registry, frame/media serving,
@@ -35,7 +36,10 @@ export { CCTV_FRAME_FETCH_TIMEOUT_MS, fetchCctvImageFromUpstream };
  *
  * @returns {import('vite').Plugin}
  */
-export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
+export function cctvProxy({
+  sourceRoot = process.cwd(),
+  singaporeSnapshot = fetchSingaporeCameraSnapshot,
+} = {}) {
   const getCctvSources = createCctvCatalog({ sourceRoot });
   /** @type {Map<string,{id:string,status:string,sourceKind:string,label:string,message:string,updatedAt:number}>} */
   const health = new Map();
@@ -61,7 +65,9 @@ export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
       label: patch.label || prev.label || '',
       message: patch.message || prev.message || '',
       updatedAt: Date.now(),
-      checkedAt: Date.now(),
+      checkedAt: Number.isFinite(patch.checkedAt)
+        ? patch.checkedAt
+        : Date.now(),
       capturedAt: Object.hasOwn(patch, 'capturedAt')
         ? patch.capturedAt
         : (prev.capturedAt ?? null),
@@ -536,7 +542,9 @@ export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
         const upstreamImage =
           source?.sourceKind === 'txdot-its'
             ? await fetchTxdotSnapshot(upstreamCandidate)
-            : await fetchCctvImageFromUpstream(upstreamCandidate);
+            : source?.sourceKind === 'singapore-lta'
+              ? await singaporeSnapshot(cameraId)
+              : await fetchCctvImageFromUpstream(upstreamCandidate);
         if (upstreamImage?.ok) {
           setHealth(cameraId, {
             status: 'ok',
@@ -544,6 +552,7 @@ export function cctvProxy({ sourceRoot = process.cwd() } = {}) {
             label: source?.provider || 'Configured source',
             message: 'Upstream snapshot active',
             capturedAt: upstreamImage.capturedAt,
+            checkedAt: upstreamImage.checkedAt,
           });
           res.writeHead(200, {
             'Content-Type': upstreamImage.contentType,

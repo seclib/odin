@@ -35,7 +35,7 @@ _俯瞰全球，洞察无遗。_
 
 <div align="center">
 
-**[快速开始](#-快速开始) · [渊源与改动](#-渊源分支与-seclib-改动) · [功能与限制](#-功能特性与技术限制) · [图层数据源](#-地球上的数据图层) · [AI 架构](#-ai-能力本地-ethan-与云端模型) · [隐私与安全](#-隐私安全模型与网络通信) · [许可证说明](NOTICE.md) · [参与贡献](CONTRIBUTING.md)**
+**[快速开始](#-快速开始) · [渊源与改动](#-渊源分支与-seclib-改动) · [功能与限制](#-功能特性与技术限制) · [数据源与依赖](#-数据源与外部依赖) · [图层数据源](#-地球上的数据图层) · [AI 架构](#-ai-能力本地-ethan-与云端模型) · [隐私与安全](#-隐私安全模型与网络通信) · [许可证说明](NOTICE.md) · [参与贡献](CONTRIBUTING.md)**
 
 </div>
 
@@ -289,6 +289,51 @@ Odin 专为监测物理基础设施、机械设备、航行器、自然现象及
 - **绝不追踪个人：** 本项目坚决不包含，且未来绝不合并任何涉及人脸识别、车牌车主个人隐私匹配或针对特定自然人的跟踪功能。
 
 ---
+
+> [!TIP]
+> **注意：** 此部分已通过自动翻译添加，需经人工校对。
+
+## 🗂️ 数据源与外部依赖
+
+Odin 整合**公共开源情报数据流**与**本地渲染**。MIT 许可证仅涵盖应用程序代码——不包括第三方数据或视觉资产。每个提供方保留其自己的许可证和条款。
+
+### 实时数据源（运行时获取）
+
+| 数据源 | 用于 | 许可 / 条款 |
+| --- | --- | --- |
+| NOAA GFS（风） | 全球风场模型 | 公共领域（NOAA 数据在 AWS 上） |
+| ECMWF IFS（风） | 备用风场模型 | CC BY 4.0 + ECMWF 服务条款 |
+| NOAA nowCOAST | 雨格雷德、云红外、闪电 | 公共领域 |
+| OpenSky Network | ADS-B 飞机位置 | 免费层 ; 条款适用 |
+| adsb.lol | 过滤后的 ADS-B（军用、警方航班） | 免费 ; 条款适用 |
+| AISStream.io | 船舶实时追踪 | 免费层 ; 条款适用 |
+| CelesTrak | 轨道要素（TLE） | NASA 公共数据 |
+| USGS Seismology | 全球地震数据 | 公共领域 |
+| NASA FIRMS | 活跃火灾探测 | 公共领域（请求引用） |
+| OpenStreetMap | 道路网络、共享单车、公共交通 | ODbL 1.0 |
+| TomTom Flow | 交通流量速度 | 条款适用（见 `docs/OSRM-FOSSGIS.md`） |
+| Mapillary / KartaView / Panoramax | 街道级影像 | 混合许可证 ; 见 DATA_SOURCES.md |
+| Radio Browser | 带地理位置的电台 | 免费 ; 条款适用 |
+| GTFS-Realtime 数据流 | 实时公共交通车辆位置 | 运营商条款 |
+| GBFS 数据流 | 共享单车可用性 | 运营商条款（见 DATA_SOURCES.md） |
+| OSRM / FOSSGIS | 路由和导航 | 免费 ; ODbL |
+| Launch Library 2 | 火箭发射时间表 | 免费层 ; 条款适用 |
+| TeleGeography 海底电缆地图（捆绑） | 电缆地图可视化 | [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/) — 禁止商业行为 + 相同许可 |
+
+### 捆绑数据（存储在仓库中）
+
+- **`src/data/local_data/`** — 捆绑数据集（TeleGeography 电缆地图、OpenStreetMap 提取物、事件影像等）
+- **`public/models/`** — 3D 模型，附带单独许可证（见 [`public/models/README.md`](public/models/README.md)）
+
+### 外部依赖
+
+- **npm 包** — 记录在 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) 和 `package-lock.json`
+- **Cesium ion** — 3D 瓦片的可选访问令牌；免费层可用
+- **Google Maps Platform** — 3D 瓦片和街景的可选 API 密钥
+- **云端 AI 提供方** — OpenAI（可选）用于云端语音和场景摘要；本地 ETHAN 用于主权替代方案
+
+> [!CAUTION]
+> **许可证边界：** MIT 许可证仅涵盖源代码。捆绑数据（TeleGeography CC BY-NC-SA 3.0、Bhote Koshi 事件影像 CC BY-NC 4.0）为非商业用途。请删除任何许可证不适合您使用的数据集，或获得必要的授权。详情见 [NOTICE.md](NOTICE.md)。
 
 ## 📜 许可证与知识产权边界
 
