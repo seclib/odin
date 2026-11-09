@@ -140,6 +140,13 @@ export const DATA_CREDITS = [
       'Dr. T.S. Kelso',
   },
   {
+    key: 'mpc-orbits',
+    html:
+      'Catalogued asteroid and comet orbital elements: ' +
+      '<a href="https://data.minorplanetcenter.net/" target="_blank" rel="noopener">Minor Planet Center (MPC)</a> ' +
+      '· per-object orbit epoch and fit metadata shown in the Space panel',
+  },
+  {
     key: 'launch-library-2',
     html:
       'Space mission launch, payload &amp; recovery metadata: ' +

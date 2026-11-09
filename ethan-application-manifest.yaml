@@ -1,0 +1,44 @@
+identity:
+  app_id: odin
+  instance_id: odin-local-default
+  name: Odin
+  version: 0.2.1
+  contract_version: 1.0.0
+  publisher: Seclib
+  manifest_version: 1
+capabilities:
+  - name: application.health.read
+    description: Read Odin health status
+  - name: application.lifecycle.read
+    description: Read Odin lifecycle state
+  - name: application.logs.read
+    description: Read redacted Odin logs
+  - name: application.control.start
+    description: Start the Odin container
+  - name: application.control.stop
+    description: Stop the Odin container
+  - name: application.control.restart
+    description: Restart the Odin container
+dependencies:
+  - name: docker
+    version: ">=24"
+    required: false
+  - name: node
+    version: ">=24.14.0"
+    required: true
+compatibility:
+  - ethan 2026.11
+interfaces:
+  http:
+    kind: http
+    entrypoint: "http://127.0.0.1:4173"
+  api:
+    kind: api
+    entrypoint: "http://127.0.0.1:4173/api/health"
+permissions:
+  - application.control.start
+  - application.control.stop
+  - application.control.restart
+provenance:
+  source: examples/odin/package.json
+  digest: 17f4307a216ed8854291bfcc554681d798ee96fd1b9f8700cfd786a6f3821f64

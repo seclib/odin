@@ -108,10 +108,7 @@ test('the browser User-Agent applies to the NSW image host only', async () => {
     ),
     'odin-cctv-proxy/1.0',
   );
-  assert.equal(
-    cctvUpstreamUserAgent('not a url'),
-    'odin-cctv-proxy/1.0',
-  );
+  assert.equal(cctvUpstreamUserAgent('not a url'), 'odin-cctv-proxy/1.0');
 
   const seen = [];
   await fetchCctvImageFromUpstream(

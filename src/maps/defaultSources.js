@@ -5,6 +5,7 @@ import { t } from '../i18n/index.js';
 import {
   createOsmImagery,
   createEsriImagery,
+  createCartoDarkImagery,
   createIonImagery,
   ESRI_ATTRIBUTION_HTML,
 } from './imagery.js';
@@ -52,7 +53,9 @@ export function createDefaultMapSources({
           ? () => createIonImagery(descriptor.style, ionToken)
           : descriptor.id === 'osm'
             ? createOsmImagery
-            : createEsriImagery;
+            : descriptor.id === 'carto-dark'
+              ? createCartoDarkImagery
+              : createEsriImagery;
       return {
         ...common,
         imagery,

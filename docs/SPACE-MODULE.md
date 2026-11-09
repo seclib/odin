@@ -38,6 +38,34 @@ identical searches for ten minutes, validates the response shape, and renders
 only HTTPS preview URLs from NASA's image asset host. The NASA record remains
 the authority for individual media credits and reuse terms.
 
+## Follow-up architecture decision: small-body orbit geometry
+
+**Decision (2026-10-24): do not connect JPL Horizons to Odin's web UI.** JPL's
+current [SSD API fair-use policy](https://ssd-api.jpl.nasa.gov/doc/) explicitly
+says not to embed its APIs in a website. The server proxy pattern does not
+remove that restriction. Odin links to the official Horizons UI instead; this
+increment does not provide Horizons ephemerides or planet positions.
+
+The audit's bounded MPC checks returned orbit records for asteroid Ceres and
+comet C/2020 F3. MPC documentation says its database data are freely available
+to the public, requires a maximum of five API requests per second, and documents
+single-designation orbit queries. Add only a single-object MPC orbit lookup,
+with much lower serialized request rate, cache, source attribution and no bulk
+catalog replication. The visualizer may draw a **catalogued osculating orbit
+geometry** from MPC's COM elements in a 2D ecliptic projection. It must show the
+MPC orbit epoch and mark z as projected away. It must not claim a position at
+the selected wall-clock time: current API records do not provide sufficient
+documented time-scale metadata for COM `peri_time` in the reviewed schema, and a
+two-body propagation would omit perturbations and comet non-gravitational
+effects. Position/ephemeris remains unavailable until an authorized,
+validated source is selected.
+
+NASA Images API, NASA Mars WMTS, and the independent Mars Cesium globe remain
+unchanged. Stellarium is not bundled, copied, framed, or launched: the audited
+local directory has no Git metadata or executable; the documented RemoteControl
+service is an optional separate desktop application's HTTP surface and does
+not justify an Odin service dependency.
+
 ## Existing components reused
 
 - The existing Space Missions context and mission roster in `context.html`.

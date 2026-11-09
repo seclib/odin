@@ -1,4 +1,4 @@
-import { greatCircleMeters } from '../geoDistance.js';
+import { greatCircleMeters } from 'odin/geo';
 
 const MAX_ARTICLES = 5;
 

@@ -5,8 +5,7 @@ import { createHash } from 'node:crypto';
 // Overpass API proxy constants and cache state
 // ---------------------------------------------------------------------------
 /** Stable application identity for operator-configured Overpass instances. */
-const OVERPASS_USER_AGENT =
-  'odin/0.1 (+https://github.com/seclib/odin)';
+const OVERPASS_USER_AGENT = 'odin/0.1 (+https://github.com/seclib/odin)';
 
 /** Parse only operator-supplied HTTP(S) endpoints; private instances are allowed. */
 function parseOverpassUpstreams(raw) {

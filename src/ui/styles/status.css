@@ -56,7 +56,9 @@
 #tilt-map-view[aria-pressed='true'] {
   border-color: var(--accent);
   color: var(--accent);
-  box-shadow: 0 0 14px rgba(0, 212, 255, 0.18);
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.5),
+    0 0 0 1px var(--accent) inset;
 }
 
 #north-up-view {
@@ -90,20 +92,18 @@
   gap: 10px;
   max-width: calc(100vw - 32px);
   padding: 6px 10px;
-  border-radius: 7px;
-  border: 1px solid rgba(0, 212, 255, 0.24);
-  background: rgba(3, 10, 18, 0.78);
+  border-radius: var(--btn-radius);
+  border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.12));
+  background: rgba(14, 18, 24, 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  color: rgba(170, 252, 255, 0.92);
+  color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 8px;
   letter-spacing: 1.35px;
   text-transform: uppercase;
   transform: translateX(-50%);
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.34),
-    0 0 14px rgba(0, 212, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   pointer-events: none;
 }
 #global-loading-status[hidden] {

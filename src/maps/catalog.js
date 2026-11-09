@@ -37,4 +37,11 @@ export const MAP_STACKS = [
     kind: 'osm',
     requiresIon: false,
   },
+  {
+    id: 'carto-dark',
+    label: 'CARTO Dark', // i18n-ignore: imagery product name
+    shortLabel: 'DARK',
+    kind: 'carto-dark',
+    requiresIon: false,
+  },
 ];

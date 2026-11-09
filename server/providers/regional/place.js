@@ -13,8 +13,7 @@ import {
  * agents will not do. Both are sent.
  */
 const NOMINATIM_HEADERS = Object.freeze({
-  'User-Agent':
-    'odin/0.1 (+https://github.com/seclib/odin)',
+  'User-Agent': 'odin/0.1 (+https://github.com/seclib/odin)',
   Referer: 'https://github.com/seclib/odin',
 });
 

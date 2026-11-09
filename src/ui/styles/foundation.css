@@ -1,27 +1,28 @@
 /* ═══════════════════════════════════════════════
-   GOD'S EYE VIEW — Dark Sci-Fi UI
-   Apple meets Blade Runner
+   ODIN — Modern Professional OSINT/GEOINT UI
+   Precision, Contrast, Clarity
    ═══════════════════════════════════════════════ */
 
 :root {
-  --bg-dark: #0a0a0f;
-  --glass-bg: rgba(12, 12, 20, 0.72);
+  --bg-dark: #0a0c10;
+  --glass-bg: rgba(18, 22, 28, 0.94);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-hover: rgba(255, 255, 255, 0.15);
-  --accent: #00d4ff;
-  --accent-dim: rgba(0, 212, 255, 0.15);
-  --accent-glow: rgba(0, 212, 255, 0.4);
-  --text-primary: #e8eaed;
-  --text-secondary: rgba(232, 234, 237, 0.5);
-  --text-dim: rgba(232, 234, 237, 0.3);
-  /* Opaque surface for browser-painted menus, which cannot use --glass-bg. */
-  --menu-bg: #12121c;
+  --glass-border-hover: rgba(255, 255, 255, 0.14);
+  --accent: #5b9cf6;
+  --accent-dim: rgba(91, 156, 246, 0.1);
+  --accent-glow: rgba(91, 156, 246, 0.16);
+    --text-primary: #e6e9ef;
+  --text-secondary: rgba(230, 233, 239, 0.72);
+  --text-dim: rgba(230, 233, 239, 0.45);
+          /* Opaque surface for browser-painted menus, which cannot use --glass-bg. */
+  --menu-bg: #1a1f27;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --panel-radius: 16px;
-  --btn-radius: 10px;
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --panel-radius: 6px;
+  --btn-radius: 4px;
+  --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --left-stack-x: 52px;
   --right-rail-x: 52px;
   --left-stack-top: 26vh;
@@ -30,6 +31,15 @@
   --display-panel-expanded-width: 272px;
   --cockpit-radio-collapsed-width: 148px;
   --cockpit-radio-expanded-width: 232px;
+
+  /* Semantic surface & border elevations */
+  --surface-ground: #0a0c10;
+  --surface-panel: rgba(20, 24, 31, 0.96);
+  --surface-card: rgba(26, 31, 39, 0.96);
+  --surface-hover: rgba(34, 40, 51, 0.98);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.16);
 }
 
 * {
@@ -506,7 +516,7 @@ body.cockpit-mode #cockpit-cloud-effects.active {
   height: 80px;
   background: radial-gradient(ellipse, var(--accent-dim) 0%, transparent 70%);
   filter: blur(20px);
-  opacity: 0.6;
+  opacity: 0.2;
 }
 
 #title-bar h1 {
@@ -518,7 +528,9 @@ body.cockpit-mode #cockpit-cloud-effects.active {
   font-weight: 600;
   letter-spacing: 8px;
   color: var(--text-primary);
-  text-shadow: 0 0 30px var(--accent-glow);
+  text-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.8),
+    0 0 16px var(--accent-glow);
   position: relative;
 }
 
@@ -527,7 +539,7 @@ body.cockpit-mode #cockpit-cloud-effects.active {
   display: block;
   width: 52px;
   height: auto;
-  filter: drop-shadow(0 0 12px rgba(0, 246, 255, 0.5));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
 }
 
 #title-bar .title-logo::before,
@@ -650,6 +662,6 @@ body.cockpit-mode #cockpit-cloud-effects.active {
   letter-spacing: 5px;
   color: var(--accent);
   margin-top: 4px;
-  text-shadow: 0 0 20px var(--accent-glow);
+  text-shadow: 0 0 10px var(--accent-glow);
   transition: var(--transition-smooth);
 }

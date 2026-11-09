@@ -11,6 +11,19 @@ export function createOsmImagery() {
   });
 }
 
+
+
+
+export function createCartoDarkImagery() {
+  return new Cesium.UrlTemplateImageryProvider({
+    url: 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    credit: new Cesium.Credit('Labels and cartography: CARTO; map data: © OpenStreetMap contributors', true),
+    tilingScheme: new Cesium.WebMercatorTilingScheme(),
+    maximumLevel: 20,
+    enablePickFeatures: false,
+  });
+}
+
 export function createEsriImagery() {
   return Cesium.ArcGisMapServerImageryProvider.fromUrl(
     'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',

@@ -140,13 +140,19 @@ export function createPresentation({
       mountHeightM: camera.mountHeightM,
       active: isActive,
       feedType: camera.feedType,
-      mediaMode: camera.mediaMode || (camera.externalUrl
-        ? 'external-embed'
-        : ['hls', 'mjpeg'].includes(String(camera.feedType || '').toLowerCase())
-          ? 'continuous-video'
-          : ['mp4', 'webm'].includes(String(camera.feedType || '').toLowerCase())
-            ? 'video-clip'
-            : 'still-image'),
+      mediaMode:
+        camera.mediaMode ||
+        (camera.externalUrl
+          ? 'external-embed'
+          : ['hls', 'mjpeg'].includes(
+                String(camera.feedType || '').toLowerCase(),
+              )
+            ? 'continuous-video'
+            : ['mp4', 'webm'].includes(
+                  String(camera.feedType || '').toLowerCase(),
+                )
+              ? 'video-clip'
+              : 'still-image'),
       externalUrl: camera.externalUrl || '',
       isVideo:
         parts.model.isVideoFeedType(camera.feedType) &&

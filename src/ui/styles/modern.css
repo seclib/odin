@@ -1,0 +1,353 @@
+/* Modern OSINT/GEOINT theme overlay.
+   Harmonizes shared surfaces, controls, and interaction states on top of the
+   existing component styles. Imported last so these refinements win the cascade
+   without duplicating component layout rules. */
+
+:root {
+  --modern-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --modern-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --modern-shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.6);
+}
+
+/* Thin, unobtrusive scrollbars. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+/* Reduce decorative glass blur on the main control panel. */
+.panel-inner {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: var(--modern-shadow-md);
+}
+
+.panel-mini-value {
+  text-shadow: none;
+}
+
+/* Panels use a solid, levelled surface instead of heavy glass. */
+[data-panel-surface]::before {
+  background-color: var(--surface-panel);
+  border-color: var(--border-subtle);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: var(--modern-shadow-md);
+}
+
+/* Compact, consistent form controls. */
+.pp-select,
+.pp-text-input,
+.draw-color-select {
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--btn-radius);
+  color: var(--text-primary);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.pp-select:focus,
+.pp-text-input:focus,
+.draw-color-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+.pp-mode-btn,
+.pp-toggle-btn,
+.draw-clear-btn {
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--btn-radius);
+  color: var(--text-secondary);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.pp-mode-btn:hover,
+.pp-toggle-btn:hover,
+.draw-clear-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.pp-mode-btn.active,
+.pp-toggle-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0a0c10;
+}
+
+/* Native inputs/selects/textareas across the app. */
+input,
+select,
+textarea {
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--btn-radius);
+  color: var(--text-primary);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+  outline: none;
+}
+
+/* Dialogs / popovers / menus. */
+dialog,
+[role='dialog'],
+.modal,
+[role='menu'],
+[role='listbox'],
+menu {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--modern-shadow-lg);
+  color: var(--text-primary);
+}
+
+/* Keep keyboard focus visible on top of the new surfaces. */
+:focus-visible {
+  outline-color: var(--text-primary);
+}
+
+/* Main chrome and navigation. */
+#title-bar {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--modern-shadow-md);
+  padding: 0.5rem 0.75rem;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+#title-bar h1 {
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+#title-bar .subtitle {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+#style-indicator {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--btn-radius);
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+}
+
+#style-indicator #active-style-name {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+#top-center-actions {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--modern-shadow-md);
+  padding: 0.25rem;
+  gap: 0.25rem;
+}
+
+#top-center-actions button {
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--btn-radius);
+  color: var(--text-primary);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+#top-center-actions button:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+#global-loading-status {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--btn-radius);
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+}
+
+#toast {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--modern-shadow-lg);
+  color: var(--text-primary);
+}
+
+#safe-frame-overlay #safe-frame-box {
+  border-color: var(--accent);
+}
+
+/* Shared panel headers and titles. */
+.panel-header,
+.param-panel-header,
+.cctv-calibration-header,
+.cockpit-context-header,
+.cockpit-signal-header,
+.radio-tuner-header,
+.space-mission-roster-header,
+.space-planetarium-header,
+.first-run-header,
+.key-setup-header {
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-card);
+}
+
+.panel-title,
+.param-panel-title,
+.pp-header-label {
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-size: 0.85rem;
+}
+
+/* Panel inner surfaces. */
+.data-panel-inner,
+.global-context-panel-inner,
+.cctv-panel-inner,
+.scene-panel-inner,
+.weather-panel-inner,
+.street-level-panel-inner,
+.recent-imagery-panel-inner,
+.radio-panel-inner,
+.global-context-panel-inner {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--modern-shadow-md);
+}
+
+/* Toolbars, filters and search fields. */
+.location-toolbar,
+.sl-filters {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--btn-radius);
+  padding: 0.5rem;
+  gap: 0.5rem;
+}
+
+.location-search-wrap input,
+.space-gallery-search input {
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--btn-radius);
+  color: var(--text-primary);
+  padding: 0.4rem 0.6rem;
+}
+
+.location-search-wrap input:focus,
+.space-gallery-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+/* Icon buttons and small controls. */
+.btn-icon,
+.panel-collapse-btn,
+.search-toggle-btn,
+.panel-layer-toggle {
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--btn-radius);
+  color: var(--text-primary);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.btn-icon:hover,
+.panel-collapse-btn:hover,
+.search-toggle-btn:hover,
+.panel-layer-toggle:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+/* Mini readouts. */
+.panel-mini-label,
+.cctv-summary-label,
+.panel-mini-status {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.panel-mini-value,
+.cctv-cal-value,
+.cctv-cal-readout {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-shadow: none;
+}
+
+/* Tone down residual neon glows from legacy overlays. */
+.style-btn.active .btn-icon,
+#scene-progress-fill,
+#scene-runtime,
+.radio-tuner-scale,
+.military-awareness-target:focus-visible,
+.military-awareness-compass-heading,
+.military-awareness-direction-label {
+  text-shadow: none;
+}
+
+#scene-runtime {
+  color: var(--text-primary);
+  background: var(--surface-panel);
+  border-color: var(--border-subtle);
+}
+
+#scene-progress-fill {
+  color: var(--text-primary);
+}

@@ -1,3 +1,5 @@
+name: odin
+
 services:
   odin:
     build: .

@@ -80,12 +80,15 @@ async function handleHudSummary(req, res) {
     let response;
     let data = {};
     try {
-      response = await fetch(`${ethanBaseUrl()}/v1/plugins/odin/ai/hud-summary`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(context),
-        signal: controller.signal,
-      });
+      response = await fetch(
+        `${ethanBaseUrl()}/v1/plugins/odin/ai/hud-summary`,
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(context),
+          signal: controller.signal,
+        },
+      );
       data = await response.json().catch(() => ({}));
     } finally {
       clearTimeout(timer);

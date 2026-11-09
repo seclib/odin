@@ -18,7 +18,7 @@
     transparent 60%
   );
   filter: blur(30px);
-  opacity: 0.4;
+  opacity: 0.1;
   pointer-events: none;
 }
 
@@ -343,13 +343,13 @@ html:not([lang='en']) .panel-collapse-btn {
   border-color: var(--accent);
   background: var(--accent-dim);
   box-shadow:
-    0 0 20px rgba(0, 212, 255, 0.15),
-    0 0 0 1px rgba(0, 212, 255, 0.1) inset;
+    0 0 0 1px var(--accent) inset,
+    0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .style-btn.active .btn-icon {
   color: var(--accent);
-  text-shadow: 0 0 12px var(--accent-glow);
+  text-shadow: 0 0 8px var(--accent-glow);
 }
 
 .style-btn.active .btn-label {
@@ -870,7 +870,7 @@ html:not([lang='en']) .pp-slider-row > .pp-slider-mini-label {
 
 .map-stack-chip-row {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 4px;
 }
 

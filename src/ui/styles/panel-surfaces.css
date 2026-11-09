@@ -35,7 +35,7 @@
   --panel-surface-font: var(--font-sans);
   --panel-surface-detail: none;
   --panel-surface-frame: none;
-  --panel-surface-shadow: 0 8px 24px rgba(0, 0, 0, 0.38);
+  --panel-surface-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.4);
   --panel-surface-title: var(--text-secondary);
   --panel-surface-error: #ff9b8e;
   --panel-surface-width: 300px;
@@ -81,12 +81,14 @@
   position: absolute;
   inset: -1px;
   z-index: -1;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--border-subtle);
   border-radius: inherit;
-  background-color: var(--glass-bg);
+  background-color: var(--surface-panel);
   background-image: var(--panel-surface-detail);
   box-shadow: var(--panel-surface-shadow);
   clip-path: var(--panel-surface-frame);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   pointer-events: none;
 }
 
@@ -162,9 +164,9 @@
   min-height: 30px;
   max-width: 100%;
   padding: 5px 8px;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.12));
   border-radius: var(--btn-radius);
-  background: var(--bg-dark);
+  background: var(--surface-card, rgba(20, 26, 35, 0.85));
   color: var(--text-primary);
   font: inherit;
   accent-color: var(--accent);
@@ -176,7 +178,7 @@ button.panel-surface-control {
 
 .panel-surface-control:hover:not(:disabled):not([aria-disabled='true']) {
   border-color: var(--glass-border-hover);
-  background: var(--accent-dim);
+  background: var(--surface-hover, rgba(30, 39, 52, 0.90));
 }
 
 .panel-surface-control:focus-visible {

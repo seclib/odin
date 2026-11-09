@@ -1,4 +1,5 @@
 import { t } from '../i18n/index.js';
+import { microphoneAccessMessage } from './microphoneError.js';
 
 const DISCONNECT_GRACE_MS = 6000;
 
@@ -89,6 +90,7 @@ export class RealtimeConnection {
     });
     let localStream = null;
     let localPc = null;
+    let requestingMicrophone = false;
     try {
       const minted = await this.backend.requestToken({
         tier: this.cost.voiceTier,
@@ -117,6 +119,7 @@ export class RealtimeConnection {
         servedTier: minted.tier || null,
         ratesRecognized: costState.ratesRecognized,
       });
+      requestingMicrophone = true;
       localStream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
@@ -125,6 +128,7 @@ export class RealtimeConnection {
           channelCount: 1,
         },
       });
+      requestingMicrophone = false;
       if (this.abandonStart(epoch, { localStream, localPc })) return;
       this.stream = localStream;
       this.setMicrophoneEnabled(
@@ -250,7 +254,22 @@ export class RealtimeConnection {
       }
       const diagnostics = this.connectionDiagnostics();
       this.stop({ preserveStatus: true });
-      this.reportError('Realtime connection', error, diagnostics);
+      const microphoneMessage = requestingMicrophone
+        ? microphoneAccessMessage(error)
+        : null;
+      this.reportError(
+        microphoneMessage ? 'Microphone' : 'Realtime connection',
+        microphoneMessage ? new Error(microphoneMessage) : error,
+        {
+          ...diagnostics,
+          ...(microphoneMessage
+            ? {
+                browserErrorName: error?.name || null,
+                secureContext: globalThis.isSecureContext ?? null,
+              }
+            : {}),
+        },
+      );
     }
   }
 

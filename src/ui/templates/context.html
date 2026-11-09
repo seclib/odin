@@ -133,6 +133,60 @@
               <a href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener noreferrer" data-i18n>JPL Horizons web application</a>
             </div>
           </section>
+          <section
+            id="space-orbit-explorer"
+            class="space-orbit-explorer"
+            aria-labelledby="space-orbit-title"
+          >
+            <div class="space-gallery-heading">
+              <strong id="space-orbit-title" data-i18n
+                >SMALL-BODY ORBIT CATALOG</strong
+              >
+              <span data-i18n>MPC ELEMENTS · NOT A LIVE POSITION</span>
+            </div>
+            <form id="space-orbit-form" class="space-gallery-search">
+              <label
+                class="space-gallery-label"
+                for="space-orbit-query"
+                data-i18n
+                >SEARCH ONE ASTEROID OR COMET</label
+              >
+              <input
+                id="space-orbit-query"
+                type="search"
+                value="Ceres"
+                maxlength="100"
+                required
+                autocomplete="off"
+              />
+              <button class="panel-layer-toggle" type="submit" data-i18n>
+                LOOK UP MPC ORBIT
+              </button>
+            </form>
+            <div
+              id="space-orbit-status"
+              role="status"
+              aria-live="polite"
+              data-i18n
+            >
+              Search a designation to load its catalogued orbit.
+            </div>
+            <div id="space-orbit-details" class="space-orbit-details"></div>
+            <div id="space-orbit-plot" class="space-orbit-plot"></div>
+            <div class="space-gallery-provenance">
+              <span data-i18n
+                >MPC CATALOG ORBIT · 2D ECLIPTIC PROJECTION · AU · Z PROJECTED
+                AWAY · NO DATED POSITION</span
+              >
+              <a
+                href="https://data.minorplanetcenter.net/"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-i18n
+                >Minor Planet Center source</a
+              >
+            </div>
+          </section>
         </section>
         <section id="radio-panel" class="panel-collapsible collapsed" data-panel-id="radio-panel" aria-label="Internet radio and local SDR" data-i18n-aria-label>
           <div class="radio-panel-inner">
