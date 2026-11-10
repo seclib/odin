@@ -1,7 +1,7 @@
 import { isUnavailableCapability } from '../sources/capability.js';
 import { defaultGeospatial } from '../search/defaults.js';
 import * as Cesium from 'cesium';
-import { greatCircleMeters } from '../geoDistance.js';
+import { greatCircleMeters } from 'odin/geo';
 import {
   holdContinuousRender,
   releaseContinuousRender,

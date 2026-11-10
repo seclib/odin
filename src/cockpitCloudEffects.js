@@ -1,6 +1,6 @@
 import { applicationServices } from './services/application.js';
 import * as Cesium from 'cesium';
-import { greatCircleMeters } from './geoDistance.js';
+import { greatCircleMeters } from 'odin/geo';
 import {
   deriveWeatherEffectProfile,
   weatherAltitudeFactors,

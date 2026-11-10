@@ -6,7 +6,10 @@ import {
 } from '../app/viewer.js';
 import { registerDataCredits } from '../data/dataCredits.js';
 import { configureCreditKeyboardAccess } from '../creditKeyboard.js';
+import { createPerformanceMonitor } from '../performanceMonitor.js';
 import { MapStackController } from '../mapStackController.js';
+import { createTerrainEngine } from '../maps/terrainEngine.js';
+import { createPerformanceManager } from '../performanceManager.js';
 import { loadPhotorealisticTileset } from '../mapStartup.js';
 import { initLogoGaze } from '../logoGaze.js';
 import {
@@ -58,7 +61,45 @@ export async function createApplicationScene({
     if (!viewer.isDestroyed()) viewer.destroy();
   });
   defer(installTrackpadPinchZoom(viewer));
-  registerDataCredits(viewer, credits);
+
+  // Instrumentation de performance : API de diagnostics uniquement, aucun
+  // démarrage automatique, aucune boucle de rendu ajoutée. Le monitor est
+  // exposé pour que les prochaines missions (P2 Adaptive Performance Manager)
+  // puissent appeler start() et consommer getSnapshot()/getHistory().
+  const performanceMonitor = createPerformanceMonitor({
+    scene: viewer.scene,
+    viewer,
+  });
+  defer(() => performanceMonitor.dispose());
+
+  // Terrain Engine : encapsulation additive des fournisseurs de terrain.
+  // Création différée (aucun provider n'est instancié tant que
+  // createProvider() n'est pas appelé) — aucune modification du comportement
+  // de MapSourceController, aucune boucle de rendu ajoutée. Exposé pour que
+  // les futurs consommateurs (Adaptive Performance Manager) puissent l'utiliser.
+  const terrainEngine = createTerrainEngine({
+    scene: viewer.scene,
+    cesiumToken,
+    googleApiKey,
+  });
+  defer(() => terrainEngine.destroy());
+
+  // Adaptive Performance Manager (P4): coordination de performanceMonitor,
+  // terrainEngine et renderGovernor. Déclaré ici, instancié après la
+  // résolution du tileset Google Photorealistic 3D Tiles (chargé de façon
+  // asynchrone) afin de pouvoir l'attacher dès qu'il est disponible.
+  // Aucun profil n'est activé automatiquement : Balanced est la référence
+  // et aucun paramètre Cesium n'est modifié.
+  let performanceManager;
+
+  // A provider can finish after cancellation; retain ownership of its result.
+  defer(() => {
+    if (tileset && !tileset.isDestroyed()) {
+      if (!viewer.scene.primitives.remove(tileset)) tileset.destroy();
+    }
+    // Détacher le tileset du performance manager avant sa destruction.
+    if (performanceManager) performanceManager.detachTileset();
+  });
   configureCreditKeyboardAccess(document);
   loaderStatus.textContent =
     googleApiKey || googleTokens || cesiumToken
@@ -70,6 +111,21 @@ export async function createApplicationScene({
     cesiumToken,
   });
   const tileset = photoreal.tileset;
+  // Instancier le performance manager maintenant que le tileset est résolu
+  // (chargé de façon asynchrone), puis l'attacher pour qu'il puisse piloter
+  // maximumScreenSpaceError sur le tileset actif.
+  performanceManager = createPerformanceManager({
+    performanceMonitor,
+    terrainEngine,
+  });
+  if (tileset) {
+    performanceManager.attachTileset(tileset);
+  }
+  defer(() => performanceManager.dispose());
+
+  registerDataCredits(viewer, credits);
+  configureCreditKeyboardAccess(document);
+
   // A provider can finish after cancellation; retain ownership of its result.
   defer(() => {
     if (tileset && !tileset.isDestroyed()) {
@@ -127,5 +183,13 @@ export async function createApplicationScene({
   });
 
   signal.throwIfAborted();
-  return { viewer, tileset, mapStackController, operations };
+  return {
+    viewer,
+    tileset,
+    mapStackController,
+    operations,
+    performanceMonitor,
+    terrainEngine,
+    performanceManager,
+  };
 }

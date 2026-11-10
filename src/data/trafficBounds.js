@@ -13,7 +13,7 @@
  * @module data/trafficBounds
  */
 
-import { EARTH_RADIUS_KM, greatCircleKm, isGeoPoint } from '../geoDistance.js';
+import { EARTH_RADIUS_KM, greatCircleKm, isGeoPoint } from 'odin/geo';
 
 const toRad = (deg) => (deg * Math.PI) / 180;
 const toDeg = (rad) => (rad * 180) / Math.PI;

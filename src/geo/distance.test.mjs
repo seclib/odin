@@ -6,6 +6,11 @@ import {
   greatCircleMeters,
   isGeoPoint,
   wrapLongitude,
+  greatCirclePathKm,
+  greatCirclePathMeters,
+  polygonPerimeterKm,
+  polygonAreaKm2,
+  circularAreaKm2,
 } from './distance.js';
 import {
   greatCircleKm as legacyGreatCircleKm,
@@ -192,4 +197,121 @@ test('public entry, canonical, and legacy facade agree on reference cases', () =
     assert.equal(p, c);
     assert.equal(l, c);
   }
+});
+
+test('great-circle path sums consecutive segments and rejects short paths', () => {
+  const parisLyon = greatCircleKm(PARIS, LYON);
+  assert.ok(Math.abs(greatCirclePathKm([PARIS, LYON]) - parisLyon) < 1e-9);
+  assert.equal(greatCirclePathKm([]), Infinity);
+  assert.equal(greatCirclePathKm([PARIS]), Infinity);
+  assert.equal(greatCirclePathKm(null), Infinity);
+  const lyonAustin = greatCircleKm(LYON, AUSTIN);
+  assert.ok(
+    Math.abs(greatCirclePathKm([PARIS, LYON, AUSTIN]) - (parisLyon + lyonAustin)) <
+      1e-9,
+  );
+});
+
+test('great-circle path in metres equals kilometres scaled by 1000', () => {
+  const points = [PARIS, LYON, AUSTIN];
+  assert.equal(greatCirclePathMeters(points), greatCirclePathKm(points) * 1000);
+});
+
+test('great-circle path invalid point forces Infinity', () => {
+  assert.equal(greatCirclePathKm([PARIS, LYON, { lat: 91, lon: 0 }]), Infinity);
+});
+
+test('polygon perimeter closes rings and sums great-circle segments', () => {
+  const ring = [PARIS, LYON, AUSTIN];
+  const expected =
+    greatCircleKm(PARIS, LYON) +
+    greatCircleKm(LYON, AUSTIN) +
+    greatCircleKm(AUSTIN, PARIS);
+  assert.ok(Math.abs(polygonPerimeterKm(ring) - expected) < 1e-9);
+  const closed = [...ring, PARIS];
+  assert.equal(polygonPerimeterKm(closed), polygonPerimeterKm(ring));
+});
+
+test('polygon perimeter handles dateline-crossing rings', () => {
+  const acrossDateline = [
+    { lat: 0, lon: 179 },
+    { lat: 0, lon: -179 },
+    { lat: 10, lon: 0 },
+  ];
+  const expected =
+    greatCircleKm({ lat: 0, lon: 179 }, { lat: 0, lon: -179 }) +
+    greatCircleKm({ lat: 0, lon: -179 }, { lat: 10, lon: 0 }) +
+    greatCircleKm({ lat: 10, lon: 0 }, { lat: 0, lon: 179 });
+  assert.ok(Math.abs(polygonPerimeterKm(acrossDateline) - expected) < 1e-9);
+});
+
+test('polygon perimeter rejects short and invalid rings', () => {
+  assert.equal(polygonPerimeterKm([PARIS, LYON]), Infinity);
+  assert.equal(polygonPerimeterKm(null), Infinity);
+  assert.equal(
+    polygonPerimeterKm([PARIS, LYON, { lat: NaN, lon: 0 }]),
+    Infinity,
+  );
+});
+
+test('spherical polygon area via Girard excess (octant triangle)', () => {
+  const octant = [
+    { lat: 90, lon: 0 },
+    { lat: 0, lon: 0 },
+    { lat: 0, lon: 90 },
+  ];
+  const expected = (Math.PI * EARTH_RADIUS_KM * EARTH_RADIUS_KM) / 2;
+  const area = polygonAreaKm2(octant);
+  assert.ok(
+    Math.abs(area - expected) < expected * 1e-6,
+    `octant area: got ${area}, expected ${expected}`,
+  );
+});
+
+test('spherical polygon area is zero for degenerate and invalid rings', () => {
+  const line = [
+    { lat: 0, lon: 0 },
+    { lat: 0, lon: 10 },
+    { lat: 0, lon: 20 },
+  ];
+  assert.equal(polygonAreaKm2(line), 0);
+  assert.equal(polygonAreaKm2([PARIS, LYON]), 0);
+  assert.equal(polygonAreaKm2(null), 0);
+  assert.equal(
+    polygonAreaKm2([PARIS, LYON, { lat: NaN, lon: 0 }]),
+    0,
+  );
+});
+
+test('circular cap area matches the spherical cap formula', () => {
+  const radiusKm = 100;
+  const expected =
+    2 *
+    Math.PI *
+    EARTH_RADIUS_KM *
+    EARTH_RADIUS_KM *
+    (1 - Math.cos(radiusKm / EARTH_RADIUS_KM));
+  const area = circularAreaKm2(radiusKm);
+  assert.ok(Math.abs(area - expected) < expected * 1e-12, `got ${area}, expected ${expected}`);
+  // Small-radius cap approximates the planar disc.
+  const small = circularAreaKm2(50);
+  const planar = Math.PI * 50 * 50;
+  assert.ok(Math.abs(small - planar) / planar < 1e-3);
+});
+
+test('circular cap area rejects invalid radii', () => {
+  assert.equal(circularAreaKm2(0), 0);
+  assert.equal(circularAreaKm2(-5), 0);
+  assert.equal(circularAreaKm2(NaN), 0);
+  assert.equal(circularAreaKm2(Infinity), 0);
+});
+
+test('public entry exposes the new measurement exports', () => {
+  assert.equal(typeof publicEntry.greatCirclePathKm, 'function');
+  assert.equal(typeof publicEntry.greatCirclePathMeters, 'function');
+  assert.equal(typeof publicEntry.polygonPerimeterKm, 'function');
+  assert.equal(typeof publicEntry.polygonAreaKm2, 'function');
+  assert.equal(typeof publicEntry.circularAreaKm2, 'function');
+  assert.equal(typeof geoPackage.greatCirclePathKm, 'function');
+  assert.equal(typeof geoPackage.polygonAreaKm2, 'function');
 });

@@ -42,6 +42,8 @@ import {
 import { placesNearby, planRoute, searchPlaces } from './queries/places.js';
 import { panelRequest } from './queries/panelRequest.js';
 import { showInGodsEyeView } from './queries/share.js';
+import { near } from './queries/near.js';
+import { filterArea } from './queries/filter_area.js';
 import { findAlprCameras } from './queries/surveillance.js';
 import {
   findCctvCameras,
@@ -122,6 +124,8 @@ export const coreTools = Object.freeze([
   situationBrief,
   militaryAwareness,
   getHudCaption,
+  near,
+  filterArea,
   showInGodsEyeView,
   panelRequest,
 ]);

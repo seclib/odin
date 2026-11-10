@@ -68,7 +68,7 @@ async function createBingIonImagery(style, accessToken) {
     tileProtocol: 'https',
   });
   const ionCredits = (endpoint.attributions ?? []).map(
-    ({ html, collapsible }) => new Cesium.Credit(html, collapsible === false),
+    ({ html }) => new Cesium.Credit(html, false),
   );
   const getTileCredits = provider.getTileCredits.bind(provider);
   provider.getTileCredits = (x, y, level) => [

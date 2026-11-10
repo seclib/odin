@@ -20,7 +20,7 @@ import { t, tn } from '../i18n/index.js';
  * `drawTool.js`.
  */
 
-import { greatCircleMeters } from '../geoDistance.js';
+import { greatCircleMeters } from 'odin/geo';
 
 export const DRAW_SHAPES = Object.freeze(['area', 'line', 'pin']);
 export const MIN_VERTICES = Object.freeze({ area: 3, line: 2, pin: 1 });

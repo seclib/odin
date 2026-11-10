@@ -367,6 +367,14 @@ export function createLocalGeoJsonLayer(
   let _lodGraceState = new Map();
   /** Budget cap the most recent camera-height band produced (0 until computed). */
   let _lastLodBudgetLimit = 0;
+  /** Dernière changeId reçue du performanceManager, pour détecter les changements de politique. */
+  let _lastChangeId = 0;
+  /** Dernier memoryPressure reçu du performanceManager. */
+  let _lastMemoryPressure = null;
+  /** Dernier activeProfile reçu du performanceManager. */
+  let _lastActiveProfile = 'balanced';
+  /** Dernier decisionReason reçu du performanceManager. */
+  let _lastDecisionReason = 'ok';
   /**
    * False until the first post-enable preRender walk has run the LOD
    * selection. While false the walk treats every record as active (old
@@ -484,6 +492,7 @@ export function createLocalGeoJsonLayer(
     source,
     updateInterval: 0,
     statsRefreshInterval: 1000,
+    performanceManager: null,
 
     init: async (viewer) => {
       // DataLayerManager calls this once
@@ -953,6 +962,36 @@ export function createLocalGeoJsonLayer(
             // recompute while genuine slow travel eventually does.
             Cesium.Cartesian3.clone(cameraPos, _lastLodCameraPos);
             _lastLodProbeMs = now;
+
+            // ---- Contract consumption from performanceManager (optionnel) ----
+            // Si un performanceManager est attaché et qu'il fournit un contrat,
+            // lire ses champs pour affiner le comportement LOD sans reconstruire
+            // d'entités ni perturber le rendu.
+            if (this.performanceManager && typeof this.performanceManager.getLODContract === 'function') {
+              try {
+                const contract = this.performanceManager.getLODContract();
+                // Mise à jour du raisonnement de décision si le contrat indique
+                // un changement (changeId incrémenté). On conserve la valeur
+                // existante si changeId n'a pas changé.
+                if (contract.changeId !== undefined && lastChangeId !== undefined) {
+                  if (contract.changeId !== lastChangeId) {
+                    // Changement de politique LOD détecté
+                    // Peut être utilisé pour logger ou ajuster des comportements
+                    // sans toucher au budget actif ou aux entités.
+                  }
+                }
+                // Stocker la dernière changeId pour la prochaine comparaison
+                lastChangeId = contract.changeId;
+                // Rappeler memoryPressure et activeProfile si souhaité pour
+                // d'autres boucles de prise de décision externe.
+                lastMemoryPressure = contract.memoryPressure;
+                lastActiveProfile = contract.activeProfile;
+                lastDecisionReason = contract.decisionReason;
+              } catch (e) {
+                // Contract read error : ne pas perturber le rendu
+                console.warn('ODIN P5.3-C: error reading LOD contract:', e);
+              }
+            }
           }
 
           for (let i = 0; i < _stemRecords.length; i++) {

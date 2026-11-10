@@ -27,7 +27,7 @@
 import { feedProvenanceEnvelope } from './layerSnapshot.js';
 import { pointInRing } from './naturalEarthRegions.js';
 import { VOICE_LAYER_MANIFEST, voiceLayer } from '../voice/layerManifest.js';
-import { greatCircleKm } from '../geoDistance.js';
+import { greatCircleKm } from 'odin/geo';
 
 /**
  * Layers the engine understands, with the fields queries may reference,

@@ -15,6 +15,11 @@ export {
   greatCircleKm,
   greatCircleMeters,
   wrapLongitude,
+  greatCirclePathKm,
+  greatCirclePathMeters,
+  polygonPerimeterKm,
+  polygonAreaKm2,
+  circularAreaKm2,
 } from './distance.js';
 
 export {
@@ -31,3 +36,5 @@ export {
   geoPointToGeoJsonCoordinates,
   geoJsonCoordinatesToGeoPoint,
 } from './geometry.js';
+
+export { spatialJoin, Predicate } from './spatialJoin.js';

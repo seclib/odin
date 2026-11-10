@@ -15,7 +15,7 @@ import { applicationServices } from './services/application.js';
  */
 
 import * as Cesium from 'cesium';
-import { greatCircleKm } from './geoDistance.js';
+import { greatCircleKm } from 'odin/geo';
 import { forward as toMGRS } from 'mgrs';
 import { CITY_POIS } from './cityPois.js';
 import { composeLocalityTag } from './hudLocality.js';

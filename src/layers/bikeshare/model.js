@@ -5,7 +5,7 @@ import {
   parseStationStatus,
   toNonNegativeInteger,
 } from '../../sources/gbfsStations.js';
-import { greatCircleKm } from '../../geoDistance.js';
+import { greatCircleKm } from 'odin/geo';
 
 export function createModel({ state: layerState, services, parts, source }) {
   /**

@@ -167,7 +167,7 @@ test('both Bing ion stacks use HTTPS and retain ion and per-tile attribution', a
     assert.deepEqual(
       credits.map(({ html, showOnScreen }) => ({ html, showOnScreen })),
       [
-        { html: 'Ion required credit', showOnScreen: true },
+        { html: 'Ion required credit', showOnScreen: false },
         { html: 'Ion optional credit', showOnScreen: false },
         { html: 'Bing tile credit', showOnScreen: true },
       ],

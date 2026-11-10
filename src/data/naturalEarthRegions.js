@@ -18,7 +18,7 @@
 
 import { loadBundledJson } from './bundledJson.js';
 import { createRetryableLoader } from './retryableLoad.js';
-import { EARTH_RADIUS_KM, greatCircleKm } from '../geoDistance.js';
+import { EARTH_RADIUS_KM, greatCircleKm } from 'odin/geo';
 
 const toRad = (d) => (d * Math.PI) / 180;
 

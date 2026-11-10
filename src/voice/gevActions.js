@@ -11,7 +11,7 @@ import { defaultGeospatial } from '../search/defaults.js';
 import { msg } from '../i18n/index.js';
 import * as Cesium from 'cesium';
 import { CITY_POIS } from '../cityPois.js';
-import { greatCircleKm } from '../geoDistance.js';
+import { greatCircleKm } from 'odin/geo';
 import {
   findPoiByName,
   flyToGlobeView,
@@ -244,6 +244,7 @@ const STACK_ALIASES = new Map([
   ['road', 'osm'],
   ['roads', 'osm'],
   ['road map', 'osm'],
+  ['carto-dark', 'carto-dark'],
 ]);
 
 /** Search order for track_entity across entity layer families. */

@@ -3,7 +3,7 @@ import { isUnavailableCapability } from './sources/capability.js';
 import { createOverpassFeatureSource } from './sources/overpassFeatures.js';
 import { applicationServices } from './services/application.js';
 import * as Cesium from 'cesium';
-import { greatCircleKm } from './geoDistance.js';
+import { greatCircleKm } from 'odin/geo';
 import {
   viewportBias,
   placesNearViewRecovery,

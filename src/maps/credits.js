@@ -11,7 +11,10 @@ export function createMapCredits(viewer) {
       if (!display) return;
       try {
         if (active) display.removeStaticCredit(active);
-        active = html ? new Cesium.Credit(html, true) : null;
+        // Cesium-hosted attribution (e.g. Esri Powered-by) stays accessible via
+        // the credit lightbox rather than the always-on on-screen credit line
+        // (`Credit.showOnScreen = false`).
+        active = html ? new Cesium.Credit(html, false) : null;
         markup = html;
         if (active) display.addStaticCredit(active);
       } catch {

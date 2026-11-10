@@ -39,6 +39,8 @@ export const TOOL_SURFACES = Object.freeze({
   // plan routes and report weather, and these layers add little in a chat.
   search_places: mcpOff,
   places_nearby: mcpOff,
+  near: { mcp: true, voice: true },
+  filter_by_area: { mcp: true, voice: true },
   plan_route: mcpOff,
   get_weather: mcpOff,
   get_wind: mcpOff,

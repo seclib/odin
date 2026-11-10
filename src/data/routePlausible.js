@@ -10,7 +10,7 @@
  * low → its destination should be nearby).
  */
 
-import { EARTH_RADIUS_KM, greatCircleKm, isGeoPoint } from '../geoDistance.js';
+import { EARTH_RADIUS_KM, greatCircleKm, isGeoPoint } from 'odin/geo';
 
 const D2R = Math.PI / 180;
 
