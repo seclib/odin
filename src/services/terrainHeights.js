@@ -20,9 +20,16 @@ export function createTerrainHeights({
   // src/data/terrainHeights.js — batched, cached client terrain-height resolver
   // (docs/plans/2026-07-05-entity-height-datum-fix.md Task 3).
   //
-  // Resolves ELLIPSOIDAL ground height per (lat, lon) via the server-side
-  // `/api/terrain/heights` proxy (Task 2 — Re:Earth `heights.json`, disk-cached,
-  // serve-stale). When the proxy is unreachable (or errors) AND the point isn't
+  // Resolves GROUND height per (lat, lon), always returned as ellipsoidal.
+  // Two upstream shapes are accepted and normalized here:
+  //
+  //   Re:Earth (`/api/terrain/heights`) — ellipsoidal heights as-is.
+  //   IGN RGE ALTI (same proxy, French territories) — orthometric heights
+  //   (NGF-IGN69, source:'ign-rge-alti'); this module converts them to
+  //   ellipsoidal with the same bundled EGM96 geoid used for the geoid-fallback
+  //   path, so the datum conversion exists in exactly one place.
+  //
+  // When the proxy is unreachable (or errors) AND the point isn't
   // already warm in this module's in-memory cache, falls back to bundled-geoid
   // math (Task 1, `src/data/geoid.js`):
   //
@@ -82,7 +89,7 @@ export function createTerrainHeights({
    * `resolveEllipsoidalGround`. Bounded at CACHE_MAX_ENTRIES; write through
    * `cacheStore` and read a consumer-facing hit through `cacheTouch` so the
    * eviction order stays least-recently-used.
-   * @type {Map<string, {ellipsoid: number, source: 'reearth'|'geoid-fallback', retryAt?: number}>}
+   * @type {Map<string, {ellipsoid: number, source: 'reearth'|'ign-rge-alti'|'geoid-fallback', retryAt?: number}>}
    */
   const cache = new Map();
 
@@ -96,7 +103,7 @@ export function createTerrainHeights({
    * cell it is parked on must not be evicted merely for having been resolved
    * early.
    * @param {string} key
-   * @param {{ellipsoid: number, source: 'reearth'|'geoid-fallback', retryAt?: number}} entry
+   * @param {{ellipsoid: number, source: 'reearth'|'ign-rge-alti'|'geoid-fallback', retryAt?: number}} entry
    */
   function cacheStore(key, entry) {
     cache.delete(key);
@@ -112,7 +119,7 @@ export function createTerrainHeights({
    * Read an entry and promote it to newest, so a coordinate a consumer keeps
    * asking about survives eviction. Returns undefined on a miss.
    * @param {string} key
-   * @returns {{ellipsoid: number, source: 'reearth'|'geoid-fallback', retryAt?: number}|undefined}
+   * @returns {{ellipsoid: number, source: 'reearth'|'ign-rge-alti'|'geoid-fallback', retryAt?: number}|undefined}
    */
   function cacheTouch(key) {
     const entry = cache.get(key);
@@ -149,18 +156,22 @@ export function createTerrainHeights({
   /**
    * Field-test round 5 (2026-07-06, the "sea-level poison"): like
    * cachedEllipsoidalGround but returns null for geoid-FALLBACK entries —
-   * only a real Re:Earth value counts. A fallback (cached when the proxy
-   * failed mid-burst) is the geoid surface, which at Austin sits ~165 m below
-   * the airport: floors built on it sank every sprite/trail, and the mesh
-   * sampler's sanity gate rejected REAL surface samples against it. Floor
-   * consumers read THIS; the plain read stays for display-only consumers.
+   * only a measured height counts (Re:Earth or IGN RGE ALTI). A fallback
+   * (cached when the proxy failed mid-burst) is the geoid surface, which at
+   * Austin sits ~165 m below the airport: floors built on it sank every
+   * sprite/trail, and the mesh sampler's sanity gate rejected REAL surface
+   * samples against it. Floor consumers read THIS; the plain read stays for
+   * display-only consumers.
    * @param {number} lat
    * @param {number} lon
    * @returns {number|null}
    */
   function cachedRealEllipsoidalGround(lat, lon) {
     const entry = cacheTouch(cacheKey(lat, lon));
-    return entry && entry.source === 'reearth' ? entry.ellipsoid : null;
+    return entry &&
+      (entry.source === 'reearth' || entry.source === 'ign-rge-alti')
+      ? entry.ellipsoid
+      : null;
   }
 
   /**
@@ -169,8 +180,13 @@ export function createTerrainHeights({
    * look results up positionally-independent of upstream response ordering.
    * Throws on any failure (non-ok response, network error, malformed body) —
    * callers decide the fallback behavior per point.
+   *
+   * The proxy may answer with two result shapes:
+   *   { ellipsoid, source:'reearth', … }   — already ellipsoidal
+   *   { heightOrthometric, source:'ign-rge-alti' } — NGF-IGN69 metres, converted
+   *     locally with the bundled EGM96 geoid (the conversion lives here, once).
    * @param {Array<{key: string, lat: number, lon: number}>} chunk
-   * @returns {Promise<Map<string, number>>} key -> ellipsoid height (m)
+   * @returns {Promise<Map<string, {ellipsoid: number, source: 'reearth'|'ign-rge-alti'}>>} key -> ellipsoid height (m)
    */
   async function fetchChunk(chunk, requestSignal = signal) {
     // lon,lat order (matches the proxy's documented `points=lon,lat;…` contract
@@ -193,11 +209,31 @@ export function createTerrainHeights({
     // this against the live upstream), so map positionally rather than trust
     // the response's own lon/lat fields to re-match — those are also present
     // for callers who want them, but this module doesn't need them.
+    const ignPending = []; // [key, heightOrthometric] for the geoid pass
     for (let i = 0; i < chunk.length; i += 1) {
+      const item = body.results[i];
+      const heightOrthometric = Number(item?.heightOrthometric);
+      if (
+        item &&
+        Number.isFinite(heightOrthometric) &&
+        item?.source === 'ign-rge-alti'
+      ) {
+        ignPending.push([chunk[i].key, chunk[i].lat, chunk[i].lon, heightOrthometric]);
+        continue;
+      }
       const ellipsoid = body.results[i]?.ellipsoid;
       if (!Number.isFinite(ellipsoid))
         throw new Error(`non-finite ellipsoid height at index ${i}`);
-      out.set(chunk[i].key, ellipsoid);
+      out.set(chunk[i].key, { ellipsoid, source: 'reearth' });
+    }
+    if (ignPending.length) {
+      await ensureGeoidReady();
+      for (const [key, lat, lon, heightOrthometric] of ignPending) {
+        out.set(key, {
+          ellipsoid: geoidFallback(lat, lon, heightOrthometric),
+          source: 'ign-rge-alti',
+        });
+      }
     }
     return out;
   }
@@ -236,7 +272,7 @@ export function createTerrainHeights({
    *   with a real proxy round-trip pending — sees a warm hit.
    *
    * @param {Array<{lat:number, lon:number, sourceOrthometricM?:number}>} coords
-   * @returns {Promise<Array<{ellipsoid:number, source:'reearth'|'geoid-fallback'}>>}
+   * @returns {Promise<Array<{ellipsoid:number, source:'reearth'|'ign-rge-alti'|'geoid-fallback'}>>}
    *   Same length and order as `coords`.
    */
   async function resolveEllipsoidalGround(
@@ -283,7 +319,11 @@ export function createTerrainHeights({
         entry?.source === 'geoid-fallback' &&
         Number.isFinite(entry.retryAt) &&
         now < entry.retryAt;
-      if ((entry && entry.source === 'reearth') || fallbackCooling) {
+      if (
+        (entry &&
+          (entry.source === 'reearth' || entry.source === 'ign-rge-alti')) ||
+        fallbackCooling
+      ) {
         resolvedThisCall.set(item.key, entry);
         continue;
       }
@@ -301,28 +341,64 @@ export function createTerrainHeights({
         const resolved = await fetchChunk(chunk, requestSignal);
         requestSignal?.throwIfAborted();
         for (const item of chunk) {
-          const ellipsoid = resolved.get(item.key);
-          // Round 6: only a FINITE value may be cached as 'reearth'. A point
-          // the upstream response omitted used to cache {ellipsoid: undefined,
-          // source: 'reearth'} — permanently "warm" yet empty, so its floor
-          // read null forever and every later warm skipped it (ATL verify:
-          // one contact frozen at the geoid while its neighbors resolved).
-          // An omitted point now caches nothing and retries on the next warm.
-          if (Number.isFinite(ellipsoid)) {
-            const entry = { ellipsoid, source: 'reearth' };
+          const resolvedEntry = resolved.get(item.key);
+          // Round 6: only a FINITE value is cached — a point the upstream
+          // response omitted caches nothing and retries on the next warm.
+          if (resolvedEntry && Number.isFinite(resolvedEntry.ellipsoid)) {
+            const entry = {
+              ellipsoid: resolvedEntry.ellipsoid,
+              source: resolvedEntry.source,
+            };
             resolvedThisCall.set(item.key, entry);
             cacheStore(item.key, entry);
           }
         }
-      } catch {
+      } catch (error) {
         requestSignal?.throwIfAborted();
         // Proxy down (or cold cache had nothing to serve-stale) — fall back to
-        // geoid math for every point in this chunk. `ensureGeoidReady()` is
-        // awaited lazily, only on the fallback path, so the common (proxy
-        // healthy) case never pays for the geoid grid's dynamic import.
+        // geoid math for the points in this chunk. A failure that still
+        // carries real heights (the proxy's `partial`, e.g. cached points
+        // during an upstream 429 pause) keeps them; only the rest use the
+        // geoid. `ensureGeoidReady()` is awaited lazily, only on the fallback
+        // path, so the common (proxy healthy) case never pays for the geoid
+        // grid's dynamic import.
+        const partial =
+          Array.isArray(error?.partial) && error.partial.length === chunk.length
+            ? error.partial
+            : [];
+        const ignPartial = [];
+        const fallback = [];
+        chunk.forEach((item, index) => {
+          const p = partial[index];
+          // IGN partial rows are orthometric with NGF-IGN69 datum — convert
+          // with the bundled geoid, exactly like a fresh IGN response.
+          const z = p?.heightOrthometric;
+          if (p?.source === 'ign-rge-alti' && Number.isFinite(z)) {
+            ignPartial.push({ item, z });
+            return;
+          }
+          const ellipsoid = p?.ellipsoid;
+          if (!Number.isFinite(ellipsoid)) {
+            fallback.push(item);
+            return;
+          }
+          const entry = { ellipsoid, source: 'reearth' };
+          resolvedThisCall.set(item.key, entry);
+          cacheStore(item.key, entry);
+        });
+        if (ignPartial.length === 0 && fallback.length === 0) continue;
         await ensureGeoidReady();
         requestSignal?.throwIfAborted();
-        for (const item of chunk) {
+        for (const { item, z } of ignPartial) {
+          const entry = {
+            ellipsoid: geoidFallback(item.lat, item.lon, z),
+            source: 'ign-rge-alti',
+          };
+          resolvedThisCall.set(item.key, entry);
+          cacheStore(item.key, entry);
+        }
+        if (fallback.length === 0) continue;
+        for (const item of fallback) {
           const ellipsoid = geoidFallback(
             item.lat,
             item.lon,

@@ -22,6 +22,8 @@ import {
   keyholeLabelAlphaFromGeometry,
 } from '../celestialRing.js';
 import { registerWorldOverlayPaintLane } from '../overlays/worldOverlay.js';
+import { SurfaceOcclusion } from './detectionOcclusion.js';
+import { createSceneOcclusionProbe } from '../services/sceneOcclusion.js';
 import {
   DETECTION_STYLE,
   DETECTION_THEME_MAP,
@@ -216,6 +218,8 @@ let _lastCyberSonarPaintAt = Number.NEGATIVE_INFINITY;
 let _cyberSonarRenderTimer = null;
 /** @type {Function|null} External callback invoked when the detection mode changes */
 let _onModeChange = null;
+let _occlusion = null;
+let _occlusionProbe = null;
 /** @type {{surface:HTMLCanvasElement|null,setActive:Function,requestPaint:Function,unregister:Function}|null} */
 let _hostLane = null;
 /**
@@ -297,6 +301,37 @@ export function initDetection(viewer, layers, onModeChange) {
   _viewer = viewer;
   _layers = layers;
   _onModeChange = onModeChange;
+  // Scene occlusion: native Cesium probe + scheduler. Fail-safe: any error
+  // leaves contacts visible.
+  try {
+    _occlusionProbe = createSceneOcclusionProbe(viewer);
+    _occlusion = new SurfaceOcclusion({
+      add(contact, position) {
+        if (!_occlusionProbe || !_occlusionProbe.available()) return false;
+        const scene = viewer?.scene;
+        const camera = viewer?.camera;
+        if (!scene || !camera) return false;
+        let screen = null;
+        try {
+          screen = scene.cartesianToCanvasCoordinates(position);
+        } catch {
+          return false;
+        }
+        if (!screen) return false;
+        const result = _occlusionProbe.probe(screen.x, screen.y, position, 3);
+        contact.pending = false;
+        contact.answered = true;
+        if (result.occluded) contact.lastHiddenAt = _occlusion.now;
+        else contact.lastHiddenAt = Number.NEGATIVE_INFINITY;
+        return true;
+      },
+      mode: 'sync',
+      maxPerFrame: 8,
+    });
+  } catch {
+    _occlusion = null;
+    _occlusionProbe = null;
+  }
   _debugBanner = detectionDebugRequested(
     typeof window !== 'undefined' ? window.location?.search : '',
   );
@@ -334,6 +369,11 @@ export function initDetection(viewer, layers, onModeChange) {
 /** Release the host lane and all retained detection runtime state. */
 export function destroyDetection() {
   _clearCyberSonarRenderTimer();
+  try {
+    _occlusion?.clear();
+  } catch {}
+  _occlusion = null;
+  _occlusionProbe = null;
   if (_cockpitModeListener && typeof window !== 'undefined') {
     window.removeEventListener(
       'gev:cockpit-mode-changed',
@@ -562,6 +602,31 @@ export function markDetectionSourcesChanged(reason = 'sources-changed') {
 }
 
 /** Read-only diagnostics for unit/browser QA. */
+/**
+ * Query whether a contact is currently occluded by scene geometry.
+ * Safe to call from other modules; returns false when occlusion is unavailable.
+ * @param {string} layerId
+ * @param {*} sourceId
+ * @returns {boolean}
+ */
+export function isContactOccluded(layerId, sourceId) {
+  if (!_occlusion) return false;
+  try {
+    const layer = _occlusion.contacts.get(layerId);
+    if (!layer) return false;
+    const contact = layer.get(sourceId);
+    if (!contact) return false;
+    // Reuse the same hidden logic as the scheduler.
+    const now = _occlusion.now;
+    if (now < contact.hiddenUntil) return true;
+    if (!contact.answered && _occlusionProbe?.mode === 'async' && now - contact.firstSeenAt < _occlusion.firstAnswerMs)
+      return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 export function getDetectionDiagnostics() {
   if (!_lastDiagnostics) return null;
   const result = JSON.parse(JSON.stringify(_lastDiagnostics));
@@ -765,6 +830,9 @@ function _paintDetectionLane(frame) {
     animatingCount: 0,
     solvePending: false,
   };
+  try {
+    _occlusion?.prune();
+  } catch {}
   _lastRenderMs = performance.now() - start;
   _lastSolveMs = result.solveMs || 0;
   _lastPaintMs = Math.max(0, _lastRenderMs - _lastSolveMs);
@@ -1229,6 +1297,9 @@ function _drawOverlay(frame) {
   // with every arbiter call in this function — so the frame that paints an
   // animation's final state is the same frame that ends its demand.
   const now = Number.isFinite(frame.timestamp) ? frame.timestamp : _nowMs();
+  try {
+    _occlusion?.beginFrame(now);
+  } catch {}
   const sonarActive = isCyberSonarActive();
   const cyberMapActive = isCyberMapThemeActive();
   const sonarSampler = createCyberSonarSampler(width, height, now);
@@ -1244,7 +1315,25 @@ function _drawOverlay(frame) {
     now,
   });
   const objects = _collectDetectableObjects();
-  const sampledCount = objects.length;
+  // Scene occlusion: drop contacts hidden by terrain/buildings/tiles. Fail-safe:
+  // any error keeps the contact visible.
+  const visibleObjects = [];
+  for (const obj of objects) {
+    let hidden = false;
+    if (_occlusion && obj.position) {
+      try {
+        hidden = _occlusion.isHidden(obj._layerId || 'detection', obj.sourceId, obj.position);
+      } catch {
+        hidden = false;
+      }
+    }
+    if (!hidden) visibleObjects.push(obj);
+  }
+  const occludedCount = objects.length - visibleObjects.length;
+  const sampledCount = visibleObjects.length;
+  // Replace objects reference for downstream use.
+  objects.length = 0;
+  objects.push(...visibleObjects);
   if (objects.length === 0) {
     // No detectable objects (e.g. DETECT on with no data layers enabled). Still
     // paint so the overlay reads "armed, nothing in view" instead of a dead blank

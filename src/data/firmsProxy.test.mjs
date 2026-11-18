@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import test from 'node:test';
 import { filterTrailing24h, parseFirmsCsv } from './firmsCsv.js';
 
+import { describeFetchError } from '../../server/providers/firms.js';
+
 const config = fs.readFileSync(new URL('../../server/providers/firms.js', import.meta.url), 'utf8');
 const start = config.indexOf('  async function refreshUpstream(key) {');
 assert.notEqual(start, -1, 'FIRMS refresh function exists');
@@ -17,8 +19,8 @@ const recent = { acqDate: '2026-09-11', acqTime: '1100' };
 // Inject only its upstream, clock and filter dependencies; keep its aggregation
 // and source-status code intact, including failures while consuming records.
 function createRefresh(fetchSource, filter = filterTrailing24h) {
-  return new Function('SOURCES', 'fetchSource', 'filterTrailing24h', 'Date', 'console',
-    `return (${refreshSource});`)(SOURCES, fetchSource, filter, { now: () => NOW }, { warn() {} });
+  return new Function('SOURCES', 'fetchSource', 'filterTrailing24h', 'describeFetchError', 'Date', 'console',
+    `return (${refreshSource});`)(SOURCES, fetchSource, filter, describeFetchError, { now: () => NOW }, { warn() {} });
 }
 
 test('FIRMS retains large sources in order and filters expired rows', async () => {

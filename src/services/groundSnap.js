@@ -335,7 +335,10 @@ export function createGroundSnap({ groundFloor }) {
       entries.set(icao, next);
       return heldSnapM(next, surfacePos);
     };
-    if (!_tilesReady(viewer)) return miss();
+    // Tiles still streaming: no sample is taken, so no backoff is earned
+    // (as with the budget above). The next tick asks again, and the first
+    // one after the tiles settle samples.
+    if (!_tilesReady(viewer)) return heldSnapM(entry, surfacePos);
     windowCount += 1;
     let sampled;
     try {

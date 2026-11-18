@@ -165,7 +165,14 @@ export function firePerimetersProxy({
       });
       return { value: await promise, stale: false };
     } catch (error) {
-      if (previous) return { value: previous.value, stale: true };
+      // A failed refresh serves the last answer, marked stale. A perimeter
+      // snapshot is only fresh for a day: older than that, it is no picture of
+      // current fires. (InciWeb entries keep their previous behaviour.)
+      if (
+        previous &&
+        (key !== 'perimeters' || now() - previous.savedAt <= 24 * 60 * 60 * 1000)
+      )
+        return { value: previous.value, stale: true };
       throw error;
     }
   }

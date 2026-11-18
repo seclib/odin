@@ -21,8 +21,9 @@
  * @param {{signal?: AbortSignal}} [options]
  * @returns {Promise<any>} The parsed JSON.
  */
-export async function loadBundledJson(url, { signal } = {}) {
+export async function loadBundledJson(url, { signal, fetchImpl } = {}) {
   signal?.throwIfAborted();
+  const fetchFn = fetchImpl ?? globalThis.fetch;
   if (url.protocol === 'file:') {
     // Node's built-in, reached without an import, so the browser build never
     // bundles or rewrites it; only Node, reading `file:` URLs, gets here. The
@@ -36,7 +37,7 @@ export async function loadBundledJson(url, { signal } = {}) {
     const { readFileSync } = getBuiltinModule('node:fs');
     return JSON.parse(readFileSync(url, 'utf8'));
   }
-  const response = await fetch(url, { signal });
+  const response = await fetchFn(url, { signal });
   if (!response.ok) {
     throw new Error(`HTTP ${response.status} for ${url.pathname}`);
   }

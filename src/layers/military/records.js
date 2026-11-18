@@ -2,6 +2,7 @@ import { pickRenderAltitudeM } from '../../data/renderAltitude.js';
 import { stickyText, stickyNumber } from '../../data/aircraftMeta.js';
 import { classifyAircraft } from '../../data/aircraftClass.js';
 import { aircraftEmergency } from '../../data/aircraftEmergency.js';
+import { courseFromFixes } from '../../data/courseFromFixes.js';
 import {
   GROUND_FLOOR_WARM_MAX_ALT_M,
   LANDED_MISSING_POLL_LIMIT,
@@ -127,6 +128,19 @@ export class MilitaryFlightRecords {
     // Sticky merge — adsb.lol intermittently drops flight/t/r/ownOp; hold
     // last-known-good (bounded by the layer's eviction, which deletes the entry).
     const stickyType = stickyText(type, prevMeta?.type);
+
+    // Course derived from the contact's own fixes when the feed omits a
+    // reported track. The anchor advances only when a course can be read
+    // (sufficient distance, time, and speed), so stale or parked contacts
+    // never manufacture a heading.
+    const fixEpochMs = aircraft.positionTimeMs ?? observedAtMs;
+    const course = courseFromFixes(prevMeta?.courseAnchor, {
+      lat,
+      lon,
+      ms: fixEpochMs,
+      speedMps: aircraft.speedMps,
+    });
+
     const meta = {
       sourceReference: aircraft.reference,
       observedReceiptMs: Date.now(),
@@ -154,7 +168,14 @@ export class MilitaryFlightRecords {
         onGround ? 0 : prevMeta?.speedMps,
         0,
       ),
-      track: stickyNumber(aircraft.courseDeg, prevMeta?.track, 0),
+      // With no reported track or true heading, a moving contact faces the
+      // way its fixes went (src/data/courseFromFixes.js); else the last one.
+      track: stickyNumber(
+        aircraft.courseDeg,
+        course.courseDeg ?? prevMeta?.track,
+        0,
+      ),
+      courseAnchor: course.anchor,
       // Analyst seam (additive): sticky like the other kinematics.
       verticalRateMps: stickyNumber(
         verticalRateMps,
@@ -184,7 +205,7 @@ export class MilitaryFlightRecords {
       prevMeta,
       meta,
       groundFlipped,
-      fixEpochMs: aircraft.positionTimeMs ?? observedAtMs,
+      fixEpochMs,
     };
   }
   absence(id, { complete, likelyLanded }) {

@@ -5,6 +5,7 @@ import {
 } from '../../data/renderAltitude.js';
 import { classifyAircraft } from '../../data/aircraftClass.js';
 import { aircraftEmergency } from '../../data/aircraftEmergency.js';
+import { courseFromFixes } from '../../data/courseFromFixes.js';
 import {
   approxDistanceKm,
   GROUND_FLOOR_CLAMP_RADIUS_KM,
@@ -198,6 +199,23 @@ export class FlightRecords {
       !!prevMeta && (prevMeta.onGround === true) !== onGround;
     // Store flight metadata for click-to-track labels
     const cat = stickyNumber(category, prevMeta?.category, null);
+
+    // Course derived from the contact's own fixes when the feed omits a
+    // reported track. The anchor advances only when a course can be read
+    // (sufficient distance, time, and speed), so stale or parked contacts
+    // never manufacture a heading.
+    const fixEpochMs =
+      Number.isFinite(observation.positionTimeMs) &&
+      observation.positionTimeMs > 0
+        ? observation.positionTimeMs
+        : Date.now();
+    const course = courseFromFixes(prevMeta?.courseAnchor, {
+      lat,
+      lon,
+      ms: fixEpochMs,
+      speedMps: velocity,
+    });
+
     const meta = {
       sourceReference: observation.reference,
       observedReceiptMs: Date.now(),
@@ -214,7 +232,14 @@ export class FlightRecords {
       // applies to contacts that actually flew this session.
       wasAirborne: prevMeta?.wasAirborne === true || !onGround,
       velocity: stickyNumber(velocity, prevMeta?.velocity, 0),
-      true_track: stickyNumber(true_track, prevMeta?.true_track, 0),
+      // With no reported track or true heading, a moving contact faces the
+      // way its fixes went (src/data/courseFromFixes.js); else the last one.
+      true_track: stickyNumber(
+        true_track,
+        course.courseDeg ?? prevMeta?.true_track,
+        0,
+      ),
+      courseAnchor: course.anchor,
       category: cat,
       // An adsbdb-enriched type code outranks the coarse OpenSky category.
       klass: classifyAircraft({
@@ -267,11 +292,6 @@ export class FlightRecords {
     };
     this.data.set(icao24, meta);
 
-    const fixEpochMs =
-      Number.isFinite(observation.positionTimeMs) &&
-      observation.positionTimeMs > 0
-        ? observation.positionTimeMs
-        : Date.now();
     return { icao24, prevMeta, meta, groundFlipped, fixEpochMs };
   }
 

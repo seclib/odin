@@ -9,6 +9,22 @@ import {
 import { sameSiteGated } from './common/same-site.js';
 import { createCodexOAuthLogin } from './openai/codex-auth.js';
 
+import { loadEnv } from 'vite';
+import { fileURLToPath } from 'node:url';
+
+// Charge le fichier .env du projet dans process.env pour les variables qui ne
+// sont pas déjà définies dans l'environnement du shell. Cela garantit que
+// OPENAI_API_KEY (et les autres clés configurées) sont disponibles pour le
+// fournisseur OpenAI Realtime, quels que soient le lanceur utilisé
+// (npm run dev, dev-secure.sh, dev-fresh.sh, Docker) et quels que soient les
+// exports shell présents au démarrage. Les valeurs déjà définies dans
+// process.env conservent la priorité.
+const envRoot = fileURLToPath(new URL('../../', import.meta.url));
+const loadedEnv = loadEnv('development', envRoot, '');
+for (const [key, value] of Object.entries(loadedEnv)) {
+  if (process.env[key] === undefined) process.env[key] = value;
+}
+
 /**
  * Vite plugin: OpenAI Realtime ephemeral client secret.
  *

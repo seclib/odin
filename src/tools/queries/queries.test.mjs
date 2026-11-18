@@ -197,6 +197,10 @@ test('every core tool is a read-only query with a unique name', () => {
   for (const tool of coreTools) {
     assert.equal(tool.kind, 'query', tool.name);
     assert.equal(tool.annotations.readOnlyHint, true, tool.name);
-    assert.ok(tool.requires.length > 0, tool.name);
+    // `filter_area` is a pure local filter: it consumes the caller's `features`
+    // and needs no backing service, so an empty `requires` is correct for it.
+    // Every other core tool declares at least one service it consumes.
+    if (tool.name !== 'filter_area')
+      assert.ok(tool.requires.length > 0, tool.name);
   }
 });

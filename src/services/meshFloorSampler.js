@@ -11,6 +11,7 @@ export function createMeshFloorSampler({
     coarseFloorCoord,
     cachedMeshFloor,
     reportValidatedMeshFloorCell,
+    meshFloorPriorReady,
     setMeshFloorPreferred,
     meshFloorPreferred,
     cachedGroundFloor,
@@ -49,6 +50,16 @@ export function createMeshFloorSampler({
    *  streamed LOD under a high camera is coarse everywhere, so every probe
    *  would latch junk. */
   const MAX_CAMERA_HEIGHT_M = 25_000;
+  /** @constant {number} Readings per cell: a cell is probed at most this many
+   *  times, each at a point apart from the others, and groundFloor keeps each
+   *  reading at its point (a read answers from the nearest one). */
+  const MAX_PROBES_PER_CELL = 8;
+  /** @constant {number} How far apart (degrees, about 17 m) a new probe must
+   *  be from the cell's earlier ones to be worth taking. */
+  const PROBE_APART_DEG = 0.00015;
+  /** @type {Map<string, Array<{lat: number, lon: number}>>} Points probed
+   *  per cell that returned a reading. */
+  const _probedPoints = new Map();
   /** @type {Cesium.Cartographic} Scratch for probe coordinates. */
   const _scratchProbe = new Cesium.Cartographic();
 
@@ -120,7 +131,20 @@ export function createMeshFloorSampler({
       const key = `${cell.lat},${cell.lon}`;
       if (attempted.has(key)) continue;
       attempted.add(key);
-      if (cachedMeshFloor(cell.lat, cell.lon) != null) continue; // one-shot latch
+      // A cell with a reading is probed again only at a point well apart
+      // from the ones already probed, a few times at most, so the cell's
+      // readings follow where its vehicles actually are.
+      const probes = _probedPoints.get(key);
+      if (
+        cachedMeshFloor(cell.lat, cell.lon) != null &&
+        (probes?.length >= MAX_PROBES_PER_CELL ||
+          probes?.some(
+            (q) =>
+              Math.abs(q.lat - p.lat) < PROBE_APART_DEG &&
+              Math.abs(q.lon - p.lon) < PROBE_APART_DEG,
+          ))
+      )
+        continue;
       if (
         Number.isFinite(viewerLat) &&
         Number.isFinite(viewerLon) &&
@@ -171,7 +195,23 @@ export function createMeshFloorSampler({
       // feasible and deliberately deferred — see the P2 in
       // the project roadmap, which bundles it with the fly_route probe so
       // one post-launch pass settles rendered-mesh sampling everywhere.
-      reportValidatedMeshFloorCell(cell.lat, cell.lon, height);
+      // A spot counts as probed once the gate has judged it against a real
+      // prior: accepted, or refused with the cell's DEM warm. A spot refused
+      // only because the DEM was still cold is tried again later. Each spot is
+      // recorded once, so a cell retried while it has no reading does not fill
+      // its probe allowance with the same spot.
+      const accepted = reportValidatedMeshFloorCell(cell.lat, cell.lon, height);
+      if (!accepted && !meshFloorPriorReady(cell.lat, cell.lon)) continue;
+      if (!probes) _probedPoints.set(key, [{ lat: p.lat, lon: p.lon }]);
+      else if (
+        probes.length < MAX_PROBES_PER_CELL &&
+        !probes.some(
+          (q) =>
+            Math.abs(q.lat - p.lat) < PROBE_APART_DEG &&
+            Math.abs(q.lon - p.lon) < PROBE_APART_DEG,
+        )
+      )
+        probes.push({ lat: p.lat, lon: p.lon });
     }
   }
 

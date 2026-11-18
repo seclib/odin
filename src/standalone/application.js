@@ -61,6 +61,10 @@ export function createStandaloneApplication({
       catalog = createStandaloneCatalog({
         sources,
         streetLevelProviders,
+        // The scene owns the single Performance Manager instance; the catalog
+        // hands it to the infrastructure layers so the LOD contract reaches
+        // the GeoJSON selection.
+        performanceManager: scene.performanceManager,
         nepalBoundaryResolver: (signal) =>
           scene.operations.annotationResolver.resolveRegionRingForQuery(
             'Nepal',

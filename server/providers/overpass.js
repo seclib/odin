@@ -1,4 +1,5 @@
 import { makeRateLimiter, clientKey } from './common/rate-limit.js';
+import { admitSameSiteKeyless } from './common/same-site.js';
 import { readRequestBodyCapped } from './common/request.js';
 import {
   OVERPASS_MAX_BODY_BYTES,
@@ -93,6 +94,7 @@ function overpassProxy({ routing = {} } = {}) {
           res.end(JSON.stringify({ error: 'Method Not Allowed' }));
           return;
         }
+        if (admitSameSiteKeyless(req, res)) return;
 
         // Collect POST body with a hard byte cap (Overpass QL queries are small)
         let body;

@@ -1,0 +1,65 @@
+- generic [active] [ref=f1e1]:
+  - region "Visible map targets" [ref=f1e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+    - paragraph: NO PLACE LEFT BEHIND
+  - navigation "Globe actions" [ref=f1e8]:
+    - button "Clear selected data layers" [ref=f1e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e10]: layers_clear
+    - button "Copy share link" [ref=f1e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e12]: 🔗
+    - button "Tilt map to oblique view" [ref=f1e13] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e14]: view_in_ar
+    - button "Reset map to north up" [ref=f1e15] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e16]: "N"
+      - generic [aria-hidden] [ref=f1e17]: navigation
+    - button "Reset to full globe view" [ref=f1e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e19]: public
+    - button "General settings" [ref=f1e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e21]: settings
+  - generic:
+    - generic: syncing road network
+    - generic: 0%
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic [ref=f1e23]:
+    - generic [ref=f1e24]: DISPLAY
+    - button "◀" [ref=f1e26] [cursor=pointer]
+  - generic "Navigation, voice, and visual preset controls" [ref=f1e27]:
+    - button "Expand Visual Presets" [ref=f1e30] [cursor=pointer]:
+      - generic [ref=f1e31]: VISUAL PRESETS
+    - button "Expand LOCATION" [ref=f1e36] [cursor=pointer]:
+      - generic [ref=f1e37]: LOCATION
+  - generic:
+    - generic [ref=f1e41]:
+      - generic [ref=f1e42]: DATA LAYERS
+      - button "+" [ref=f1e43] [cursor=pointer]
+    - generic [ref=f1e46]:
+      - generic [ref=f1e47]: CCTV
+      - button "+" [ref=f1e49] [cursor=pointer]
+    - generic:
+      - generic:
+        - generic:
+          - generic: STREET LEVEL
+          - button "◀"
+    - generic [ref=f1e52]:
+      - generic [ref=f1e53]: SCENES
+      - button "+" [ref=f1e55] [cursor=pointer]
+  - complementary:
+    - generic [ref=f1e58]:
+      - generic [ref=f1e59]: CONTEXT
+      - button "Open compact Radio controls" [ref=f1e61] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f1e62]: radio
+      - button "▶" [ref=f1e63] [cursor=pointer]
+  - generic [ref=f1e64]:
+    - generic [ref=f1e65]: ACTIVE STYLE
+    - generic [ref=f1e66]: NORMAL
+  - generic [ref=f1e68]:
+    - heading "ODIN" [level=2] [ref=f1e69]
+    - paragraph [ref=f1e70]: Loading Google 3D Tiles...
+  - link [ref=f1e74] [cursor=pointer]:
+    - /url: https://cesium.com/
+    - img "Cesium ion" [ref=f1e75]

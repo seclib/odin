@@ -33,6 +33,7 @@ import { createInfrastructureLayers } from '../data/infrastructure.js';
 import { localGeoJsonServices } from './localGeojsonServices.js';
 import { createBhoteKoshiEventLayer } from '../data/bhoteKoshiEvent.js';
 import { createBhoteKoshiLocatorLayer } from '../data/bhoteKoshiLocator.js';
+import { createBuildingsLayer } from '../layers/buildings/index.js';
 
 /**
  * Hardware-local layers are registered like any other but never enter share
@@ -61,6 +62,7 @@ export function createApplicationCatalog({
   resolveAsset,
   nepalBoundaryResolver,
   streetLevelProviders,
+  performanceManager,
 }) {
   if (!signal?.addEventListener)
     throw new TypeError('An application lifetime signal is required');
@@ -166,8 +168,12 @@ export function createApplicationCatalog({
           clock: weatherClock,
         }),
         createCyclonesLayer({ feed: sources.cyclones }),
-        ...createInfrastructureLayers(localGeoJsonServices),
+        ...createInfrastructureLayers({
+          ...localGeoJsonServices,
+          performanceManager,
+        }),
         createApplicationCables({ source: sources.cables }),
+        createBuildingsLayer(),
         createApplicationFirms({
           surface,
           id: 'local-firms',

@@ -671,11 +671,13 @@ test('the Display selector, voice schema and final stylesheet expose Cyber', () 
     militaryRendering,
     /baseAlpha:[\s\S]*?alpha: flightState\._irBoost \? 1 : treatment\.alpha/,
   );
+  // The ODIN raven mark is a self-coloured <img>; cyber keeps only the red
+  // drop-shadow on the logo chip instead of part-level eye overrides.
   assert.match(
     cyberStyles,
-    /#title-bar \.title-logo #globe \{[\s\S]*?fill: var\(--cyber-red\);[\s\S]*?stroke: var\(--cyber-red-bright\);/,
+    /#title-bar \.title-logo \{[\s\S]*?drop-shadow\(0 0 10px rgba\(196, 84, 84, 0\.24\)\)/,
   );
-  assert.match(cyberStyles, /#title-bar \.title-logo #globe_cage/);
+  assert.doesNotMatch(cyberStyles, /#outer_eye|#inner_eye|#globe_cage/);
   assert.match(
     cyberStyles,
     /#top-center-actions button\s*\{[\s\S]*?border-radius:\s*0;[\s\S]*?clip-path:\s*polygon\(\s*29% 0,\s*71% 0,[\s\S]*?0 29%\s*\);/,

@@ -393,6 +393,12 @@ const layers = [
     noQuery: 'cable records are not loaded for queries',
   },
   {
+    id: 'local-buildings',
+    aliases: ['buildings', '3d buildings', 'building footprints'],
+    context: false,
+    noQuery: 'building tilesets are not voice-queryable records',
+  },
+  {
     // Global Context owns this layer; voice reaches it through
     // set_context_mode, never a bare toggle.
     id: 'military-awareness',

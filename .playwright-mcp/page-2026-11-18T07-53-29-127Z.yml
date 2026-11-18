@@ -1,0 +1,64 @@
+- generic [active] [ref=f2e1]:
+  - region "Visible map targets" [ref=f2e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=f2e8]:
+    - button "Clear selected data layers" [ref=f2e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e10]: layers_clear
+    - button "Copy share link" [ref=f2e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e12]: 🔗
+    - button "Tilt map to oblique view" [ref=f2e13] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e14]: view_in_ar
+    - button "Reset map to north up" [ref=f2e15] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e16]: "N"
+      - generic [aria-hidden] [ref=f2e17]: navigation
+    - button "Reset to full globe view" [ref=f2e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e19]: public
+    - button "General settings" [ref=f2e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e21]: settings
+    - button "Providers" [ref=f2e22] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e23]: plug
+  - generic:
+    - generic: syncing road network
+    - generic: 0%
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic [ref=f2e25]:
+    - generic [ref=f2e26]: DISPLAY
+    - button "◀" [ref=f2e28] [cursor=pointer]
+  - generic "Navigation, voice, and visual preset controls" [ref=f2e29]:
+    - button "Expand Visual Presets" [ref=f2e32] [cursor=pointer]:
+      - generic [ref=f2e33]: VISUAL PRESETS
+    - button "Expand LOCATION" [ref=f2e38] [cursor=pointer]:
+      - generic [ref=f2e39]: LOCATION
+  - generic:
+    - generic [ref=f2e43]:
+      - generic [ref=f2e44]: DATA LAYERS
+      - button "+" [ref=f2e45] [cursor=pointer]
+    - generic [ref=f2e48]:
+      - generic [ref=f2e49]: CCTV
+      - button "+" [ref=f2e51] [cursor=pointer]
+    - generic:
+      - generic:
+        - generic:
+          - generic: STREET LEVEL
+          - button "◀"
+    - generic [ref=f2e54]:
+      - generic [ref=f2e55]: SCENES
+      - button "+" [ref=f2e57] [cursor=pointer]
+  - complementary:
+    - generic [ref=f2e60]:
+      - generic [ref=f2e61]: CONTEXT
+      - button "Open compact Radio controls" [ref=f2e63] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f2e64]: radio
+      - button "▶" [ref=f2e65] [cursor=pointer]
+  - generic: NORMAL
+  - generic [ref=f2e69]:
+    - heading "ODIN" [level=2] [ref=f2e70]
+    - paragraph [ref=f2e71]: Loading Google 3D Tiles...
+  - link [ref=f2e75] [cursor=pointer]:
+    - /url: https://cesium.com/
+    - img "Cesium ion" [ref=f2e76]

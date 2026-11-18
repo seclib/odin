@@ -9,6 +9,17 @@ import {
   createIonImagery,
   ESRI_ATTRIBUTION_HTML,
 } from './imagery.js';
+import {
+  createIgnPlanImagery,
+  createIgnOrthoHrImagery,
+  createIgnBdOrthoImagery,
+  createIgnLidarHillshadeImagery,
+  IGN_ATTRIBUTION_HTML,
+} from './ignImagery.js';
+import {
+  createOpenFreeMapImagery,
+  OPENFREEMAP_EXPERIMENTAL_REASON,
+} from './openFreeMapImagery.js';
 import { createWorldTerrain, createKeylessTerrain } from './terrain.js';
 
 /** Select sources and setup guidance without putting provider branches in the controller. */
@@ -55,7 +66,29 @@ export function createDefaultMapSources({
             ? createOsmImagery
             : descriptor.id === 'carto-dark'
               ? createCartoDarkImagery
-              : createEsriImagery;
+              : descriptor.id === 'plan-ign'
+                ? createIgnPlanImagery
+                : descriptor.id === 'ortho-ign'
+                  ? createIgnOrthoHrImagery
+                  : descriptor.id === 'bd-ortho'
+                    ? createIgnBdOrthoImagery
+                    : descriptor.id === 'lidar-shade'
+                      ? createIgnLidarHillshadeImagery
+                    : descriptor.id === 'openfreemap'
+                      ? createOpenFreeMapImagery
+                      : createEsriImagery;
+      if (descriptor.id === 'openfreemap') {
+        const enabled =
+          typeof import.meta !== 'undefined' &&
+          Boolean(import.meta.env && import.meta.env.VITE_OPENFREEMAP === '1');
+        return {
+          ...common,
+          available: enabled,
+          unavailableReason: enabled ? null : OPENFREEMAP_EXPERIMENTAL_REASON,
+          imagery,
+          terrain,
+        };
+      }
       return {
         ...common,
         imagery,

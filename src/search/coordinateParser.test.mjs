@@ -2,7 +2,6 @@
 // refuses. A refusal hands the text to the geocoders; a wrong accept flies the
 // operator somewhere they never asked for and looks like success, so every
 // malformed and ambiguous form below is pinned.
-//
 // Run with: npm test
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -51,7 +50,7 @@ test('hemisphere letters fix the axis, in either order', () => {
     lon: -74,
     label: '40.0000° N, 74.0000° W',
   });
-  assert.deepEqual(parseCoordinateQuery('40° N, 74° W')?.lat, 40);
+  assert.deepEqual(parseCoordinateQuery(`40° N, 74° W`)?.lat, 40);
   // One letter is enough: it fixes its own axis, the other takes what is left.
   assert.deepEqual(parseCoordinateQuery('40 N, -74')?.lon, -74);
   assert.deepEqual(parseCoordinateQuery('-74, 40 N'), {
@@ -96,12 +95,9 @@ test('malformed and ambiguous coordinates are refused, never guessed', () => {
     '0, 181',
     '0, -180.5',
     'N 100, W 74',
-    // Degrees/minutes/seconds is out of scope and must fall through, not
-    // be read as a decimal pair.
-    '40°26\'46"N, 79°58\'56"W',
+    // Degrees/minutes/seconds without degree symbols are not read; they fall
+    // through to the geocoders.
     '40 26 46, 79 58 56',
-    // A grid reference is out of scope too.
-    '33UXP0500444998',
   ]) {
     assert.equal(
       parseCoordinateQuery(query),
@@ -109,6 +105,38 @@ test('malformed and ambiguous coordinates are refused, never guessed', () => {
       `${JSON.stringify(query)} must be refused`,
     );
   }
+});
+
+test('the search box reads degrees-minutes-seconds, grid references and plus codes', () => {
+  const near = (query, lat, lon, within) => {
+    const point = parseCoordinateQuery(query);
+    assert.ok(point, query);
+    assert.ok(
+      Math.abs(point.lat - lat) < within && Math.abs(point.lon - lon) < within,
+      query,
+    );
+    assert.match(point.label, /° [NS], .*° [EW]$/, query);
+  };
+  near(`40°26'46"N, 79°58'56"W`, 40.446111, -79.982222, 1e-6);
+  near(`40° 26′ 46″ N 79° 58′ 56″ W`, 40.446111, -79.982222, 1e-6);
+  near('33UXP0500444998', 48.249493, 16.414495, 1e-5);
+  near('18T 585651 4511369', 40.748817, -73.985428, 1e-5);
+  near('849VCWC8+R9', 37.4220625, -122.0840625, 1e-9);
+  for (const query of [
+    `40°26'46"N`, // one component
+    `40°60'0"N, 79°0'0"W`, // 60 minutes
+    `40°26'60"N, 79°0'0"W`, // 60 seconds
+    `40°26.5'46"N, 79°0'0"W`, // a decimal before the last number
+    `-40°26'46"N, 79°0'0"W`, // a sign and a letter
+    `N 40°26'46"N, 79°0'0"W`, // two letters
+    `91°0'0"N, 79°0'0"W`, // out of range
+    `40°26'46"N, 40°26'46"S`, // both latitude
+    'CWC8+R9', // a short plus code needs a place
+    'CWC8+R9 Mountain View', // short code with a place is not a coordinate
+    '18T WL 8511', // coarser MGRS
+    '1 JAN 2023 1200', // letters spell a month
+  ])
+    assert.equal(parseCoordinateQuery(query), null, query);
 });
 
 test('non-strings are refused without throwing', () => {
@@ -195,4 +223,26 @@ test('malformed or unsupported geo URIs are refused without losing their meaning
   ]) {
     assert.equal(parseCoordinateQuery(query), null, query);
   }
+});
+
+test('whitespace boundaries preserve degree signs and hemisphere ownership', () => {
+  for (const query of ['40 ° 74', '40° 74', '40 N, 74', 'N 40 74']) {
+    assert.equal(parseCoordinateQuery(query)?.lat, 40, query);
+    assert.equal(parseCoordinateQuery(query)?.lon, 74, query);
+  }
+  for (const query of [`40° N 74 ° W`, `N 40 ° W 74 °`, `40\tN\n74\tW`]) {
+    assert.equal(parseCoordinateQuery(query)?.lat, 40, query);
+    assert.equal(parseCoordinateQuery(query)?.lon, -74, query);
+  }
+});
+
+test('a signed plain component leaves a spaced letter with the other component', () => {
+  assert.deepEqual(
+    parseCoordinateQuery('-40 N 74'),
+    parseCoordinateQuery('-40, N 74'),
+  );
+  assert.deepEqual(
+    parseCoordinateQuery('40 N -74'),
+    parseCoordinateQuery('40 N, -74'),
+  );
 });

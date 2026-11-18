@@ -20,9 +20,48 @@
  */
 
 import { getRenderGovernorDiagnostics } from './renderGovernor.js';
+import {
+  INFRA_LOD_ACTIVE_MIN,
+  INFRA_LOD_ACTIVE_MID,
+  INFRA_LOD_ACTIVE_MAX,
+  infraLodBudget,
+} from './data/localGeojsonLod.js';
 
-export const PROFILES = Object.freeze(['eco', 'balanced', 'quality', 'automatic']);
+export const PROFILES = Object.freeze([
+  'eco',
+  'balanced',
+  'quality',
+  'automatic',
+]);
 export const DEFAULT_PROFILE = 'balanced';
+
+/**
+ * Budget LOD actif d'un profil, exprimé en crans de la bande par hauteur de
+ * caméra (80 / 200 / 420) — aucun multiplicateur, aucun seuil inventé.
+ *
+ * - Eco prend le cran inférieur à celui de la caméra (plancher 80).
+ * - Balanced garde la bande de la caméra telle quelle.
+ * - Quality prend le cran supérieur (plafond 420).
+ * - Automatic suit la décision effective du manager : celui-ci bascule
+ *   `_profile` vers un profil concret dès sa première décision, donc seule la
+ *   phase « aucune décision prise » retombe sur le comportement Balanced.
+ *
+ * @param {string} profile Profil actif.
+ * @param {number} [cameraHeightM] Hauteur de caméra courante (m).
+ * @returns {number} Budget actif, borné par INFRA_LOD_ACTIVE_MIN/MAX.
+ */
+export function lodBudgetForProfile(profile, cameraHeightM) {
+  const base = infraLodBudget(cameraHeightM).activeLimit;
+  if (profile === 'eco')
+    return base === INFRA_LOD_ACTIVE_MAX
+      ? INFRA_LOD_ACTIVE_MID
+      : INFRA_LOD_ACTIVE_MIN;
+  if (profile === 'quality')
+    return base === INFRA_LOD_ACTIVE_MIN
+      ? INFRA_LOD_ACTIVE_MID
+      : INFRA_LOD_ACTIVE_MAX;
+  return base;
+}
 
 /** Default thresholds per profile. Configurable via options. */
 const DEFAULT_THRESHOLDS = Object.freeze({
@@ -99,18 +138,26 @@ export function createPerformanceManager({
   initialProfile = DEFAULT_PROFILE,
 } = {}) {
   if (!performanceMonitor)
-    throw new TypeError('createPerformanceManager requires a performanceMonitor');
+    throw new TypeError(
+      'createPerformanceManager requires a performanceMonitor',
+    );
 
   const _thresholds = { ...DEFAULT_THRESHOLDS, ...(thresholds || {}) };
 
-  let _profile =
-    PROFILES.includes(initialProfile) ? initialProfile : DEFAULT_PROFILE;
+  let _profile = PROFILES.includes(initialProfile)
+    ? initialProfile
+    : DEFAULT_PROFILE;
   let _previousProfile = null;
   let _started = false;
   let _timer = null;
   let _decisionHistory = [];
   const _decisionCapacity = 60;
   const _disposeFns = [];
+
+  // LOD policy revision: counts EFFECTIVE policy changes (profile, active
+  // budget or quality level), never contract reads. Reset with the profile.
+  let _lodPolicyRevision = 0;
+  let _lastLodPolicySignature = null;
 
   // Automatic adaptation state.
   let _lastDecisionTime = 0;
@@ -137,10 +184,7 @@ export function createPerformanceManager({
   }
 
   // Attach the tileset if provided at construction (retro-compatibility).
-  if (
-    tileset &&
-    typeof tileset.maximumScreenSpaceError !== 'undefined'
-  ) {
+  if (tileset && typeof tileset.maximumScreenSpaceError !== 'undefined') {
     _attachedTileset = tileset;
     _tilesetInitialMSE = tileset.maximumScreenSpaceError;
     _tilesetInitialMSEKnown = true;
@@ -173,7 +217,10 @@ export function createPerformanceManager({
       _globeInitialMSEKnown,
       _globeInitialMSE,
     );
-    if (terrainEngine && typeof terrainEngine.setMaximumScreenSpaceError === 'function') {
+    if (
+      terrainEngine &&
+      typeof terrainEngine.setMaximumScreenSpaceError === 'function'
+    ) {
       terrainEngine.setMaximumScreenSpaceError(targetGlobe);
     }
 
@@ -275,10 +322,7 @@ export function createPerformanceManager({
       if (fps < degradeThreshold) {
         desire = 'degrade';
         reason = `fps ${fps.toFixed(1)} below ${degradeThreshold}`;
-      } else if (
-        fps > improveThreshold &&
-        _pendingDesire !== 'degrade'
-      ) {
+      } else if (fps > improveThreshold && _pendingDesire !== 'degrade') {
         // Hysteresis: only improve if we are not currently wanting to degrade,
         // and FPS is comfortably above the improve threshold.
         desire = 'improve';
@@ -288,11 +332,18 @@ export function createPerformanceManager({
       }
     }
 
-    const pressure = memoryPressure(memory, _thresholds.automatic.memoryRatioDegrade);
+    const pressure = memoryPressure(
+      memory,
+      _thresholds.automatic.memoryRatioDegrade,
+    );
     if (pressure === true && desire !== 'improve') {
       desire = 'degrade';
       reason += '; memory pressure high';
-    } else if (pressure === false && desire === null && memoryRelief(memory, _thresholds.automatic.memoryRatioDegrade)) {
+    } else if (
+      pressure === false &&
+      desire === null &&
+      memoryRelief(memory, _thresholds.automatic.memoryRatioDegrade)
+    ) {
       desire = 'improve';
       reason += '; memory relieved';
     } else if (pressure === false && desire === null) {
@@ -313,8 +364,7 @@ export function createPerformanceManager({
     // ajustée manuellement via setProfile().
     const hasActiveHolds = holds > 0;
 
-    const canChange =
-      now - _lastChangeTime >= _thresholds.automatic.cooldownMs;
+    const canChange = now - _lastChangeTime >= _thresholds.automatic.cooldownMs;
     const canDecide =
       now - _lastDecisionTime >= _thresholds.automatic.minDecisionIntervalMs;
 
@@ -456,10 +506,7 @@ export function createPerformanceManager({
         clearTimeout(_timer);
         _timer = null;
       }
-      if (
-        performanceMonitor &&
-        typeof performanceMonitor.stop === 'function'
-      ) {
+      if (performanceMonitor && typeof performanceMonitor.stop === 'function') {
         performanceMonitor.stop();
       }
       _recordDecision('stop', { profile: _profile });
@@ -486,6 +533,8 @@ export function createPerformanceManager({
       _lastChangeTime = 0;
       _lastDecisionTime = 0;
       _decisionHistory = [];
+      _lodPolicyRevision = 0;
+      _lastLodPolicySignature = null;
       _applyStaticProfile(DEFAULT_PROFILE);
     },
     /** Current configuration summary. */
@@ -500,11 +549,14 @@ export function createPerformanceManager({
 
     /** Renvoie le contrat LOD à 6 champs pour la consommation par localGeojsonCore.
      *  Champs : activeProfile, lodBudget, qualityLevel, memoryPressure, decisionReason, changeId.
-     *  changeId n'est incrémenté que si activeProfile change vraiment.
+     *  changeId n'est incrémenté que si la politique LOD EFFECTIVE change
+     *  (profil, budget actif ou niveau de qualité) — deux lectures sans
+     *  changement renvoient le même changeId.
      *  À appeler depuis localGeojsonCore lors du walk preRender.
-     *  Note : lodBudget.activeLimit est fourni par localGeojsonCore via sa propre
-     *  computation infraLodBudget(cameraHeightM). Ce méthode fournit les bornes min/max. */
-    getLODContract() {
+     *  @param {number} [cameraHeightM] Hauteur de caméra (m) : le budget actif
+     *  Balanced en dépend. Sans elle, la bande globale (la plus économe) est
+     *  retenue. */
+    getLODContract(cameraHeightM) {
       // Map profile → qualityLevel
       const qualityLevelMap = {
         eco: 'eco',
@@ -530,23 +582,29 @@ export function createPerformanceManager({
         }
       }
 
-      // Bornes connues du budget LOD (fixes, définies par INFRA_LOD_ACTIVE_MIN/MAX)
+      // Budget actif : politique du profil, borné par les limites LOD établies
+      // dans localGeojsonLod.js (le module qui le consomme).
+      const activeLimit = Math.min(
+        INFRA_LOD_ACTIVE_MAX,
+        Math.max(
+          INFRA_LOD_ACTIVE_MIN,
+          lodBudgetForProfile(_profile, cameraHeightM),
+        ),
+      );
       const lodBudget = {
-        activeLimit: INFRA_LOD_ACTIVE_MIN, // valeur par défaut; localGeojsonCore propre calcul
+        activeLimit,
         min: INFRA_LOD_ACTIVE_MIN,
         max: INFRA_LOD_ACTIVE_MAX,
       };
 
-      // changeId : incrémenté uniquement si activeProfile change vraiment
-      let changeId = 0;
-      const history = this.getHistory();
-      if (history.length > 0) {
-        const lastDecision = history[history.length - 1];
-        if (lastDecision && lastDecision.changeId !== undefined) {
-          changeId = lastDecision.changeId + 1;
-        } else {
-          changeId = 1;
-        }
+      // changeId : compteur de la politique LOD EFFECTIVE, pas des lectures.
+      // Il n'avance que lorsque le profil, le budget actif ou le niveau de
+      // qualité change ; deux lectures consécutives sans changement rendent le
+      // même identifiant, donc le consommateur peut éviter un recalcul.
+      const policySignature = `${_profile}|${qualityLevel}|${activeLimit}`;
+      if (_lastLodPolicySignature !== policySignature) {
+        _lastLodPolicySignature = policySignature;
+        _lodPolicyRevision += 1;
       }
 
       return {
@@ -555,7 +613,7 @@ export function createPerformanceManager({
         qualityLevel,
         memoryPressure: memoryPressureVal,
         decisionReason: snapshot?.reason || 'ok',
-        changeId,
+        changeId: _lodPolicyRevision,
       };
     },
     /** Attache un tileset (chargé de façon asynchrone) au manager.

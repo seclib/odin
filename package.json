@@ -57,6 +57,7 @@
     "mcp": "node server/mcp/stdio.js"
   },
   "dependencies": {
+    "kdbush": "^4.0.2",
     "@jtarrio/signals": "^0.10.0",
     "@jtarrio/webrtlsdr": "^3.0.6",
     "@mapbox/vector-tile": "^3.0.0",

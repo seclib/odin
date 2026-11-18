@@ -140,3 +140,94 @@ test('civil emergency status follows the latest poll instead of sticking', () =>
   assert.equal(next.meta.squawk, '2000');
   assert.equal(next.meta.emergency, null);
 });
+
+test('civil records derive true_track from fixes when courseDeg is omitted and contact moves', () => {
+  const store = records();
+  // First fix: no previous anchor, no course can be derived yet.
+  const first = store.receive(
+    observation({
+      courseDeg: null,
+      latitude: 0,
+      longitude: 0,
+      positionTimeMs: 1000,
+    }),
+    view(),
+  );
+  assert.equal(first.meta.true_track, 0); // no previous track, falls back to 0
+  assert.ok(Object.hasOwn(first.meta, 'courseAnchor'));
+
+  // Second fix: contact moved ~111 m east in 1 s at 10 m/s → course ≈ 90°.
+  const second = store.receive(
+    observation({
+      courseDeg: null,
+      latitude: 0,
+      longitude: 0.001,
+      positionTimeMs: 2000,
+      speedMps: 10,
+    }),
+    view(),
+  );
+  assert.ok(
+    second.meta.true_track > 80 && second.meta.true_track < 100,
+    `expected ~90°, got ${second.meta.true_track}`,
+  );
+});
+
+test('civil records do not derive course when speed is below threshold', () => {
+  const store = records();
+  store.receive(
+    observation({
+      courseDeg: null,
+      latitude: 0,
+      longitude: 0,
+      positionTimeMs: 1000,
+    }),
+    view(),
+  );
+  // Same position jump but speed below 2 m/s: standing, no course derived.
+  const slow = store.receive(
+    observation({
+      courseDeg: null,
+      latitude: 0,
+      longitude: 0.001,
+      positionTimeMs: 2000,
+      speedMps: 1,
+    }),
+    view(),
+  );
+  assert.equal(slow.meta.true_track, 0); // falls back to default
+});
+
+test('civil records do not derive course when time gap is too small', () => {
+  const store = records();
+  store.receive(
+    observation({
+      courseDeg: null,
+      latitude: 0,
+      longitude: 0,
+      positionTimeMs: 1000,
+    }),
+    view(),
+  );
+  // Only 500 ms after anchor: less than the 1 s minimum.
+  const tooSoon = store.receive(
+    observation({
+      courseDeg: null,
+      latitude: 0,
+      longitude: 0.001,
+      positionTimeMs: 1500,
+      speedMps: 10,
+    }),
+    view(),
+  );
+  assert.equal(tooSoon.meta.true_track, 0); // no course derived
+});
+
+test('civil records hold reported true_track when available', () => {
+  const store = records();
+  const first = store.receive(
+    observation({ courseDeg: 45, latitude: 0, longitude: 0, positionTimeMs: 1000 }),
+    view(),
+  );
+  assert.equal(first.meta.true_track, 45);
+});

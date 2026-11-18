@@ -308,10 +308,14 @@ test('both Google 3D routes keep tiles drawing while draped imagery loads', asyn
   };
   assert.equal(await createGoogleDirectTileset(sdk, 'key'), 'direct');
   assert.equal(await createGoogleIonTileset(sdk, 'token'), 'ion');
-  assert.deepEqual(calls[0], [
-    { key: 'key', onlyUsingWithGoogleGeocoder: true },
-    { asynchronouslyLoadImagery: true },
-  ]);
+  // Both routes carry the same tileset options, so the zoom→detail path
+  // behaves identically whichever credential delivered the tiles.
+  assert.deepEqual(calls[0][0], {
+    key: 'key',
+    onlyUsingWithGoogleGeocoder: true,
+  });
+  assert.deepEqual(calls[0][1], calls[1][1]);
+  assert.equal(calls[0][1].asynchronouslyLoadImagery, true);
   assert.equal(calls[1][0].id, 2275207);
   assert.equal(calls[1][0].accessToken, 'token');
   assert.equal(calls[1][1].asynchronouslyLoadImagery, true);

@@ -1,5 +1,8 @@
 node_modules
 dist
+# Local ODIN buildings master + runtime local-data state (Phase E storage
+# centralization - kept out of Git, served from the repository storage/ dir).
+storage/
 # Credential files. `.env` alone is not enough: Vite's loadEnv (see
 # server/standalone/vite.config.js) and scripts/setup-doctor.mjs both read the
 # full dotenv ladder — .env, .env.local, .env.<mode> and .env.<mode>.local —

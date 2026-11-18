@@ -324,6 +324,7 @@ export function createLocalGeoJsonLayer(
     governorRequestRender,
     showOsmCredit,
     hideOsmCredit,
+    performanceManager,
   },
 ) {
   let _dataSource = null;
@@ -492,7 +493,7 @@ export function createLocalGeoJsonLayer(
     source,
     updateInterval: 0,
     statsRefreshInterval: 1000,
-    performanceManager: null,
+    performanceManager,
 
     init: async (viewer) => {
       // DataLayerManager calls this once
@@ -525,6 +526,20 @@ export function createLocalGeoJsonLayer(
       active: _activeLodIds.size,
       budgetLimit: _lastLodBudgetLimit,
       computed: _lodComputed,
+    }),
+
+    /**
+     * Last LOD policy read from the Performance Manager contract, if any.
+     * `changeId` is the contract's policy revision: it only moves when the
+     * effective policy changes, so a consumer can tell a real policy change
+     * from a re-read of an unchanged contract.
+     * @returns {{changeId:number, activeProfile:string, memoryPressure:number|null, decisionReason:string}}
+     */
+    getLodPolicy: () => ({
+      changeId: _lastChangeId,
+      activeProfile: _lastActiveProfile,
+      memoryPressure: _lastMemoryPressure,
+      decisionReason: _lastDecisionReason,
     }),
 
     /**
@@ -931,6 +946,44 @@ export function createLocalGeoJsonLayer(
           // The occluder test is the same cheap dot product used below.
           if (refreshStemGeometry && _stemRecords.length > 0) {
             const cameraHeightM = viewer.camera.positionCartographic?.height;
+
+            // ---- Contract consumption from performanceManager (optionnel) ----
+            // Lu AVANT la sélection : le budget transmis par la politique LOD
+            // doit piloter réellement selectInfraLod(), pas être mémorisé
+            // après coup. Un contrat absent, invalide ou incomplet laisse
+            // le calcul historique par hauteur de caméra s'appliquer.
+            let contractActiveLimit = null;
+            if (
+              performanceManager &&
+              typeof performanceManager.getLODContract === 'function'
+            ) {
+              try {
+                const contract =
+                  performanceManager.getLODContract(cameraHeightM);
+                if (contract && typeof contract === 'object') {
+                  const limit = contract.lodBudget?.activeLimit;
+                  if (Number.isFinite(limit) && limit > 0) {
+                    contractActiveLimit = limit;
+                  }
+                  if (contract.changeId !== undefined) {
+                    _lastChangeId = contract.changeId;
+                  }
+                  if (contract.activeProfile !== undefined) {
+                    _lastActiveProfile = contract.activeProfile;
+                  }
+                  if (contract.memoryPressure !== undefined) {
+                    _lastMemoryPressure = contract.memoryPressure;
+                  }
+                  if (contract.decisionReason !== undefined) {
+                    _lastDecisionReason = contract.decisionReason;
+                  }
+                }
+              } catch (e) {
+                // Contract read error : ne pas perturber le rendu
+                console.warn('ODIN P5.3-C: error reading LOD contract:', e);
+              }
+            }
+
             const candidates = new Array(_stemRecords.length);
             for (let i = 0; i < _stemRecords.length; i++) {
               const record = _stemRecords[i];
@@ -944,6 +997,9 @@ export function createLocalGeoJsonLayer(
             const selection = selectInfraLod(candidates, {
               cameraHeightM,
               incumbentIds: _activeLodIds,
+              ...(contractActiveLimit !== null
+                ? { activeLimit: contractActiveLimit }
+                : {}),
             });
             const grace = applyInfraEvictionGrace({
               selectedIds: selection.activeIds,
@@ -962,36 +1018,6 @@ export function createLocalGeoJsonLayer(
             // recompute while genuine slow travel eventually does.
             Cesium.Cartesian3.clone(cameraPos, _lastLodCameraPos);
             _lastLodProbeMs = now;
-
-            // ---- Contract consumption from performanceManager (optionnel) ----
-            // Si un performanceManager est attaché et qu'il fournit un contrat,
-            // lire ses champs pour affiner le comportement LOD sans reconstruire
-            // d'entités ni perturber le rendu.
-            if (this.performanceManager && typeof this.performanceManager.getLODContract === 'function') {
-              try {
-                const contract = this.performanceManager.getLODContract();
-                // Mise à jour du raisonnement de décision si le contrat indique
-                // un changement (changeId incrémenté). On conserve la valeur
-                // existante si changeId n'a pas changé.
-                if (contract.changeId !== undefined && lastChangeId !== undefined) {
-                  if (contract.changeId !== lastChangeId) {
-                    // Changement de politique LOD détecté
-                    // Peut être utilisé pour logger ou ajuster des comportements
-                    // sans toucher au budget actif ou aux entités.
-                  }
-                }
-                // Stocker la dernière changeId pour la prochaine comparaison
-                lastChangeId = contract.changeId;
-                // Rappeler memoryPressure et activeProfile si souhaité pour
-                // d'autres boucles de prise de décision externe.
-                lastMemoryPressure = contract.memoryPressure;
-                lastActiveProfile = contract.activeProfile;
-                lastDecisionReason = contract.decisionReason;
-              } catch (e) {
-                // Contract read error : ne pas perturber le rendu
-                console.warn('ODIN P5.3-C: error reading LOD contract:', e);
-              }
-            }
           }
 
           for (let i = 0; i < _stemRecords.length; i++) {

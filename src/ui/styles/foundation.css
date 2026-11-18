@@ -506,38 +506,46 @@ body.cockpit-mode #cockpit-cloud-effects.active {
   z-index: 100;
   pointer-events: none;
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 46px;
+  padding: 4px 10px;
+  box-sizing: border-box;
 }
 
 #title-bar .title-glow {
   position: absolute;
-  top: -20px;
-  left: -20px;
-  width: 200px;
-  height: 80px;
+  top: -12px;
+  left: -12px;
+  width: 120px;
+  height: 60px;
   background: radial-gradient(ellipse, var(--accent-dim) 0%, transparent 70%);
-  filter: blur(20px);
+  filter: blur(16px);
   opacity: 0.2;
 }
 
 #title-bar h1 {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   font-family: var(--font-mono);
-  font-size: 26px;
+  font-size: 18px;
   font-weight: 600;
-  letter-spacing: 8px;
+  letter-spacing: 4px;
   color: var(--text-primary);
   text-shadow:
     0 1px 4px rgba(0, 0, 0, 0.8),
     0 0 16px var(--accent-glow);
   position: relative;
+  margin: 0;
+  line-height: 1;
 }
 
 #title-bar .title-logo {
   position: relative;
   display: block;
-  width: 52px;
+  width: 32px;
   height: auto;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
 }
@@ -598,7 +606,7 @@ body.cockpit-mode #cockpit-cloud-effects.active {
 }
 
 .brand-logo {
-  aspect-ratio: 775 / 520;
+  aspect-ratio: 1 / 1;
   overflow: visible;
   pointer-events: none;
 }
@@ -617,12 +625,7 @@ body.cockpit-mode #cockpit-cloud-effects.active {
 }
 
 #title-bar .subtitle {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 5px;
-  color: var(--text-dim);
-  margin-top: 8px;
-  text-transform: uppercase;
+  display: none;
 }
 
 #title-bar .frame-rate-readout {
@@ -636,13 +639,16 @@ body.cockpit-mode #cockpit-cloud-effects.active {
 
 /* ── Style Indicator ──────────────────────────── */
 #style-indicator {
-  position: fixed;
-  top: 32px;
-  right: 36px;
-  z-index: 100;
+  display: inline-flex;
+  align-items: center;
   pointer-events: none;
   user-select: none;
-  text-align: right;
+  margin-left: 8px;
+  padding: 0 8px;
+  height: 36px;
+  border-radius: var(--btn-radius);
+  background: var(--surface-panel, rgba(14, 18, 24, 0.90));
+  border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.12));
 }
 
 #style-indicator .indicator-label {
@@ -657,11 +663,10 @@ body.cockpit-mode #cockpit-cloud-effects.active {
 #style-indicator .indicator-value {
   display: block;
   font-family: var(--font-mono);
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
   color: var(--accent);
-  margin-top: 4px;
-  text-shadow: 0 0 10px var(--accent-glow);
+  text-shadow: 0 0 8px var(--accent-glow);
   transition: var(--transition-smooth);
 }

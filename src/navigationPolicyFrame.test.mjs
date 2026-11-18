@@ -6,6 +6,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { TRACKABLE_FAMILIES } from './agent/worldPacket.js';
 import { setLocale } from './i18n/index.js';
 import {
   COCKPIT_REFUSAL_NOUNS,
@@ -68,10 +69,10 @@ const NOUN_LITERAL =
   /\bnoun\s*=\s*'([^']+)'|\bconst noun\s*=\s*[^?;]*\?\s*'([^']+)'\s*:\s*'([^']+)'/g;
 
 function trackableKinds() {
-  const source = readFileSync(join(SRC, 'voice/gevActions.js'), 'utf8');
-  const block = source.match(/const TRACKABLE_FAMILIES = \[([\s\S]*?)\];/);
-  assert.ok(block, 'TRACKABLE_FAMILIES is still in gevActions.js');
-  return [...block[1].matchAll(/kind:\s*'([^']+)'/g)].map((m) => m[1]);
+  // This is shared with voice; test the exported owner, not its file position.
+  // The constant moved to src/agent/worldPacket.js in the World Packet lot; a
+  // source-text regex broke on that refactor while the public export did not.
+  return TRACKABLE_FAMILIES.map(({ kind }) => kind);
 }
 
 // Non-literal arguments: what each one can be. A wrapper's own `noun` (or all

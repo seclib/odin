@@ -1,0 +1,281 @@
+- generic [ref=f3e1]:
+  - region "Visible map targets" [ref=f3e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=f3e8]:
+    - button "Clear selected data layers" [ref=f3e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f3e10]: layers_clear
+    - button "Copy share link" [ref=f3e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f3e12]: 🔗
+    - button "Tilt map to oblique view" [ref=f3e13] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f3e14]: view_in_ar
+    - button "Reset map to north up. Current heading 15 degrees" [ref=f3e77] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f3e16]: "N"
+      - generic [aria-hidden] [ref=f3e17]: navigation
+    - button "Reset to full globe view" [ref=f3e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f3e19]: public
+    - button "General settings" [ref=f3e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f3e21]: settings
+    - button "Providers" [ref=f3e22] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f3e23]: plug
+    - 'button "Language: English" [ref=f3e79] [cursor=pointer]':
+      - generic [aria-hidden] [ref=f3e84]: EN
+  - generic: syncing road network
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic "Navigation, voice, and visual preset controls" [ref=f3e29]:
+    - button "Expand LOCATION" [ref=f3e38] [cursor=pointer]:
+      - generic [ref=f3e39]: LOCATION
+    - generic [ref=f3e87]:
+      - generic [ref=f3e88]:
+        - generic: AI AGENT
+        - generic [ref=f3e89]: "OFF"
+        - generic [ref=f3e90]:
+          - button "STD" [ref=f3e91] [cursor=pointer]
+          - generic "Estimated session cost on gpt-realtime-2 — 0 response(s). Warns at ~$2.00, ends the session at ~$5.00." [ref=f3e92]: ~$0.00
+      - button "Voice control — activate to toggle voice; hold Space to speak" [ref=f3e93] [cursor=pointer]:
+        - generic [ref=f3e95]: ON/OFF
+      - generic [ref=f3e112]: VOICE STANDBY
+    - button "Expand VISUAL PRESETS" [ref=f3e114] [cursor=pointer]:
+      - generic [ref=f3e33]: VISUAL PRESETS
+  - generic:
+    - generic [ref=f3e43]:
+      - generic [ref=f3e44]: DATA LAYERS
+      - button "Expand DATA LAYERS" [ref=f3e115] [cursor=pointer]: +
+    - generic [ref=f3e54]:
+      - generic [ref=f3e55]: SCENES
+      - button "Expand SCENES" [ref=f3e116] [cursor=pointer]: +
+  - complementary:
+    - generic [ref=f3e24]:
+      - generic [ref=f3e25]:
+        - generic [ref=f3e26]: DISPLAY
+        - button "Collapse DISPLAY" [expanded] [ref=f3e117] [cursor=pointer]: ▶
+      - generic [ref=f3e118]:
+        - generic [ref=f3e119]:
+          - button "◎ HUD" [ref=f3e120] [cursor=pointer]:
+            - generic [ref=f3e121]: ◎
+            - generic [ref=f3e122]: HUD
+          - generic [ref=f3e123]:
+            - generic [ref=f3e124]: Layout
+            - combobox "HUD layout" [ref=f3e125]:
+              - option "Tactical" [selected]
+              - option "Operator"
+              - option "Minimal"
+              - option "Cyber"
+        - generic [ref=f3e126]:
+          - 'button "Detection overlay: dense" [pressed] [ref=f3e127] [cursor=pointer]':
+            - generic [ref=f3e128]: ▣
+            - generic [ref=f3e129]: DENSE
+          - generic [ref=f3e130]:
+            - generic [ref=f3e131]: Density
+            - slider "Detection label density" [ref=f3e132] [cursor=pointer]: "75"
+            - generic [ref=f3e133]: 75%
+          - generic [ref=f3e134]:
+            - generic [ref=f3e135]: Allocation
+            - radiogroup "Detection label allocation" [ref=f3e136]:
+              - radio "Elastic" [checked] [ref=f3e137] [cursor=pointer]
+              - radio "Weighted" [ref=f3e138] [cursor=pointer]
+          - generic [ref=f3e139]:
+            - generic [ref=f3e140]: Fade
+            - slider "Detection fade distance" [ref=f3e141] [cursor=pointer]: "7"
+            - generic [ref=f3e142]: 7%
+          - generic [ref=f3e143]:
+            - generic [ref=f3e144]: Outside
+            - slider "Detection opacity outside the keyhole" [ref=f3e145] [cursor=pointer]: "1"
+            - generic [ref=f3e146]: 1%
+        - button "✈ 3D" [ref=f3e148] [cursor=pointer]:
+          - generic [ref=f3e149]: ✈
+          - generic [ref=f3e150]: 3D
+        - generic [ref=f3e151]:
+          - button "Scope" [pressed] [ref=f3e152] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f3e153]: adjust
+          - generic [ref=f3e155]:
+            - generic [ref=f3e156]: Feather
+            - slider "Scope edge feather" [ref=f3e157] [cursor=pointer]: "11"
+            - generic [ref=f3e158]: 11%
+        - button "Draw" [ref=f3e160] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f3e161]: draw
+        - button "Import" [ref=f3e164] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f3e165]: upload_file
+        - button "Celestial" [ref=f3e168] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f3e169]: flare
+        - button "□ Clean UI" [ref=f3e171] [cursor=pointer]:
+          - generic [ref=f3e172]: □
+          - generic [ref=f3e173]: Clean UI
+        - button "✨ Bloom" [ref=f3e175] [cursor=pointer]:
+          - generic [ref=f3e176]: ✨
+          - generic [ref=f3e177]: Bloom
+        - generic [ref=f3e178]:
+          - button "🔍 Sharpen" [ref=f3e179] [cursor=pointer]:
+            - generic [ref=f3e180]: 🔍
+            - generic [ref=f3e181]: Sharpen
+          - generic [ref=f3e182]:
+            - slider "Sharpen intensity" [ref=f3e183] [cursor=pointer]: "49"
+            - generic [ref=f3e184]: 49%
+  - generic: NORMAL
+  - dialog "Power up the globe" [ref=f3e185]:
+    - banner [ref=f3e186]:
+      - generic [ref=f3e187]: GROUND STATION · PROVIDER SETTINGS
+      - button "Close key setup" [ref=f3e188] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f3e189]: close
+    - heading "Power up the globe" [level=2] [ref=f3e190]
+    - paragraph [ref=f3e191]: The globe already flies keyless. Every key below switches on another real feed — paste one and it's saved into this app's local configuration, then the server restarts itself. Server-side keys stay on this machine; Google Maps and Cesium ion run in the browser and must be provider-restricted. Keys you configured elsewhere are shown but never touched.
+    - generic:
+      - generic [ref=f3e192]:
+        - generic [ref=f3e193]:
+          - strong [ref=f3e195]: GOOGLE MAPS
+          - generic "Metered — a billing-enabled account" [ref=f3e196]: 🔴
+          - generic "This key runs in the browser by design — restrict it at the provider (see SECURITY.md)" [ref=f3e197]: browser-side
+          - link "GET KEY ↗" [ref=f3e198] [cursor=pointer]:
+            - /url: https://developers.google.com/maps/documentation/tile/get-api-key
+        - paragraph [ref=f3e199]: The photorealistic 3D planet, place search + Street View
+        - textbox "GOOGLE_MAPS_API_KEY" [active] [ref=f3e201]:
+          - /placeholder: paste GOOGLE_MAPS_API_KEY
+      - generic [ref=f3e202]:
+        - generic [ref=f3e203]:
+          - strong [ref=f3e205]: OPENAI
+          - generic "Metered — a billing-enabled account" [ref=f3e206]: 🔴
+          - generic "Supplied by your environment, Keychain, or launcher — change it where it was set" [ref=f3e207]: configured externally
+          - link "MANAGE ↗" [ref=f3e208] [cursor=pointer]:
+            - /url: https://platform.openai.com/api-keys
+        - paragraph [ref=f3e209]: Voice control — API key or ChatGPT OAuth
+        - generic [ref=f3e210]:
+          - generic [ref=f3e211]: VOICE AUTH · API KEY
+          - button "USE CHATGPT OAUTH" [ref=f3e212] [cursor=pointer]
+      - generic [ref=f3e213]:
+        - generic [ref=f3e214]:
+          - strong [ref=f3e216]: AISSTREAM
+          - generic "Free key — register, paste, done" [ref=f3e217]: 🟡
+          - generic "Supplied by your environment, Keychain, or launcher — change it where it was set" [ref=f3e218]: configured externally
+          - link "MANAGE ↗" [ref=f3e219] [cursor=pointer]:
+            - /url: https://aisstream.io
+        - paragraph [ref=f3e220]: Live ships, worldwide
+      - generic [ref=f3e221]:
+        - generic [ref=f3e222]:
+          - strong [ref=f3e224]: NASA FIRMS
+          - generic "Free key — register, paste, done" [ref=f3e225]: 🟡
+          - generic "Supplied by your environment, Keychain, or launcher — change it where it was set" [ref=f3e226]: configured externally
+          - link "MANAGE ↗" [ref=f3e227] [cursor=pointer]:
+            - /url: https://firms.modaps.eosdis.nasa.gov/api/map_key/
+        - paragraph [ref=f3e228]: Live active-fire detections
+      - generic [ref=f3e229]:
+        - generic [ref=f3e230]:
+          - strong [ref=f3e232]: TOMTOM
+          - generic "Free key — register, paste, done" [ref=f3e233]: 🟡
+          - generic "Supplied by your environment, Keychain, or launcher — change it where it was set" [ref=f3e234]: configured externally
+          - link "MANAGE ↗" [ref=f3e235] [cursor=pointer]:
+            - /url: https://my.tomtom.com/keys
+        - paragraph [ref=f3e236]: Real live traffic (keyless runs a simulation)
+      - generic [ref=f3e237]:
+        - generic [ref=f3e238]:
+          - strong [ref=f3e240]: CESIUM ION
+          - generic "Free key — register, paste, done" [ref=f3e241]: 🟡
+          - generic "This key runs in the browser by design — restrict it at the provider (see SECURITY.md)" [ref=f3e242]: browser-side
+          - generic "Supplied by your environment, Keychain, or launcher — change it where it was set" [ref=f3e243]: configured externally
+          - link "MANAGE ↗" [ref=f3e244] [cursor=pointer]:
+            - /url: https://ion.cesium.com/tokens
+        - paragraph [ref=f3e245]: Bing imagery map stacks + world terrain
+      - generic [ref=f3e246]:
+        - generic [ref=f3e247]:
+          - strong [ref=f3e249]: OPENSKY
+          - generic "Free key — register, paste, done" [ref=f3e250]: 🟡
+          - generic "Supplied by your environment, Keychain, or launcher — change it where it was set" [ref=f3e251]: configured externally
+          - link "MANAGE ↗" [ref=f3e252] [cursor=pointer]:
+            - /url: https://opensky-network.org
+        - paragraph [ref=f3e253]: More flight-polling credits (anonymous works without)
+      - generic [ref=f3e254]:
+        - generic [ref=f3e255]:
+          - strong [ref=f3e257]: MAPILLARY
+          - generic "Free key — register, paste, done" [ref=f3e258]: 🟡
+          - generic "This key runs in the browser by design — restrict it at the provider (see SECURITY.md)" [ref=f3e259]: browser-side
+          - generic "Supplied by your environment, Keychain, or launcher — change it where it was set" [ref=f3e260]: configured externally
+          - link "MANAGE ↗" [ref=f3e261] [cursor=pointer]:
+            - /url: https://www.mapillary.com/dashboard/developers
+        - paragraph [ref=f3e262]: "Street-level imagery and coverage in the Street Level layer. Free: register an app in the Mapillary developer dashboard and paste its Client Token"
+      - generic [ref=f3e263]:
+        - generic [ref=f3e264]:
+          - strong [ref=f3e266]: LAUNCH LIBRARY
+          - generic "Free key — register, paste, done" [ref=f3e267]: 🟡
+          - link "GET KEY ↗" [ref=f3e268] [cursor=pointer]:
+            - /url: https://thespacedevs.com
+        - paragraph [ref=f3e269]: Higher space-missions request allowance
+        - textbox "LL2_API_TOKEN" [ref=f3e271]:
+          - /placeholder: paste LL2_API_TOKEN
+    - generic [ref=f3e272]:
+      - generic [ref=f3e273]:
+        - generic [ref=f3e274]: GROUND STATION · LOCAL DATA
+        - generic [ref=f3e275]: AVAILABLE
+        - generic [ref=f3e276]: CONFIGURED
+      - heading "Local 3D buildings — La Réunion" [level=3] [ref=f3e277]
+      - paragraph [ref=f3e278]: Microsoft GMLFP footprints, IGN-enriched altitudes and the generated 3D Tiles are cached on this machine. Nothing is uploaded anywhere. The map layer stays off until you enable it from the Data Layers panel.
+      - generic [ref=f3e279]:
+        - generic [ref=f3e280]: Storage path
+        - generic [ref=f3e281]:
+          - textbox "Storage path" [ref=f3e282]: /app/storage/buildings-974
+          - button "APPLY" [ref=f3e283] [cursor=pointer]
+      - generic [ref=f3e284]:
+        - generic [ref=f3e285] [cursor=pointer]:
+          - checkbox "Keep buildings data on this machine" [checked]
+          - generic [ref=f3e287]: Keep buildings data on this machine
+        - generic [ref=f3e288]: Disabling keeps the map working without the layer.
+      - status [ref=f3e289]: 100 buildings · 42 tiles · 4 source files · 29 MB
+      - generic [ref=f3e290]: "Sources (original): 4 Enriched (IGN): 100 records Generated (3D Tiles): 42 tiles · 100 buildings Total volume: 29 MB Provenance: pilot-100 · CDLA-Permissive-2.0 · 2026-11-17T15:34:00Z Manifest schema: v1 Integrity: 135 SHA-256 hashes"
+      - generic [ref=f3e291]:
+        - button "RESCAN" [ref=f3e292] [cursor=pointer]
+        - button "VERIFY CHECKSUMS" [ref=f3e293] [cursor=pointer]
+        - button "COPY TO DIST" [ref=f3e294] [cursor=pointer]
+        - button "DELETE GENERATED TILES" [ref=f3e295] [cursor=pointer]
+        - button "DELETE ENRICHED DATA" [ref=f3e296] [cursor=pointer]
+        - button "DELETE ORIGINAL SOURCES" [ref=f3e297] [cursor=pointer]
+      - status [ref=f3e298]: Ready. Enable the layer from Data Layers to use it on the map.
+      - paragraph [ref=f3e299]: Heights are a constant default of 6 m — not measured. Footprints © Microsoft (CDLA-Permissive-2.0). Bases from IGN RGE ALTI®.
+    - generic [ref=f3e300]:
+      - button "SAVE KEYS" [ref=f3e301] [cursor=pointer]
+      - generic [ref=f3e302]: ESC to close
+    - status [ref=f3e303]: The Google Maps key buys the photorealistic planet — everything else stacks on top.
+  - generic:
+    - generic:
+      - generic: ┌
+      - generic:
+        - generic: TOP SECRET // SI-TK // NOFORN
+        - generic: KH11-4129 OPS-4104
+        - generic: NORMAL
+        - generic:
+          - generic: SUMMARY
+          - generic: NORMAL METRO NEAR FROST BANK TOWER (AUSTIN) 0KM | NORTH AMERICA | ALT 25.0KM | WINDOW 29x21KM | SUN -68° | ONA
+    - generic:
+      - generic:
+        - generic: ● REC 2026-11-18 07:53:38Z
+        - generic: "ORB: 47871 PASS: DESC-298"
+      - generic: ┐
+    - generic:
+      - generic: └
+      - generic:
+        - generic: "MGRS: 14R PU 2090 4906"
+        - generic: 30°16'01.92"N 097°44'35.16"W
+    - generic:
+      - generic:
+        - generic: "GSD: 0.23m NIIRS: 7.1"
+        - generic: "ALT: 627m SUN: -68.2° EL"
+        - generic: "AIS: --"
+      - generic: ┘
+    - generic:
+      - generic: "COLL: 07:53:39Z"
+      - generic: "ONA: 60.0°"
+    - generic:
+      - generic: "BAND: PAN"
+      - generic: "BITS: 11"
+      - generic: "LVL: 1A"
+  - generic [ref=f3e72]:
+    - link [ref=f3e75] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=f3e76]
+    - generic [ref=f3e304]:
+      - link "Upgrade for commercial use." [ref=f3e306] [cursor=pointer]:
+        - /url: https://cesium.com/pricing/
+      - text: •
+      - img "Google" [ref=f3e308]
+    - button "Data attribution" [ref=f3e309] [cursor=pointer]

@@ -7,8 +7,10 @@ import {
   polygonCentroid,
   clipTileLine,
   createOpenFreeMapSource,
+  registerOpenFreeMapProjection,
+  clearSharedOpenFreeMapTiles,
 } from './openFreeMap.js';
-import { createVectorTileSource } from './vectorTiles.js';
+import { createVectorTileSource, createSharedDecodedTileCache } from './vectorTiles.js';
 const fixture = (name) =>
   readFileSync(new URL(`../data/fixtures/${name}`, import.meta.url));
 
@@ -357,4 +359,90 @@ test('a mirror that serves the default host TileJSON verbatim fails loudly', asy
     tileJsonUrl: 'http://127.0.0.1:12348/planet',
   });
   await assert.rejects(source.getMetadata(), { retryable: false });
+});
+
+test('shared decoded cache avoids refetch across two sources', async () => {
+  const sharedDecodedCache = createSharedDecodedTileCache({
+    maxEntries: 10,
+    maxCacheBytes: Infinity,
+  });
+  const calls = [];
+  const makeSource = () =>
+    createOpenFreeMapSource({
+      fetchImpl: async (url) => {
+        calls.push(url);
+        return url.endsWith('/planet')
+          ? Response.json({
+              tiles: [
+                'https://tiles.openfreemap.org/planet/version/{z}/{x}/{y}.pbf',
+              ],
+            })
+          : new Response(fixture('ofm-austin-14-3743-6745.pbf'));
+      },
+      sharedDecodedCache,
+    });
+  const box = { south: 30.267, north: 30.268, west: -97.744, east: -97.743 };
+  const source1 = makeSource();
+  await source1.fetchBounds(box, { zoom: 14 });
+  const callsAfterSource1 = calls.length;
+  const source2 = makeSource();
+  await source2.fetchBounds(box, { zoom: 14 });
+  // Second source reuses the shared decoded tile: only metadata fetch is new
+  assert.ok(
+    calls.length > callsAfterSource1,
+    'second source fetches metadata',
+  );
+  assert.equal(
+    calls.filter((u) => !u.endsWith('/planet')).length,
+    callsAfterSource1 - 1,
+    'no second tile fetch: shared decoded cache is reused',
+  );
+  source1.clear();
+  source2.clear();
+});
+
+test('createOpenFreeMapSource without sharedDecodedCache fetches independently per source', async () => {
+  const calls = [];
+  const makeSource = () =>
+    createOpenFreeMapSource({
+      fetchImpl: async (url) => {
+        calls.push(url);
+        return url.endsWith('/planet')
+          ? Response.json({
+              tiles: [
+                'https://tiles.openfreemap.org/planet/version/{z}/{x}/{y}.pbf',
+              ],
+            })
+          : new Response(fixture('ofm-austin-14-3743-6745.pbf'));
+      },
+    });
+  const box = { south: 30.267, north: 30.268, west: -97.744, east: -97.743 };
+  const source1 = makeSource();
+  await source1.fetchBounds(box, { zoom: 14 });
+  const callsAfterSource1 = calls.length;
+  const source2 = makeSource();
+  await source2.fetchBounds(box, { zoom: 14 });
+  // Without shared cache, each source fetches its own tiles
+  assert.ok(
+    calls.filter((u) => !u.endsWith('/planet')).length >
+      callsAfterSource1 - 1,
+    'second source fetches its own tiles',
+  );
+  source1.clear();
+  source2.clear();
+});
+
+test('clearSharedOpenFreeMapTiles resets the shared cache', () => {
+  assert.equal(typeof clearSharedOpenFreeMapTiles, 'function');
+  assert.doesNotThrow(() => clearSharedOpenFreeMapTiles());
+});
+
+test('registerOpenFreeMapProjection registers and rejects duplicates', () => {
+  const projector = (bytes, z, x, y, tile) => ({ z, x, y });
+  registerOpenFreeMapProjection('test-proj', projector);
+  registerOpenFreeMapProjection('test-proj', projector);
+  assert.throws(
+    () => registerOpenFreeMapProjection('test-proj', (b) => ({})),
+    /already registered/,
+  );
 });

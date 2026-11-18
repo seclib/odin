@@ -174,8 +174,8 @@ export const near = defineTool({
     ).length;
 
     // Build summary
-    const noun = totalInRadius <= 1 ? 'entité' : 'entités';
-    const summary = `${totalInRadius} ${noun} à moins de ${args.radius_m} m du ${
+    const resultNoun = totalInRadius <= 1 ? 'entité' : 'entités';
+    const summary = `${totalInRadius} ${resultNoun} à moins de ${args.radius_m} m du ${
       hasLocation ? 'point' : 'aire'
     }${totalInRadius > 0 ? ' (triés par distance)' : '.'}`;
 

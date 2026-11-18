@@ -344,3 +344,10 @@ test('focus footprints keep relation members and centers', async () => {
   assert.match(query, /out center geom\([-\d.,]+\);/);
   assert.doesNotMatch(query, /out tags/);
 });
+
+test('overpass feature source declares outlineCredit as osm', () => {
+  const source = createOverpassFeatureSource({
+    boundarySource: { query: async () => [] },
+  });
+  assert.equal(source.outlineCredit, 'osm');
+});

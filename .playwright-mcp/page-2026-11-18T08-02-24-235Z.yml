@@ -1,0 +1,163 @@
+- generic [active] [ref=f1e1]:
+  - region "Visible map targets" [ref=f1e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=f1e8]:
+    - button "Clear selected data layers" [ref=f1e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e10]: layers_clear
+    - button "Copy share link" [ref=f1e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e12]: 🔗
+    - button "Tilt map to oblique view" [ref=f1e13] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e14]: view_in_ar
+    - button "Reset map to north up. Current heading 0 degrees" [ref=f1e75] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e16]: "N"
+      - generic [aria-hidden] [ref=f1e17]: navigation
+    - button "Reset to full globe view" [ref=f1e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e19]: public
+    - button "General settings" [ref=f1e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e21]: settings
+    - 'button "Language: English" [ref=f1e77] [cursor=pointer]':
+      - generic [aria-hidden] [ref=f1e82]: EN
+  - generic: syncing road network
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic "Navigation, voice, and visual preset controls" [ref=f1e27]:
+    - button "Expand LOCATION" [ref=f1e36] [cursor=pointer]:
+      - generic [ref=f1e37]: LOCATION
+    - generic [ref=f1e85]:
+      - generic [ref=f1e86]:
+        - generic: AI AGENT
+        - generic [ref=f1e87]: "OFF"
+        - generic [ref=f1e88]:
+          - button "STD" [ref=f1e89] [cursor=pointer]
+          - generic "Estimated session cost on gpt-realtime-2 — 0 response(s). Warns at ~$2.00, ends the session at ~$5.00." [ref=f1e90]: ~$0.00
+      - button "Voice control — activate to toggle voice; hold Space to speak" [ref=f1e91] [cursor=pointer]:
+        - generic [ref=f1e93]: ON/OFF
+      - generic [ref=f1e110]: VOICE STANDBY
+    - button "Expand VISUAL PRESETS" [ref=f1e112] [cursor=pointer]:
+      - generic [ref=f1e31]: VISUAL PRESETS
+  - generic:
+    - generic [ref=f1e41]:
+      - generic [ref=f1e42]: DATA LAYERS
+      - button "Expand DATA LAYERS" [ref=f1e113] [cursor=pointer]: +
+    - generic [ref=f1e52]:
+      - generic [ref=f1e53]: SCENES
+      - button "Expand SCENES" [ref=f1e114] [cursor=pointer]: +
+  - complementary:
+    - generic [ref=f1e22]:
+      - generic [ref=f1e23]:
+        - generic [ref=f1e24]: DISPLAY
+        - button "Collapse DISPLAY" [expanded] [ref=f1e115] [cursor=pointer]: ▶
+      - generic [ref=f1e116]:
+        - generic [ref=f1e117]:
+          - button "◎ HUD" [ref=f1e118] [cursor=pointer]:
+            - generic [ref=f1e119]: ◎
+            - generic [ref=f1e120]: HUD
+          - generic [ref=f1e121]:
+            - generic [ref=f1e122]: Layout
+            - combobox "HUD layout" [ref=f1e123]:
+              - option "Tactical" [selected]
+              - option "Operator"
+              - option "Minimal"
+              - option "Cyber"
+        - generic [ref=f1e124]:
+          - 'button "Detection overlay: dense" [pressed] [ref=f1e125] [cursor=pointer]':
+            - generic [ref=f1e126]: ▣
+            - generic [ref=f1e127]: DENSE
+          - generic [ref=f1e128]:
+            - generic [ref=f1e129]: Density
+            - slider "Detection label density" [ref=f1e130] [cursor=pointer]: "75"
+            - generic [ref=f1e131]: 75%
+          - generic [ref=f1e132]:
+            - generic [ref=f1e133]: Allocation
+            - radiogroup "Detection label allocation" [ref=f1e134]:
+              - radio "Elastic" [checked] [ref=f1e135] [cursor=pointer]
+              - radio "Weighted" [ref=f1e136] [cursor=pointer]
+          - generic [ref=f1e137]:
+            - generic [ref=f1e138]: Fade
+            - slider "Detection fade distance" [ref=f1e139] [cursor=pointer]: "7"
+            - generic [ref=f1e140]: 7%
+          - generic [ref=f1e141]:
+            - generic [ref=f1e142]: Outside
+            - slider "Detection opacity outside the keyhole" [ref=f1e143] [cursor=pointer]: "1"
+            - generic [ref=f1e144]: 1%
+        - button "✈ 3D" [ref=f1e146] [cursor=pointer]:
+          - generic [ref=f1e147]: ✈
+          - generic [ref=f1e148]: 3D
+        - generic [ref=f1e149]:
+          - button "Scope" [pressed] [ref=f1e150] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f1e151]: adjust
+          - generic [ref=f1e153]:
+            - generic [ref=f1e154]: Feather
+            - slider "Scope edge feather" [ref=f1e155] [cursor=pointer]: "11"
+            - generic [ref=f1e156]: 11%
+        - button "Draw" [ref=f1e158] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e159]: draw
+        - button "Import" [ref=f1e162] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e163]: upload_file
+        - button "Celestial" [ref=f1e166] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e167]: flare
+        - button "□ Clean UI" [ref=f1e169] [cursor=pointer]:
+          - generic [ref=f1e170]: □
+          - generic [ref=f1e171]: Clean UI
+        - button "✨ Bloom" [ref=f1e173] [cursor=pointer]:
+          - generic [ref=f1e174]: ✨
+          - generic [ref=f1e175]: Bloom
+        - generic [ref=f1e176]:
+          - button "🔍 Sharpen" [ref=f1e177] [cursor=pointer]:
+            - generic [ref=f1e178]: 🔍
+            - generic [ref=f1e179]: Sharpen
+          - generic [ref=f1e180]:
+            - slider "Sharpen intensity" [ref=f1e181] [cursor=pointer]: "49"
+            - generic [ref=f1e182]: 49%
+  - generic: NORMAL
+  - generic:
+    - generic:
+      - generic: ┌
+      - generic:
+        - generic: TOP SECRET // SI-TK // NOFORN
+        - generic: KH11-4017 OPS-4191
+        - generic: NORMAL
+        - generic:
+          - generic: SUMMARY
+          - generic: NORMAL METRO NEAR FROST BANK TOWER (AUSTIN) 0KM | NORTH AMERICA | ALT 25.0KM | WINDOW 29x21KM | SUN -66° | ONA 0° | UTC-7
+    - generic:
+      - generic:
+        - generic: REC 2026-11-18 08:02:23Z
+        - generic: "ORB: 47553 PASS: DESC-177"
+      - generic: ┐
+    - generic:
+      - generic: └
+      - generic:
+        - generic: "MGRS: 14R PU 2090 4906"
+        - generic: 30°16'01.92"N 097°44'35.16"W
+    - generic:
+      - generic:
+        - generic: "GSD: 9.14m NIIRS: 1.8"
+        - generic: "ALT: 24411m SUN: -66.5° EL"
+        - generic: "AIS: --"
+      - generic: ┘
+    - generic:
+      - generic: "COLL: 08:02:23Z"
+      - generic: "ONA: 1.5°"
+    - generic:
+      - generic: "BAND: PAN"
+      - generic: "BITS: 11"
+      - generic: "LVL: 1A"
+  - generic:
+    - generic:
+      - heading "ODIN" [level=2]
+      - paragraph: Flying to Austin, TX...
+  - generic [ref=f1e70]:
+    - link [ref=f1e73] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=f1e74]
+    - generic [ref=f1e183]:
+      - link "Upgrade for commercial use." [ref=f1e185] [cursor=pointer]:
+        - /url: https://cesium.com/pricing/
+      - text: •
+      - img "Google" [ref=f1e187]
+    - button "Data attribution" [ref=f1e188] [cursor=pointer]

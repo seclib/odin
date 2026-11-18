@@ -1,0 +1,137 @@
+- generic [ref=e1]:
+  - region "Visible map targets" [ref=e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+    - paragraph: NO PLACE LEFT BEHIND
+  - generic:
+    - generic: ACTIVE STYLE
+    - generic: NORMAL
+  - navigation "Globe actions" [ref=e8]:
+    - button "Clear selected data layers" [ref=e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e10]: layers_clear
+    - button "Copy share link" [ref=e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e12]: 🔗
+    - button "Return map to straight-down view" [pressed] [ref=e71] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e14]: view_in_ar
+    - button "Reset map to north up. Current heading 15 degrees" [ref=e72] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e16]: "N"
+      - generic [aria-hidden] [ref=e17]: navigation
+    - button "Reset to full globe view" [ref=e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e19]: public
+  - status:
+    - generic:
+      - generic: LOAD FAILED
+      - generic [aria-hidden]:
+        - generic: L
+        - generic: O
+        - generic: A
+        - generic: D
+        - generic: F
+        - generic: A
+        - generic: I
+        - generic: L
+        - generic: E
+        - generic: D
+  - generic: syncing road network
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic "Navigation, voice, and visual preset controls" [ref=e25]:
+    - button "Expand LOCATION" [ref=e34] [cursor=pointer]:
+      - generic [ref=e35]: LOCATION
+    - generic [ref=e73]:
+      - generic [ref=e74]:
+        - generic: AI AGENT
+        - generic [ref=e75]: ERROR
+        - generic [ref=e76]:
+          - button "STD" [ref=e77] [cursor=pointer]
+          - generic "Estimated session cost on gpt-realtime-2 — 0 response(s). Warns at ~$2.00, ends the session at ~$5.00." [ref=e78]: ~$0.00
+      - button "Voice control — activate to toggle voice; hold Space to speak" [ref=e79] [cursor=pointer]:
+        - generic [ref=e81]: MIC
+      - generic "VOICE UNAVAILABLE" [ref=e164]
+      - alert [ref=e165]:
+        - generic [ref=e166]:
+          - generic [ref=e167]: VOICE SYSTEM ERROR
+          - button "DISMISS" [ref=e168] [cursor=pointer]
+        - generic [ref=e169]: "Realtime connection: Failed to fetch"
+        - generic [ref=e170]: Check microphone permission and network access, then try again.
+    - button "Expand VISUAL PRESETS" [ref=e100] [cursor=pointer]:
+      - generic [ref=e29]: VISUAL PRESETS
+  - generic:
+    - generic [ref=e39]:
+      - generic [ref=e40]: DATA LAYERS
+      - button "Expand DATA LAYERS" [ref=e101] [cursor=pointer]: +
+    - generic [ref=e50]:
+      - generic [ref=e51]: SCENES
+      - button "Expand SCENES" [ref=e102] [cursor=pointer]: +
+  - complementary:
+    - generic [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]: CONTEXT
+        - button "Expand Radio section in Context" [ref=e172] [cursor=pointer]:
+          - generic [aria-hidden] [ref=e60]: radio
+        - button "Collapse CONTEXT" [expanded] [ref=e173] [cursor=pointer]: ▶
+      - generic [ref=e174]:
+        - tablist "Context mode" [ref=e175]:
+          - tab "CONTACTS" [active] [ref=e176] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e177]: radar
+          - tab "SPACE MISSIONS" [ref=e179] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e180]: rocket_launch
+        - generic [ref=e182]:
+          - strong [ref=e183]: SELECT CONTEXT
+          - generic [ref=e184]: CONTACTS — nearest planes · vessels · sitesSPACE MISSIONS — launches & orbital assets
+        - region "Internet radio and local SDR" [ref=e185]:
+          - generic [ref=e187]:
+            - generic [ref=e188]: RADIO
+            - generic [ref=e189]: "OFF"
+            - button "Expand Radio section" [ref=e191] [cursor=pointer]: +
+  - generic:
+    - 'button "Project keys: POWER UP · 2 KEYS WAITING" [ref=e147] [cursor=pointer]':
+      - generic [aria-hidden] [ref=e148]: bolt
+    - 'button "Language: English" [ref=e150] [cursor=pointer]':
+      - generic [aria-hidden] [ref=e155]: EN
+  - generic:
+    - generic:
+      - generic: ┌
+      - generic:
+        - generic: TOP SECRET // SI-TK // NOFORN
+        - generic: KH11-4111 OPS-4122
+        - generic: NORMAL
+        - generic:
+          - generic: SUMMARY
+          - generic: NORMAL REGIONAL NEAR THE JENGA TOWER (AUSTIN) 65KM | NORTH AMERICA | ALT 33.8KM | WINDOW 1384x616KM | SUN 20° | ONA 60° | UTC-7
+    - generic:
+      - generic:
+        - generic: REC 2026-11-16 14:59:57Z
+        - generic: "ORB: 47289 PASS: DESC-162"
+      - generic: ┐
+    - generic:
+      - generic: └
+      - generic:
+        - generic: "MGRS: 14R PT 0506 8550"
+        - generic: 29°41'42.83"N 097°54'50.19"W
+    - generic:
+      - generic:
+        - generic: "GSD: 12.66m NIIRS: 1.3"
+        - generic: "ALT: 33778m SUN: 19.7° EL"
+        - generic: "AIS: --"
+      - generic: ┘
+    - generic:
+      - generic: "COLL: 14:59:57Z"
+      - generic: "ONA: 60.0°"
+    - generic:
+      - generic: "BAND: PAN"
+      - generic: "BITS: 11"
+      - generic: "LVL: 1A"
+  - generic [ref=e66]:
+    - link [ref=e69] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=e70]
+    - generic [ref=e158]:
+      - link "Upgrade for commercial use." [ref=e160] [cursor=pointer]:
+        - /url: https://cesium.com/pricing/
+      - text: •
+      - img "Google" [ref=e162]
+    - button "Data attribution" [ref=e163] [cursor=pointer]

@@ -423,8 +423,20 @@ export function createGroundFloor({ terrain, signal }) {
   // reported here by meshFloorSampler.js. Design principle (owner): NEVER
   // below the visible surface; slightly above is always fine. The DEM stays
   // the instant global prior/fallback and the sanity gate for samples.
-  /** @type {Map<string, number>} coarse cell key -> rendered-surface height (m, ellipsoidal). */
+  /** @type {Map<string, Array<{lat: number, lon: number, h: number}>>}
+   *  coarse cell key -> rendered-surface readings (m, ellipsoidal), each kept
+   *  at the point it was probed. A read answers from the reading nearest the
+   *  asked point, so a viaduct and the street beside it in one cell keep their
+   *  own heights. */
   const _meshCells = new Map();
+  /** @constant {number} Readings closer than this (degrees, about 5 m) are
+   *  one spot: the lower one is kept there. */
+  const MESH_READING_SAME_SPOT_DEG = 0.00005;
+  /** @constant {number} Readings kept per cell. The sampler probes a cell at
+   *  most eight times, but ground snaps report at each aircraft's position;
+   *  past this many, a reading away from the others is not kept, so a busy
+   *  apron cell stays a short list to scan. */
+  const MESH_READINGS_PER_CELL = 16;
   /** @type {boolean} Whether mesh cells apply — true only in the google-3d
    *  regime (photoreal stack). On globe stacks the rendered surface IS the
    *  terrain provider (Re:Earth on keyless), so the DEM is already correct
@@ -456,7 +468,7 @@ export function createGroundFloor({ terrain, signal }) {
       return;
     const c = coarseFloorCoord(lat, lon);
     const key = `${c.lat},${c.lon}`;
-    if (!_meshCells.has(key)) _meshCells.set(key, heightM);
+    if (!_meshCells.has(key)) _meshCells.set(key, [{ lat, lon, h: heightM }]);
   }
 
   /** Return whether a rendered-mesh sample is plausible against a real DEM prior. */
@@ -474,6 +486,9 @@ export function createGroundFloor({ terrain, signal }) {
    * Callers must not bypass this with raw `reportMeshFloorCell`: a coarse-LOD,
    * rooftop, or aircraft hit would otherwise win the session-long first-write
    * latch and poison every floor consumer in the cell.
+   * The reading is kept at the point it was taken; a second reading at the
+   * same spot (within about 5 m) keeps the lower of the two. A cell keeps at
+   * most MESH_READINGS_PER_CELL readings.
    * @returns {boolean} Whether the sample passed and was reported.
    */
   function reportValidatedMeshFloorCell(lat, lon, heightM) {
@@ -481,13 +496,41 @@ export function createGroundFloor({ terrain, signal }) {
     const cell = coarseFloorCoord(lat, lon);
     const prior = cachedRealEllipsoidalGround(cell.lat, cell.lon);
     if (!meshFloorSampleWithinPrior(heightM, prior)) return false;
-    reportMeshFloorCell(cell.lat, cell.lon, heightM);
+    const key = `${cell.lat},${cell.lon}`;
+    const readings = _meshCells.get(key);
+    if (!readings) {
+      _meshCells.set(key, [{ lat, lon, h: heightM }]);
+      return true;
+    }
+    const same = readings.find(
+      (r) =>
+        Math.abs(r.lat - lat) < MESH_READING_SAME_SPOT_DEG &&
+        Math.abs(r.lon - lon) < MESH_READING_SAME_SPOT_DEG,
+    );
+    if (same) {
+      if (heightM < same.h) same.h = heightM;
+    } else if (readings.length < MESH_READINGS_PER_CELL) {
+      readings.push({ lat, lon, h: heightM });
+    }
     return true;
   }
 
   /**
-   * Synchronous mesh-cell read — null when the cell is unsampled OR the
-   * google-3d regime is inactive (globe stacks must floor on the DEM).
+   * Whether the cell holding the point has the real DEM prior that
+   * `reportValidatedMeshFloorCell` judges a reading against.
+   * @param {number} lat @param {number} lon
+   * @returns {boolean}
+   */
+  function meshFloorPriorReady(lat, lon) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+    const c = coarseFloorCoord(lat, lon);
+    return cachedRealEllipsoidalGround(c.lat, c.lon) != null;
+  }
+
+  /**
+   * Synchronous mesh-cell read — the cell's reading nearest the point, or
+   * null when the cell is unsampled OR the google-3d regime is inactive (globe
+   * stacks must floor on the DEM).
    * @param {number} lat @param {number} lon
    * @returns {number|null}
    */
@@ -495,8 +538,20 @@ export function createGroundFloor({ terrain, signal }) {
     if (!_meshPreferred) return null;
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
     const c = coarseFloorCoord(lat, lon);
-    const h = _meshCells.get(`${c.lat},${c.lon}`);
-    return h != null ? h : null;
+    const readings = _meshCells.get(`${c.lat},${c.lon}`);
+    if (!readings) return null;
+    if (readings.length === 1) return readings[0].h;
+    const k = Math.cos((lat * Math.PI) / 180) ** 2;
+    let best = readings[0],
+      bestD = Infinity;
+    for (const r of readings) {
+      const d = (r.lat - lat) ** 2 + k * (r.lon - lon) ** 2;
+      if (d < bestD) {
+        bestD = d;
+        best = r;
+      }
+    }
+    return best.h;
   }
 
   /** Test hook: clears mesh cells (never called at runtime — cells are valid all session). */
@@ -662,6 +717,7 @@ export function createGroundFloor({ terrain, signal }) {
     reportMeshFloorCell,
     meshFloorSampleWithinPrior,
     reportValidatedMeshFloorCell,
+    meshFloorPriorReady,
     cachedMeshFloor,
     _clearMeshFloorCellsForTest,
     cachedGroundFloor,

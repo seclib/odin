@@ -12,7 +12,7 @@ The canonical project repository is:
 
 The canonical technical knowledge base is:
 
-`/home/fatsio/AI/Ethan/Obsidian`
+`~/AI/Ethan/daena`
 
 ## 1. Initial Repository Inspection
 
@@ -20,9 +20,9 @@ Before creating or modifying anything:
 
 - Inspect the Git repository and current working tree.
 - Identify existing `AGENTS.md`, `GEMINI.md`, `.agents/`, `.agent/`, and other agent configuration files.
-- Read `Obsidian/AGENTS.md`.
-- Read `Obsidian/README.md`.
-- Inspect the current Obsidian structure and metadata conventions.
+- Read `~/AI/Ethan/daena/AGENTS.md`.
+- Read `~/AI/Ethan/daena/README.md`.
+- Inspect the current daena structure and metadata conventions.
 - Identify existing Antigravity customizations.
 - Preserve all existing configurations and user modifications.
 
@@ -39,9 +39,9 @@ Use:
 - `.agents/workflows/` for repeatable engineering procedures.
 - `.agents/skills/` for reusable ETHAN-specific procedures.
 
-Rules must remain concise and reference the canonical Obsidian documentation rather than duplicating hundreds of existing documents.
+Rules must remain concise and reference the canonical daena documentation rather than duplicating hundreds of existing documents.
 
-## 3. Mandatory Obsidian Protocol
+## 3. Mandatory Daena Protocol
 
 At the beginning of every engineering task:
 
@@ -56,7 +56,7 @@ At the beginning of every engineering task:
 
 Never assume that a new task starts from zero.
 
-Do not indiscriminately load the entire Obsidian repository.
+Do not indiscriminately load the entire daena repository.
 
 Use targeted document retrieval.
 
@@ -137,7 +137,7 @@ After every significant engineering intervention:
 - Update anomalies when their status changes.
 - Update runbooks when procedures change.
 - Preserve historical records.
-- Add Obsidian wikilinks where appropriate.
+- Add wikilinks where appropriate.
 
 Clearly distinguish:
 
@@ -151,7 +151,7 @@ Antigravity must work with the same durable technical memory as Cline and Codex.
 
 Do not create a separate Antigravity project history.
 
-All significant engineering knowledge must be recoverable from Obsidian.
+All significant engineering knowledge must be recoverable from daena.
 
 Another agent must be able to continue the work without relying on hidden conversation history.
 
@@ -170,7 +170,7 @@ Report:
 - Rules activated.
 - Workflows created.
 - Skills created.
-- Obsidian access verification.
+- Daena access verification.
 - Remaining limitations.
 
 ---

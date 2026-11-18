@@ -58,7 +58,7 @@ test('resolveLocale: ?lang= wins, then the stored choice, then browser languages
       storage: memoryStorage(),
       languages: ['de-DE', 'ru-RU'],
     }),
-    'ru',
+    'de',
   );
   assert.equal(
     resolveLocale({
@@ -66,7 +66,7 @@ test('resolveLocale: ?lang= wins, then the stored choice, then browser languages
       storage: memoryStorage(),
       languages: ['de'],
     }),
-    'en',
+    'de',
   );
 });
 

@@ -10,6 +10,7 @@ export function createStandaloneCatalog({
   sources = {},
   streetLevelProviders,
   signal = new AbortController().signal,
+  performanceManager,
   surface = createSurfaceServices({
     terrainSource: createApplicationRequestServices().terrain,
     signal,
@@ -21,6 +22,11 @@ export function createStandaloneCatalog({
     sources: createStandaloneLayerSources(sources),
     streetLevelProviders,
     signal,
+    // The application's Performance Manager owns the adaptive LOD policy.
+    // The catalog hands it to the infrastructure layers so the contract
+    // reaches the GeoJSON selection; without it the layers keep the
+    // historical camera-height budget.
+    performanceManager,
     vesselOptions: {
       maxRows: import.meta.env?.VITE_AIS_LIVE_MAX_ROWS,
       maxLabels: import.meta.env?.VITE_AIS_LIVE_LABEL_MAX_ROWS,

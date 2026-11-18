@@ -151,13 +151,28 @@ function sortableDistance(distanceM) {
  * @param {object} [options]
  * @param {number} [options.cameraHeightM]
  * @param {Iterable<string>|Set<string>} [options.incumbentIds] Ids that currently hold an active stem.
+ * @param {number} [options.activeLimit] Budget transmitted by an external LOD
+ *   policy (the Performance Manager contract). When omitted, the camera-height
+ *   band decides exactly as before; when present, it wins — clamped to the
+ *   established LOD limits so a policy can never exceed the engine's bounds.
  * @returns {{activeIds:string[], budget:{activeLimit:number}}}
  */
 export function selectInfraLod(
   candidates,
-  { cameraHeightM, incumbentIds } = {},
+  { cameraHeightM, incumbentIds, activeLimit } = {},
 ) {
-  const budget = infraLodBudget(cameraHeightM);
+  const band = infraLodBudget(cameraHeightM);
+  // A transmitted policy wins over the camera band, but never escapes the
+  // engine's own limits. An unusable value falls back to the band.
+  const budget =
+    Number.isFinite(activeLimit) && activeLimit > 0
+      ? {
+          activeLimit: Math.min(
+            INFRA_LOD_ACTIVE_MAX,
+            Math.max(INFRA_LOD_ACTIVE_MIN, Math.floor(activeLimit)),
+          ),
+        }
+      : band;
   const incumbents =
     incumbentIds instanceof Set ? incumbentIds : new Set(incumbentIds || []);
 

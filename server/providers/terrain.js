@@ -3,6 +3,9 @@ import { promises as fsp } from 'node:fs';
 
 import {
   fetchTerrainChunkWithRetry,
+  fetchIgnPoints,
+  ignAltimetryZoneForPoint,
+  IGN_ALTI_COOLDOWN_MS,
   parseTerrainPoints,
   resolveTerrainHeightRequest,
   terrainPointKey,
@@ -10,6 +13,12 @@ import {
 } from '../../src/data/terrainHeightsProxy.js';
 
 /**
+ * Resolves heights twice as fast for French national points: positions inside
+ * metropole/DOM+COM go first to IGN's altimetry API (RGE ALTI 1 m, Licence
+ * Ouverte 2.0 — orthogonal, NGF-IGN69; the client converts with its geoid),
+ * then to Re:Earth (ellipsoidal) when IGN misses/fails/429s, then — on the
+ * client — to bundled geoid math.
+ *
  * Re:Earth terrain point-height proxy: batched lon/lat → ellipsoidal height
  * lookups, keyless. Upstream: https://terrain.reearth.land/heights.json
  * (UPSTREAM_CHUNK points per call — sized against measured latency, see
@@ -21,6 +30,69 @@ import {
  * request order. Larger requests are chunked sequentially, and one failing
  * chunk does not discard the chunks that resolved.
  */
+const UPSTREAM_CHUNK = 64;
+let ignCooldownUntil = 0;
+
+/**
+ * Fetch all missing points via IGN (RGE ALTI 1 m, FR/DOM — primary) and
+ * Re:Earth (everything else), sequentially. A chunk that still fails yields
+ * nulls for its own positions rather than rejecting: with several chunks per
+ * request, throwing would discard every chunk that did resolve and re-fetch it
+ * on the next poll. The resolver caches the resolved positions and reports the
+ * null ones as omitted. Total failure (nothing resolved) still rejects, so the
+ * real upstream error reaches the caller instead of a generic omission count.
+ * First error if any is recorded.
+ * @param {Array<[number, number]>} points
+ * @returns {Promise<Array<object>>}
+ */
+async function fetchUpstreamAll(points) {
+  const results = new Array(points.length).fill(null);
+  let firstError = null;
+
+  // IGN wins for French-territory points (RGE ALTI, Licence Ouverte 2.0,
+  // finer than Re:Earth there — 1 m vs 30–90 m).
+  const ignIndices = [];
+  for (let i = 0; i < points.length; i += 1) {
+    if (ignAltimetryZoneForPoint(points[i][0], points[i][1])) ignIndices.push(i);
+  }
+  if (ignIndices.length > 0 && Date.now() >= ignCooldownUntil) {
+    try {
+      const ignPoints = ignIndices.map((i) => points[i]);
+      const ignResults = await fetchIgnPoints(ignPoints);
+      for (let j = 0; j < ignIndices.length; j += 1) {
+        results[ignIndices[j]] = ignResults[j] ?? null; // -99999 → Re:Earth
+      }
+    } catch (error) {
+      ignCooldownUntil = Date.now() + IGN_ALTI_COOLDOWN_MS;
+      firstError = firstError || error;
+    }
+  }
+
+  // Re:Earth for international points, plus every FR point IGN could not
+  // serve (cooldown active, hard failure, or nodata positions).
+  const earthIndices = [];
+  for (let i = 0; i < points.length; i += 1) {
+    if (!results[i]) earthIndices.push(i);
+  }
+  for (let i = 0; i < earthIndices.length; i += UPSTREAM_CHUNK) {
+    const chunkIdx = earthIndices.slice(i, i + UPSTREAM_CHUNK);
+    const chunkPoints = chunkIdx.map((idx) => points[idx]);
+    let chunkResults = [];
+    try {
+      chunkResults = await fetchTerrainChunkWithRetry(chunkPoints);
+    } catch (error) {
+      firstError = firstError || error;
+    }
+    // Keep later chunks aligned even if a malformed upstream response omits
+    // trailing positions. The resolver will reject each null individually.
+    for (let j = 0; j < chunkIdx.length; j += 1)
+      results[chunkIdx[j]] = chunkResults[j] ?? null;
+  }
+
+  if (firstError && results.every((result) => result == null))
+    throw firstError;
+  return results;
+}
 export function terrainHeightsProxy() {
   const TTL_MS = 30 * 24 * 3600_000;
   const CACHE_DIR = path.join(process.cwd(), '.gev-cache');
@@ -32,7 +104,6 @@ export function terrainHeightsProxy() {
   // cause of "[terrain-heights-proxy] refresh incomplete" (owner incident
   // 2026-08-21). 64 points costs 5.6-12 s, inside the timeout at both ends of
   // that range.
-  const UPSTREAM_CHUNK = 64;
   const MAX_POINTS = 2000;
 
   /** @type {Map<string, {at:number, result:object}>} keyed by canonical 5dp lon/lat. */
@@ -106,42 +177,7 @@ export function terrainHeightsProxy() {
     }, 15_000).unref?.();
   }
 
-  /**
-   * Fetch all missing chunks sequentially, UPSTREAM_CHUNK points per call.
-   *
-   * The first try keeps its empirically required 30s timeout; network errors,
-   * 429, and 5xx receive up to three jittered retries sharing a 10s added-time
-   * budget, with Retry-After honored within that bound.
-   *
-   * A chunk that still fails yields nulls for its own positions rather than
-   * rejecting: with several chunks per request, throwing would discard every
-   * chunk that did resolve and re-fetch it on the next poll. The resolver
-   * caches the resolved positions and reports the null ones as omitted. Total
-   * failure (nothing resolved) still rejects, so the real upstream error
-   * reaches the caller instead of a generic omission count.
-   * @param {Array<[number, number]>} points
-   * @returns {Promise<Array<object>>}
-   */
-  async function fetchUpstreamAll(points) {
-    const results = [];
-    let firstError = null;
-    for (let i = 0; i < points.length; i += UPSTREAM_CHUNK) {
-      const chunk = points.slice(i, i + UPSTREAM_CHUNK);
-      let chunkResults = [];
-      try {
-        chunkResults = await fetchTerrainChunkWithRetry(chunk);
-      } catch (error) {
-        firstError = firstError || error;
-      }
-      // Keep later chunks aligned even if a malformed upstream response omits
-      // trailing positions. The resolver will reject each null individually.
-      for (let j = 0; j < chunk.length; j += 1)
-        results.push(chunkResults[j] ?? null);
-    }
-    if (firstError && results.every((result) => result == null))
-      throw firstError;
-    return results;
-  }
+/** Cooldown applied to the IGN path after a 429 or a hard failure. */
 
   /** Coalesce concurrent requests for the same canonical missing-point list. */
   function fetchMissingSingleFlight(points) {

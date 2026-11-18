@@ -150,3 +150,68 @@ test('military records hold the last track and speed when a poll omits them', ()
   assert.equal(parked.meta.speedMps, 0);
   assert.equal(parked.meta.track, 90);
 });
+
+test('military records derive track from fixes when courseDeg is omitted and contact moves', () => {
+  const records = store();
+  // First fix: no previous anchor, no course can be derived yet.
+  const first = records.receive(
+    observation({
+      courseDeg: null,
+      latitude: 0,
+      longitude: 0,
+      positionTimeMs: 1000,
+    }),
+    context(),
+  );
+  assert.equal(first.meta.track, 0); // no previous track, falls back to 0
+  assert.ok(Object.hasOwn(first.meta, 'courseAnchor'));
+
+  // Second fix: contact moved ~111 m east in 1 s at 10 m/s → track ≈ 90°.
+  const second = records.receive(
+    observation({
+      courseDeg: null,
+      latitude: 0,
+      longitude: 0.001,
+      positionTimeMs: 2000,
+      speedMps: 10,
+    }),
+    context(),
+  );
+  assert.ok(
+    second.meta.track > 80 && second.meta.track < 100,
+    `expected ~90°, got ${second.meta.track}`,
+  );
+});
+
+test('military records do not derive track when speed is below threshold', () => {
+  const records = store();
+  records.receive(
+    observation({
+      courseDeg: null,
+      latitude: 0,
+      longitude: 0,
+      positionTimeMs: 1000,
+    }),
+    context(),
+  );
+  const slow = records.receive(
+    observation({
+      courseDeg: null,
+      latitude: 0,
+      longitude: 0.001,
+      positionTimeMs: 2000,
+      speedMps: 1,
+    }),
+    context(),
+  );
+  assert.equal(slow.meta.track, 0); // falls back to default
+});
+
+test('military records hold reported courseDeg when available', () => {
+  const records = store();
+  const first = records.receive(
+    observation({ courseDeg: 45, latitude: 0, longitude: 0, positionTimeMs: 1000 }),
+    context(),
+  );
+  assert.equal(first.meta.track, 45);
+});

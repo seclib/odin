@@ -27,7 +27,14 @@ test('no browser-built module imports a Node core module', () => {
   for (const file of browserModules()) {
     const source = readFileSync(file, 'utf8');
     // Static `from 'node:fs'` and dynamic `import('node:fs')`, quoted either way.
-    if (/\bfrom\s*['"]node:|\bimport\s*\(\s*(?:\/\*[^*]*\*\/\s*)?['"]node:/.test(source)) {
+    // JSDoc type-only references such as `@param {import('node:...')}` are not
+    // runtime imports: strip comment lines before scanning so they are not
+    // reported as browser-breaking dependencies.
+    const code = source
+      .split('\n')
+      .filter((line) => !/^\s*\*/.test(line) && !/^\s*\/\//.test(line))
+      .join('\n');
+    if (/\bfrom\s*['"]node:|\bimport\s*\(\s*(?:\/\*[^*]*\*\/\s*)?['"]node:/.test(code)) {
       offenders.push(path.relative(SRC_ROOT, file).split(path.sep).join('/'));
     }
   }

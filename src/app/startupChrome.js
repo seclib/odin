@@ -8,6 +8,8 @@ export function startApplicationChrome({
   signal,
   initializeWelcome = initFirstRunExperience,
   initializeSettings,
+  initializeLocalData,
+  initializeGeneralSettings,
 }) {
   let disposed = false;
   let firstRun;
@@ -38,9 +40,31 @@ export function startApplicationChrome({
   const keySetup = Promise.resolve(
     signal.aborted ? null : initializeSettings?.({ signal }),
   );
-  // Own the pending initializer too; it must not reveal a dialog after abort.
+  const localData = Promise.resolve(
+    signal.aborted ? null : initializeLocalData?.({ signal }),
+  );
+  // Keep the bottom POWER UP chip hidden: Providers is now managed inside Settings.
+  void keySetup
+    .then((handle) => {
+      if (disposed || signal.aborted) return;
+      const chip = document.getElementById('key-setup-chip');
+      if (chip) chip.style.display = 'none';
+    })
+    .catch(() => {});
+  // General settings are opened from the top dock; local data is one rubrique
+  // inside them, independent of the optional server-backed storage panel.
+  const generalSettings = Promise.resolve(
+    signal.aborted ? null : initializeGeneralSettings?.({ signal }),
+  );
+  // Own the pending initializers too; they must not reveal dialogs after abort.
   void keySetup.catch(() =>
     console.error('Provider settings initialization failed'),
+  );
+  void localData.catch(() =>
+    console.error('Local data settings initialization failed'),
+  );
+  void generalSettings.catch(() =>
+    console.error('General settings initialization failed'),
   );
   return async () => {
     disposed = true;
@@ -50,5 +74,7 @@ export function startApplicationChrome({
     loadingScreen.removeEventListener('transitionend', revealFirstRun);
     firstRun?.destroy();
     (await keySetup.catch(() => null))?.destroy();
+    (await localData.catch(() => null))?.destroy();
+    (await generalSettings.catch(() => null))?.destroy();
   };
 }

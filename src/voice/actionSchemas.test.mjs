@@ -38,7 +38,14 @@ test('the complete Realtime tool payload pins the manifest-generated layer relea
     // requested radius and center authority in descriptions only.
     // Street Level and GNSS extend the manifest; tracked and analyst aircraft describe broadcasts.
     // Air quality (ECCC AQHI) extends the manifest.
-    '775ba323384b4c1b62fb8415bac52aecc3fc668e20bedcfa57e426dcd1da3969',
+    // Re-derived after `carto-dark` joined set_map_stack.stack.enum at HEAD.
+    // Re-derived again after the geospatial programme added the IGN France and
+    // OpenFreeMap basemaps (plan-ign, ortho-ign, bd-ortho, openfreemap,
+    // lidar-shade) to set_map_stack.stack.enum — the enum must equal the
+    // live MAP_STACKS set, so both pins advance together.
+    // Re-derived a third time after `local-buildings` joined the voice toggle
+    // enums (the manifest test keeps them equal to the catalog).
+    '8f7d4f8b315527a7bc690cae4a54622c007665d056e71b0fd138942ee67ee7a5',
   );
 });
 
@@ -141,7 +148,11 @@ test('all legacy action arguments are byte-identical after removing the delibera
   // Derived by applying the same removals to the 4b56d0e9 actionSchemas.
   assert.equal(
     createHash('sha256').update(JSON.stringify(legacy)).digest('hex'),
-    '01f14fdb1523eebfcbff8b115e48e6ab99e36fa06f55a3bb13c65e198f79d758',
+    // Re-derived after `carto-dark` joined set_map_stack.stack.enum at HEAD.
+    // Re-derived again after the geospatial programme extended the enum the
+    // same way (IGN + OpenFreeMap basemaps; legacy arguments must stay
+    // byte-identical, so the pin moves with the deliberate enum additions).
+    'a595ad3056ad3023ad9eacf00d23454b13f9f24174746b90e1bb82588428db51',
   );
 });
 

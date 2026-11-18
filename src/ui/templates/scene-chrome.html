@@ -22,22 +22,12 @@
 <div id="title-bar">
   <div class="title-glow"></div>
   <h1>
-    <span
-      class="title-logo brand-logo"
-      data-logo-gaze
-      data-logo-src="/logo.svg"
-      aria-hidden="true"
+    <span class="title-logo brand-logo" aria-hidden="true"
       ><img src="/logo.svg" alt=""
     /></span>
     <span translate="no">ODIN</span>
   </h1>
   <p class="subtitle" data-i18n>NO PLACE LEFT BEHIND</p>
-</div>
-
-<!-- Style indicator -->
-<div id="style-indicator">
-  <span class="indicator-label" data-i18n>ACTIVE STYLE</span>
-  <span class="indicator-value" id="active-style-name" data-i18n>NORMAL</span>
 </div>
 
 <!-- Top-center camera and share actions -->
@@ -100,7 +90,35 @@
   >
     <span class="material-symbols-outlined" aria-hidden="true">public</span>
   </button>
+  <button
+    id="settings-btn"
+    type="button"
+    aria-label="General settings"
+    aria-pressed="false"
+    title="General settings"
+    data-i18n-aria-label
+    data-i18n-title
+  >
+    <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+  </button>
+  <div id="locale-picker"></div>
 </nav>
+
+<!-- General settings — opened by the gear in the top dock. Local data is a
+     rubrique here, never an independent dock icon. -->
+<aside id="general-settings" role="dialog" aria-modal="false" aria-labelledby="general-settings-title" hidden>
+  <header class="gs-header">
+    <span class="gs-kicker" data-i18n>GROUND STATION · SETTINGS</span>
+    <h2 id="general-settings-title" data-i18n>General settings</h2>
+    <button type="button" class="gs-close" data-role="close" aria-label="Close settings" data-i18n-aria-label>
+      <span class="material-symbols-outlined" aria-hidden="true">close</span>
+    </button>
+  </header>
+  <div class="gs-body">
+    <nav class="gs-nav" data-role="rubriques" aria-label="Settings sections" data-i18n-aria-label></nav>
+    <div class="gs-content" data-role="content"></div>
+  </div>
+</aside>
 <div
   id="global-loading-status"
   role="status"

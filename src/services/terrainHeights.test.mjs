@@ -169,3 +169,82 @@ test('an out-of-range cache bound falls back to the default instead of disabling
     );
   }
 });
+
+test('IGN RGE ALTI results are converted with the geoid and count as real heights', async () => {
+  const { ensureGeoidReady, geoidHeight } = await import('../data/geoid.js');
+  await ensureGeoidReady();
+  const terrain = createTerrainHeights({
+    source: {
+      async getHeights(chunk) {
+        return chunk.map(() => ({
+          heightOrthometric: 50,
+          source: 'ign-rge-alti',
+          verticalDatum: 'NGF-IGN69',
+        }));
+      },
+    },
+  });
+  const [entry] = await terrain.resolveEllipsoidalGround([
+    { lat: 0, lon: 0.001 },
+  ]);
+  assert.equal(entry.source, 'ign-rge-alti');
+  assert.ok(Number.isFinite(entry.ellipsoid));
+  const expected = 50 + geoidHeight(0, 0.001);
+  assert.ok(
+    Math.abs(entry.ellipsoid - expected) < 1e-9,
+    'h = H_ortho + geoid undulation',
+  );
+  // The floor path treats IGN as real, not as a fallback
+  assert.equal(
+    terrain.cachedRealEllipsoidalGround(0, 0.001),
+    entry.ellipsoid,
+  );
+});
+
+test('mixed batch: IGN rows and Re:Earth rows keep their own sources', async () => {
+  const terrain = createTerrainHeights({
+    source: {
+      async getHeights(chunk) {
+        return chunk.map((item) =>
+          item.lon < 1
+            ? {
+                heightOrthometric: 123,
+                source: 'ign-rge-alti',
+                verticalDatum: 'NGF-IGN69',
+              }
+            : { ellipsoid: 4567 },
+        );
+      },
+    },
+  });
+  const out = await terrain.resolveEllipsoidalGround([
+    { lat: 0, lon: 0.001 },
+    { lat: 0, lon: 1.001 },
+  ]);
+  assert.equal(out[0].source, 'ign-rge-alti');
+  assert.equal(out[1].source, 'reearth');
+  assert.equal(out[1].ellipsoid, 4567);
+  assert.equal(terrain.cachedRealEllipsoidalGround(0, 1.001), 4567);
+});
+
+test('an upstream IGN gap (null) marks the row as upstream omission: geoid fallback, never zero', async () => {
+  let calls = 0;
+  const terrain = createTerrainHeights({
+    source: {
+      async getHeights(chunk) {
+        calls += 1;
+        return chunk.map(() => null);
+      },
+    },
+  });
+  const [a] = await terrain.resolveEllipsoidalGround([
+    { lat: 0, lon: 0.002 },
+  ]);
+  // A null row makes fetchChunk throw; the chunk's fallback is the geoid,
+  // which is a real conversion but NOT a measurement — so `source` must be
+  // 'geoid-fallback', never 'ign-rge-alti' nor 'reearth'.
+  assert.equal(a.source, 'geoid-fallback');
+  assert.ok(Number.isFinite(a.ellipsoid));
+  assert.notEqual(a.ellipsoid, 0);
+  assert.equal(calls, 1);
+});

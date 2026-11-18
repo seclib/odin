@@ -23,6 +23,8 @@
 @import './src/ui/styles/voice-card.css';
 @import './src/ui/styles/first-run.css';
 @import './src/ui/styles/provider-settings.css';
+@import './src/ui/styles/local-data.css';
+@import './src/ui/styles/local-data-hub.css';
 @import './src/ui/styles/locale-picker.css';
 
 @import './src/ui/styles/weather.css';

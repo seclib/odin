@@ -39,9 +39,8 @@ const TARGETS = [
 /** Fit the logo inside `size * inset` and centre it on an opaque square. */
 async function render(svg, { size, inset }) {
   const box = Math.round(size * inset);
-  // The logo's viewBox is wider than it is tall, so `contain` bounds it by
-  // width and leaves the vertical padding uneven — centring is done by the
-  // composite below rather than by the resize.
+  // The logo is square; `contain` fits it to the box and the composite centres
+  // it regardless of any residual viewBox asymmetry.
   const mark = await sharp(svg, { density: 384 })
     .resize(box, box, {
       fit: 'contain',

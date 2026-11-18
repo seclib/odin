@@ -363,14 +363,8 @@ for (const fixture of LAYERS) {
       now += 1000;
       viewer.tileset.tilesLoaded = true;
       ownsVisual = fixture.driveFleetModel({ icao24, position, course: 92 });
-      assert.equal(ownsVisual, false, 'the miss backoff remains in force before two seconds');
-      assert.equal(sampleCalls, 0, 'backoff prevents an early synchronous sample');
-      assert.ok(model.show || billboard.show, 'backoff still leaves a visible owner');
-
-      now += 1500;
-      ownsVisual = fixture.driveFleetModel({ icao24, position, course: 92 });
-      assert.equal(ownsVisual, true, 'the model takes over after a valid terrain sample');
-      assert.equal(sampleCalls, 1, 'the settled terrain is sampled exactly once');
+      assert.equal(ownsVisual, true, 'the model takes over once tiles settle (no backoff from streaming)');
+      assert.equal(sampleCalls, 1, 'the settled terrain is sampled immediately');
       assert.equal(model.show, true);
       assert.equal(billboard.show, false);
       assert.ok(model.show || billboard.show, 'successful handoff keeps a visible owner');
@@ -637,14 +631,14 @@ for (const fixture of LAYERS) {
       viewer.tileset.tilesLoaded = true;
       sampledHeight = 187.5;
       fixture.driveTrackedModel();
-      assert.equal(sampleCalls, 0, 'the tracked path honors the same retry backoff before sampling');
-      assert.equal(model.show, false, 'retry backoff keeps the unplaced primitive hidden');
+      assert.equal(sampleCalls, 1, 'the settled terrain is sampled immediately');
+      assert.equal(model.show, false, 'terrain alone does not reveal an unready model');
       assert.equal(fixture.trackedBillboardColor().alpha, 1,
-        'retry backoff leaves the tracked billboard opaque');
+        'the billboard retains ownership until GPU readiness too');
 
       now += 1500;
       fixture.driveTrackedModel();
-      assert.equal(sampleCalls, 1, 'the first settled turn samples once');
+      assert.equal(sampleCalls, 1, 'no additional sample on a settled tile');
       assert.equal(model.show, false, 'terrain alone does not reveal an unready model');
       assert.equal(fixture.trackedBillboardColor().alpha, 1,
         'the billboard retains ownership until GPU readiness too');

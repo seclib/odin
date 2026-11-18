@@ -28,6 +28,7 @@ import { openAiRealtimeProxy } from './openai.js';
 import { googlePlacesContextProxy } from './places.js';
 import { mapillaryProxy } from './mapillary.js';
 import { keySetupEndpoint } from '../standalone/key-setup.js';
+import { localDataEndpoint } from '../standalone/local-data.js';
 import { weatherProxy } from './weather.js';
 import { firePerimetersProxy } from './firePerimeters.js';
 import { gnssIntegrityProxy } from './gnssIntegrity.js';
@@ -72,6 +73,7 @@ function localProviderPlugins({ realtime } = {}) {
     firePerimetersProxy(),
     gnssIntegrityProxy(),
     keySetupEndpoint(),
+    localDataEndpoint(),
   ];
 }
 

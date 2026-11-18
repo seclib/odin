@@ -44,4 +44,39 @@ export const MAP_STACKS = [
     kind: 'carto-dark',
     requiresIon: false,
   },
+  {
+    id: 'plan-ign',
+    label: 'Plan IGN', // i18n-ignore: imagery product name (French national map)
+    shortLabel: 'IGN',
+    kind: 'ign-plan',
+    requiresIon: false,
+  },
+  {
+    id: 'ortho-ign',
+    label: 'Ortho IGN', // i18n-ignore: imagery product name (French national imagery)
+    shortLabel: 'ORTHO',
+    kind: 'ign-ortho-hr',
+    requiresIon: false,
+  },
+  {
+    id: 'bd-ortho',
+    label: 'BD ORTHO 50 cm', // i18n-ignore: imagery product name
+    shortLabel: 'BDO',
+    kind: 'ign-bd-ortho',
+    requiresIon: false,
+  },
+  {
+    id: 'openfreemap',
+    label: 'OFM Exp.', // i18n-ignore: OpenFreeMap product name, marks experimental
+    shortLabel: 'OFM',
+    kind: 'openfreemap',
+    requiresIon: false,
+  },
+  {
+    id: 'lidar-shade',
+    label: 'LiDAR HD relief', // i18n-ignore: IGN LiDAR product name
+    shortLabel: 'RELIEF',
+    kind: 'ign-lidar-hillshade',
+    requiresIon: false,
+  },
 ];

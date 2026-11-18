@@ -995,10 +995,19 @@ test('the voice TOOL SCHEMA matches the pinned contract — the mission mapping 
   // list descriptions; the missions still ride existing tools.
   // Street Level and GNSS extend the manifest; broadcast caveats describe tracked and analyst aircraft.
   // Air quality (ECCC AQHI) extends the manifest.
-  assert.equal(block.length, 30655, 'serialized tool schema length drifted');
+  // Pins re-derived after `carto-dark` joined the set_map_stack enum at HEAD
+  // (0897a63): +13 serialized chars ("carto-dark" + comma). The enumeration is
+  // a legitimate ODIN map-stack, kept in the manifest and in tool schemas.
+  // Pins re-derived again after the geospatial programme added the IGN France
+  // + OpenFreeMap stacks to the same enum (plan-ign, ortho-ign, bd-ortho,
+  // openfreemap, lidar-shade) — +62 chars. Legitimate basemaps, kept.
+  // Pins re-derived a third time after `local-buildings` joined the voice
+  // toggle enums (set_layer_visibility + show_data_layers_menu) — +76 chars.
+  // Legitimate ODIN layer, kept.
+  assert.equal(block.length, 30806, 'serialized tool schema length drifted');
   assert.equal(
     crypto.createHash('sha256').update(block).digest('hex'),
-    '3b1d5e77c10a92f6543a4f9d1ff1870101a0306b65e5b8a6113111c81eda371e',
+    '0a5bf462a2f9613f74612ac14ed4f97042b2bb5e2d7b3a64a0b7bffe35400a5e',
     'the first-run missions must ride EXISTING tools: no schema edit, no cache bust',
   );
   const instructions = fs.readFileSync(

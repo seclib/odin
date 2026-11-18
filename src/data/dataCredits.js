@@ -373,7 +373,24 @@ export const DATA_CREDITS = [
     html:
       'Terrain (keyless globe stacks): ' +
       '<a href="https://terrain.reearth.land" target="_blank" rel="noopener">Re:Earth Terrain</a> / ' +
-      'Mapterhorn (CC BY 4.0) / EGM2008 (NGA)',
+      'Mapterhorn (CC BY 4.0) / ' +
+      '<a href="https://protomaps.com/" target="_blank" rel="noopener">Protomaps</a> / ' +
+      // OSM stays a plain-text credit here: the registered `openstreetmap`
+      // credit already carries the canonical copyright link the app shows.
+      '© OpenStreetMap contributors / EGM2008 (NGA)',
+  },
+  {
+    key: 'ign-imagery',
+    html:
+      'French map imagery (selectable basemaps): ' +
+      '<a href="https://geoservices.ign.fr" target="_blank" rel="noopener">IGN</a> — Géoplateforme (Licence Ouverte 2.0)',
+  },
+  {
+    key: 'ign-altimetry',
+    html:
+      'French territories DEM (heights): ' +
+      '<a href="https://geoservices.ign.fr/rgealti" target="_blank" rel="noopener">IGN — RGE ALTI®</a> ' +
+      '(Licence Ouverte 2.0) / Geoplateforme altimetry API',
   },
   {
     key: 'weather-noaa',
@@ -528,7 +545,7 @@ export const BHOTE_KOSHI_CREDIT = {
     'Bhote Koshi 2026 event imagery and derived reconstruction: ' +
     '<a href="https://vantor.com/company/open-data-program" target="_blank" rel="noopener">Vantor Open Data</a> ' +
     'and <a href="https://github.com/geo-pera/bhotekoshi-2026-reconstruction" target="_blank" rel="noopener">GeoPera</a> ' +
-    '(CC BY-NC 4.0); terrain © Re:Earth / Mapterhorn (CC BY 4.0)',
+    '(CC BY-NC 4.0); terrain © Re:Earth / Mapterhorn (CC BY 4.0), Protomaps, © OpenStreetMap contributors',
 };
 
 /** Registered when the scene-friendly Nepal incident locator activates. */

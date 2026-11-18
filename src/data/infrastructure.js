@@ -22,7 +22,10 @@ export function createInfrastructureLayers(services) {
       labelMax: 700,
       labelGridPx: 138,
     },
-    services,
+    {
+      ...services,
+      performanceManager: services?.performanceManager,
+    },
   );
 
   const dams = createLocalGeoJsonLayer(
@@ -38,7 +41,10 @@ export function createInfrastructureLayers(services) {
       labelMax: 900,
       labelGridPx: 132,
     },
-    services,
+    {
+      ...services,
+      performanceManager: services?.performanceManager,
+    },
   );
 
   return [datacenters, dams];

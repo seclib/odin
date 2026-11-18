@@ -24,6 +24,70 @@ import {
 
 const DEFAULT_PROVIDER_ID = 'keyless';
 const DEFAULT_FALLBACK_ENABLED = true;
+const DEFAULT_PARTIAL_FALLBACK_ENABLED = true;
+const GEOID_FALLBACK_COOLDOWN_MS = 60_000;
+
+/** États possibles d'un provider. */
+const _ProviderState = 'active' | 'in_cooldown' | 'fallback' | 'idle';
+
+/** Mappe des IDs provider en cours de refroidissement avec leur temps d'expiration. */
+const _providerCooldowns = new Map();
+
+/** Nombre d'échecs consécutifs par provider ID. */
+const _providerFailureCount = new Map();
+
+/** Provider actif actuel. */
+let _activeProvider = null;
+
+/**
+ * Vérifie l'état du provider et gère le transition de refroidissement.
+ * @param {string} providerId ID du provider à vérifier
+ * @returns {{state: _ProviderState, provider: object|null, shouldRetry: boolean}}
+ */
+function _checkProviderState(providerId) {
+  const expiry = _providerCooldowns.get(providerId);
+  const now = Date.now();
+
+  if (expiry && now < expiry) {
+    // Provider en période de refroidissement
+    return {
+      state: 'in_cooldown',
+      provider: _activeProvider,
+      shouldRetry: false,
+    };
+  }
+
+  // Refroidissement écoulé — nettoyer et permettre le retry
+  if (expiry) {
+    _providerCooldowns.delete(providerId);
+    _providerFailureCount.delete(providerId);
+    if (_activeProvider && _activeProvider.id === providerId) {
+      _activeProvider = null;
+    }
+  }
+
+  return {
+    state: 'active',
+    provider: _activeProvider,
+    shouldRetry: true,
+  };
+}
+
+/**
+ * Démarre la période de refroidissement pour un provider après échec.
+ * @param {string} providerId ID du provider
+ * @param {number} [durationMs=GEOID_FALLBACK_COOLDOWN_MS] durée en ms
+ */
+function _startProviderCooldown(providerId, durationMs = GEOID_FALLBACK_COOLDOWN_MS) {
+  _providerCooldowns.set(providerId, Date.now() + durationMs);
+  _providerFailureCount.set(
+    providerId,
+    (_providerFailureCount.get(providerId) || 0) + 1,
+  );
+}
+
+/**
+ * Résout le fournisseur par défaut en fonction des identifiants disponibles,
 
 /**
  * Résout le fournisseur par défaut en fonction des identifiants disponibles,
@@ -41,7 +105,150 @@ function resolveDefaultProviderId({ cesiumToken, googleApiKey } = {}) {
 }
 
 /**
- * Crée un Terrain Engine lié à une scène Cesium.
+ * Crée un provider avec gestion du refroidissement et fallback progressif.
+ * Essaie d'abord le provider demandé, puis fallback progressif si nécessaire.
+ * @param {string} requestedId ID du provider demandé
+ * @param {object} [options] Options de création de provider
+ * @returns {{state: _ProviderState, provider: object|null, fallbackUsed: boolean, partialDataPreserved: boolean}}
+ */
+function _getProviderWithFallback(requestedId, options = {}) {
+  // Vérifier d'abord l'état du provider demandé
+  const stateCheck = _checkProviderState(requestedId);
+  if (stateCheck.state === 'active' && stateCheck.provider) {
+    return {
+      state: 'active',
+      provider: stateCheck.provider,
+      fallbackUsed: false,
+      partialDataPreserved: true,
+    };
+  }
+
+  // Provider en cooldown ou absent — essayer le provider de fallback
+  const fallbackId =
+    requestedId === 'world' ? 'keyless' : requestedId === 'keyless' ? 'world' : null;
+
+  if (fallbackId) {
+    const fallbackState = _checkProviderState(fallbackId);
+    if (fallbackState.state === 'active' && fallbackState.provider) {
+      // Marquer que le fallback a été utilisé
+      _startProviderCooldown(requestedId); // Cooldown pour le provider demandé
+      // Avec DEFAULT_PARTIAL_FALLBACK_ENABLED, préserver les données valides
+      const preserved = DEFAULT_PARTIAL_FALLBACK_ENABLED ? true : false;
+      return {
+        state: 'fallback',
+        provider: fallbackState.provider,
+        fallbackUsed: true,
+        partialDataPreserved: preserved,
+      };
+    }
+  }
+
+  // Aucun provider disponible — essayer de créer un nouveau
+  const result = _createProviderInternal(requestedId, options);
+  if (result.provider) {
+    _activeProvider = result.provider;
+    return {
+      state: 'active',
+      provider: result.provider,
+      fallbackUsed: false,
+      partialDataPreserved: true,
+    };
+  }
+
+  // Échec total — marquer cooldown et retourner null
+  _startProviderCooldown(requestedId);
+  return {
+    state: 'idle',
+    provider: null,
+    fallbackUsed: false,
+    partialDataPreserved: false,
+  };
+}
+
+/**
+ * Crée un provider interne avec gestion d'erreur.
+ * @param {string} id ID du provider ('world' | 'keyless')
+ * @param {object} options Options
+ * @returns {{provider: object|null, success: boolean}}
+ * @private
+ */
+function _createProviderInternal(id, options) {
+  try {
+    if (id === 'world') {
+      const cesiumToken = options?.cesiumToken || '';
+      if (!String(cesiumToken).trim()) {
+        console.warn('Terrain engine: Cesium ion token manquant pour provider "world"');
+        return { provider: null, success: false };
+      }
+      return {
+        provider: {
+          id: 'world',
+          type: 'cesium-world',
+          supports3D: true,
+          supportsExaggeration: true,
+        },
+        success: true,
+      };
+    } else if (id === 'keyless') {
+      return {
+        provider: {
+          id: 'keyless',
+          type: 'cesium-keyless',
+          supports3D: true,
+          supportsExaggeration: false,
+        },
+        success: true,
+      };
+    }
+    return { provider: null, success: false };
+  } catch (error) {
+    console.error('Erreur creation provider terrain:', error);
+    return { provider: null, success: false };
+  }
+}
+
+/**
+ * Retourne l'état courant du provider actif.
+ * @returns {{state: _ProviderState, provider: object|null}}
+ */
+function getProviderState() {
+  return _checkProviderState(_activeProvider?.id || 'keyless');
+}
+
+/**
+ * Définit le provider actif (appelé internalement après création réussie).
+ * @param {object} provider Provider à définir comme actif
+ */
+function _setActiveProvider(provider) {
+  _activeProvider = provider;
+}
+
+/**
+ * Détruit le provider actif et nettoie les références.
+ */
+function _destroyActiveProvider() {
+  _activeProvider = null;
+  _providerCooldowns.clear();
+  _providerFailureCount.clear();
+}
+
+/**
+ * Retourne la configuration courante de l'engine terrain.
+ * @returns {{providerId: string, providerState: _ProviderState, fallbackEnabled: boolean, failureCount: number, partialFallbackEnabled: boolean}}
+ */
+function getConfig() {
+  const state = getProviderState();
+  return {
+    providerId: _activeProvider?.id || 'keyless',
+    providerState: state.state,
+    fallbackEnabled: DEFAULT_FALLBACK_ENABLED,
+    failureCount: _providerFailureCount.get(_activeProvider?.id || 'keyless') || 0,
+    partialFallbackEnabled: DEFAULT_PARTIAL_FALLBACK_ENABLED,
+  };
+}
+
+/**
+ * Résout le fournisseur par défaut en fonction des identifiants disponibles,
  *
  * Les factories de fournisseurs (`createWorldTerrain`, `createKeylessTerrain`)
  * sont injectables pour les tests ; par défaut elles sont importées de
@@ -125,6 +332,10 @@ export function createTerrainEngine({
    */
   async function createProvider(id = _providerId, { signal } = {}) {
     const requestedId = id || _providerId;
+    
+    // Vérifier l'état du provider avant création
+    const stateBefore = _checkProviderState(requestedId);
+    
     let result;
 
     if (requestedId === 'world') {
@@ -141,14 +352,20 @@ export function createTerrainEngine({
       result = await createKeylessTerrain();
     }
 
+    // Mise à jour de l'état du provider
     const entry = {
       provider: result.provider,
       fallback: Boolean(result.fallback),
       id: requestedId,
     };
-    _destroyActive();
-    _active = entry;
+    _setActiveProvider(entry);
     _providerId = requestedId;
+    
+    // En cas d'échec, démarrer le cooldown
+    if (!result.provider) {
+      _startProviderCooldown(requestedId);
+    }
+    
     return entry;
   }
 

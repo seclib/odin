@@ -78,7 +78,20 @@ export const CABLE_LABEL_DEPTH_DECISION = Object.freeze({
  */
 
 export const CABLE_GLOBE_STACK_IDS = Object.freeze(
-  new Set(['bing-aerial', 'bing-labels', 'esri-imagery', 'osm']),
+  new Set([
+    'bing-aerial',
+    'bing-labels',
+    'esri-imagery',
+    'osm',
+    'carto-dark',
+    // IGN France basemaps + OpenFreeMap experimental (Phase C) — all render on
+    // the SHOWN Cesium globe like the existing globe stacks.
+    'plan-ign',
+    'ortho-ign',
+    'bd-ortho',
+    'lidar-shade',
+    'openfreemap',
+  ]),
 );
 
 /** EntityCluster's private marker collections and their required types. */

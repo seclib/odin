@@ -46,6 +46,9 @@ export const filterArea = defineTool({
     additionalProperties: false,
     required: ['area'],
   },
+  // Pure local filter: `features` come from the caller and `area` is either a
+  // bbox/coordinate or resolved from the optional `places` service. No service
+  // is mandatory — the tool works with `services: {}` (see filter_area.test.mjs).
   requires: [],
   async run(args, { services, signal }) {
     if (!args.area) {
@@ -100,8 +103,8 @@ export const filterArea = defineTool({
     }
 
     // Build summary
-    const noun = limited.rows.length <= 1 ? 'entité' : 'entités';
-    const summary = `${limited.rows.length} ${noun} à l'intérieur de ${resolvedArea.label}${
+    const resultNoun = limited.rows.length <= 1 ? 'entité' : 'entités';
+    const summary = `${limited.rows.length} ${resultNoun} à l'intérieur de ${resolvedArea.label}${
       limited.truncated ? ` (sur ${limited.total} trouvées)` : '.'
     }`;
 

@@ -61,7 +61,9 @@ export function createDefaultPlaceSearch({
                 );
               },
             }),
-            createPhotonGeocoder({ fetchImpl, endpoint: endpoints.photon }),
+            ...(endpoints.photon === null
+              ? []
+              : [createPhotonGeocoder({ fetchImpl, endpoint: endpoints.photon })]),
             // Last resort: the local Nominatim route, which answers with no key when
             // neither of the two above did. It speaks the same result shape, so it
             // rides the existing Google adapter rather than needing its own.

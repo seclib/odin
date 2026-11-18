@@ -21,6 +21,7 @@ export const {
   meshFloorPreferred,
   reportMeshFloorCell,
   meshFloorSampleWithinPrior,
+  meshFloorPriorReady,
   reportValidatedMeshFloorCell,
   cachedMeshFloor,
   _clearMeshFloorCellsForTest,

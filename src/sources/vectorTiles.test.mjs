@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createVectorTileSource } from './vectorTiles.js';
+import {
+  createVectorTileSource,
+  nextTask,
+  createSharedDecodedTileCache,
+} from './vectorTiles.js';
 const meta = { tiles: ['https://tiles.example/{z}/{x}/{y}.pbf'] };
 const box = { south: 30.267, north: 30.268, west: -97.744, east: -97.743 };
 const options = {
@@ -244,4 +248,108 @@ test('an explicit allowedOrigin still wins over the one derived from tileJsonUrl
     (await source.getMetadata()).template,
     'https://tiles.example/planet/{z}/{x}/{y}.pbf',
   );
+});
+
+test('nextTask yields control and resolves', async () => {
+  let ran = false;
+  await nextTask().then(() => { ran = true; });
+  assert.equal(ran, true);
+});
+
+test('nextTask falls back to setTimeout when scheduler is unavailable', async () => {
+  const original = globalThis.scheduler;
+  try {
+    delete globalThis.scheduler;
+    let resolved = false;
+    await nextTask().then(() => { resolved = true; });
+    assert.equal(resolved, true);
+  } finally {
+    globalThis.scheduler = original;
+  }
+});
+
+test('createSharedDecodedTileCache set/get/evict by entries', () => {
+  const cache = createSharedDecodedTileCache({ maxEntries: 2, maxCacheBytes: Infinity });
+  cache.set('a', { value: 1 }, 10);
+  cache.set('b', { value: 2 }, 10);
+  assert.deepEqual(cache.get('a'), { value: { value: 1 }, size: 10, released: false });
+  cache.set('c', { value: 3 }, 10);
+  // get('a) made 'a' most-recent; 'b' is evicted as LRU
+  assert.equal(cache.get('b'), null);
+  assert.deepEqual(cache.get('a'), { value: { value: 1 }, size: 10, released: false });
+  assert.deepEqual(cache.get('c'), { value: { value: 3 }, size: 10, released: false });
+});
+
+test('createSharedDecodedTileCache evicts by bytes', () => {
+  const cache = createSharedDecodedTileCache({ maxEntries: Infinity, maxCacheBytes: 25 });
+  cache.set('a', { value: 1 }, 10);
+  cache.set('b', { value: 2 }, 10);
+  cache.set('c', { value: 3 }, 10);
+  assert.equal(cache.get('a'), null);
+  assert.deepEqual(cache.get('b'), { value: { value: 2 }, size: 10, released: false });
+  assert.deepEqual(cache.get('c'), { value: { value: 3 }, size: 10, released: false });
+});
+
+test('createSharedDecodedTileCache load deduplicates concurrent loaders', async () => {
+  const cache = createSharedDecodedTileCache({ maxEntries: 10, maxCacheBytes: Infinity });
+  let calls = 0;
+  const p1 = cache.load('k', undefined, async () => { calls += 1; return { value: 'v', size: 5 }; });
+  const p2 = cache.load('k', undefined, async () => { calls += 1; return { value: 'v2', size: 5 }; });
+  const r1 = await p1;
+  const r2 = await p2;
+  assert.equal(calls, 1);
+  assert.deepEqual(r1, { value: 'v', size: 5, released: false });
+  assert.deepEqual(r2, { value: 'v', size: 5, released: false });
+});
+
+test('createSharedDecodedTileCache clear resets generation and aborts flights', () => {
+  const cache = createSharedDecodedTileCache({ maxEntries: 10, maxCacheBytes: Infinity });
+  cache.set('a', { value: 1 }, 10);
+  cache.clear();
+  assert.equal(cache.get('a'), null);
+});
+
+test('createVectorTileSource with sharedDecodedCache shares decoded tile across calls', async () => {
+  const sharedDecodedCache = createSharedDecodedTileCache({ maxEntries: 10, maxCacheBytes: Infinity });
+  const calls = [];
+  const source = createVectorTileSource({
+    template: 'https://tiles.example/{z}/{x}/{y}.pbf',
+    allowedOrigin: 'https://tiles.example',
+    decode: (bytes) => ({ roads: bytes.byteLength }),
+    sharedDecodedCache,
+    selectDecoded: (value) => ({ roads: value.roads }),
+    fetchImpl: async (url) => {
+      calls.push(url);
+      return new Response(new Uint8Array([1, 2, 3]));
+    },
+  });
+  const box = { south: 30, north: 30.001, west: -97.001, east: -97 };
+  const r1 = await source.fetchBounds(box, { zoom: 14 });
+  const r2 = await source.fetchBounds(box, { zoom: 14 });
+  assert.equal(calls.length, 1, 'only one fetch for the same tile');
+  assert.equal(r1.tiles[0].roads, 3);
+  assert.equal(r2.tiles[0].roads, 3);
+});
+
+test('createVectorTileSource with sharedDecodedCache yields nextTask between shared load and selection', async () => {
+  const sharedDecodedCache = createSharedDecodedTileCache({ maxEntries: 10, maxCacheBytes: Infinity });
+  let yielded = false;
+  const originalYield = globalThis.scheduler?.yield;
+  try {
+    globalThis.scheduler = { yield: () => { yielded = true; return Promise.resolve(); } };
+    const source = createVectorTileSource({
+      template: 'https://tiles.example/{z}/{x}/{y}.pbf',
+      allowedOrigin: 'https://tiles.example',
+      decode: (bytes) => ({ roads: bytes.byteLength }),
+      sharedDecodedCache,
+      selectDecoded: (value) => ({ roads: value.roads }),
+      fetchImpl: async () => new Response(new Uint8Array([1])),
+    });
+    const box = { south: 30, north: 30.001, west: -97.001, east: -97 };
+    await source.fetchBounds(box, { zoom: 14 });
+    assert.equal(yielded, true);
+  } finally {
+    if (originalYield) globalThis.scheduler = { yield: originalYield };
+    else delete globalThis.scheduler;
+  }
 });
