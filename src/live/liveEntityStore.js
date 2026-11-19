@@ -1,20 +1,25 @@
+import { normalizeLiveEntity, compareLiveEntities } from './liveEntity.js';
 
-import { normalizeLiveEntity, compareLiveEntities } from "./liveEntity.js";
-
-export function createLiveEntityStore({ now = Date.now, maxEntities = 5000, onError = null } = {}) {
+export function createLiveEntityStore({
+  now = Date.now,
+  maxEntities = 5000,
+  onError = null,
+} = {}) {
   const entities = new Map();
 
   function apply(raw, { now: nowOverride = now } = {}) {
     const entity = normalizeLiveEntity(raw, { now: nowOverride });
     if (!entity) {
-      if (typeof onError === "function") onError(new Error("invalid_live_entity"));
-      return { applied: false, reason: "invalid", entity: null };
+      if (typeof onError === 'function')
+        onError(new Error('invalid_live_entity'));
+      return { applied: false, reason: 'invalid', entity: null };
     }
 
     const previous = entities.get(entity.id);
     if (compareLiveEntities(previous, entity) < 0) {
-      if (typeof onError === "function") onError(new Error("stale_live_entity"));
-      return { applied: false, reason: "stale", entity, previous };
+      if (typeof onError === 'function')
+        onError(new Error('stale_live_entity'));
+      return { applied: false, reason: 'stale', entity, previous };
     }
 
     entities.set(entity.id, entity);

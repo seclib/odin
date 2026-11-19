@@ -60,7 +60,7 @@ export function createFlightState({ source, services }) {
    *  `layerState.js` and `this._models3dEnabled` in ui.js, or the DISPLAY rail would
    *  light a button the layer has not armed. */
 
-  flightState._models3dEnabled = true;
+  flightState._models3dEnabled = false;
 
   flightState._models3dMode = 'proximity';
   // 'proximity' = nearest MODEL_MAX in view; 'all' = every in-view plane (≤ MODEL_MAX_ALL)

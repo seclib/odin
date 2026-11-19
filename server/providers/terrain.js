@@ -53,7 +53,8 @@ async function fetchUpstreamAll(points) {
   // finer than Re:Earth there — 1 m vs 30–90 m).
   const ignIndices = [];
   for (let i = 0; i < points.length; i += 1) {
-    if (ignAltimetryZoneForPoint(points[i][0], points[i][1])) ignIndices.push(i);
+    if (ignAltimetryZoneForPoint(points[i][0], points[i][1]))
+      ignIndices.push(i);
   }
   if (ignIndices.length > 0 && Date.now() >= ignCooldownUntil) {
     try {
@@ -89,8 +90,7 @@ async function fetchUpstreamAll(points) {
       results[chunkIdx[j]] = chunkResults[j] ?? null;
   }
 
-  if (firstError && results.every((result) => result == null))
-    throw firstError;
+  if (firstError && results.every((result) => result == null)) throw firstError;
   return results;
 }
 export function terrainHeightsProxy() {
@@ -177,7 +177,7 @@ export function terrainHeightsProxy() {
     }, 15_000).unref?.();
   }
 
-/** Cooldown applied to the IGN path after a 429 or a hard failure. */
+  /** Cooldown applied to the IGN path after a 429 or a hard failure. */
 
   /** Coalesce concurrent requests for the same canonical missing-point list. */
   function fetchMissingSingleFlight(points) {

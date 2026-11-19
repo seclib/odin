@@ -1,4 +1,5 @@
 {
+  "CARTO basemaps require an API key from carto.com; anonymous tiles return placeholder images": "Los mapas base de CARTO requieren una clave de API de carto.com; las teselas anónimas devuelven imágenes de marcador de posición.",
   "General settings": "Ajustes generales",
   "GROUND STATION · SETTINGS": "GROUND STATION · AJUSTES",
   "Close settings": "Cerrar ajustes",
@@ -70,8 +71,6 @@
   "loading frames": "cargando fotogramas",
   "Language: {language}": "Idioma: {language}",
   "Change the interface language": "Cambiar el idioma de la interfaz",
-  "Interface language": "Idioma de la interfaz",
-  "Search languages": "Buscar idioma",
   "No matching languages": "No hay idiomas que coincidan",
   "Loading Google 3D Tiles...": "Cargando Google 3D Tiles...",
   "Loading the keyless globe...": "Cargando el globo sin clave...",
@@ -805,7 +804,6 @@
   "CAPTURE SHOT": "CAPTURAR PLANO",
   "UPDATE SHOT": "ACTUALIZAR PLANO",
   "START": "INICIAR",
-  "EXPORT PRESETS": "EXPORTAR PREAJUSTES",
   "IMPORT": "IMPORTAR",
   "RUN LOG": "REGISTRO DE EJECUCIÓN",
   "Starting live contacts…": "Iniciando contactos en vivo…",

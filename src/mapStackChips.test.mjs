@@ -126,6 +126,46 @@ const CONTROLLER_STACKS = [
     available: true,
     unavailableReason: null,
   },
+  {
+    id: 'plan-ign',
+    label: 'Plan IGN',
+    shortLabel: 'IGN',
+    requiresIon: false,
+    available: true,
+    unavailableReason: null,
+  },
+  {
+    id: 'ortho-ign',
+    label: 'Ortho IGN',
+    shortLabel: 'ORTHO',
+    requiresIon: false,
+    available: true,
+    unavailableReason: null,
+  },
+  {
+    id: 'bd-ortho',
+    label: 'BD ORTHO 50 cm',
+    shortLabel: 'BDO',
+    requiresIon: false,
+    available: true,
+    unavailableReason: null,
+  },
+  {
+    id: 'openfreemap',
+    label: 'OFM Exp.',
+    shortLabel: 'OFM',
+    requiresIon: false,
+    available: true,
+    unavailableReason: null,
+  },
+  {
+    id: 'lidar-shade',
+    label: 'LiDAR HD relief',
+    shortLabel: 'RELIEF',
+    requiresIon: false,
+    available: true,
+    unavailableReason: null,
+  },
 ];
 
 test('the row renders exactly the owner-approved sources', () => {
@@ -137,7 +177,19 @@ test('the row renders exactly the owner-approved sources', () => {
 
   assert.deepEqual(
     container.children.map((chip) => chip.dataset.stackId),
-    ['photoreal', 'bing-aerial', 'bing-labels', 'esri-imagery', 'osm', 'carto-dark'],
+    [
+      'photoreal',
+      'bing-aerial',
+      'bing-labels',
+      'esri-imagery',
+      'osm',
+      'carto-dark',
+      'plan-ign',
+      'ortho-ign',
+      'bd-ortho',
+      'openfreemap',
+      'lidar-shade',
+    ],
   );
   assert.deepEqual(container.children.map(chipText), [
     'Google 3D',
@@ -146,6 +198,11 @@ test('the row renders exactly the owner-approved sources', () => {
     'Esri Satellite',
     'OSM',
     'CARTO Dark',
+    'IGN',
+    'ORTHO',
+    'BDO',
+    'OFM',
+    'RELIEF',
   ]);
   assert.deepEqual(PRESENTED_MAP_STACK_IDS, [
     'photoreal',
@@ -154,6 +211,11 @@ test('the row renders exactly the owner-approved sources', () => {
     'esri-imagery',
     'osm',
     'carto-dark',
+    'plan-ign',
+    'ortho-ign',
+    'bd-ortho',
+    'openfreemap',
+    'lidar-shade',
   ]);
   assert.ok(
     container.children.every(
@@ -177,8 +239,22 @@ test('internal and future stacks stay outside the approved presentation set', ()
   ];
   renderMapStackChips(container, withHybrid, { activeId: 'photoreal', doc });
 
-  assert.equal(container.children.length, 6);
+  assert.equal(container.children.length, PRESENTED_MAP_STACK_IDS.length);
   assert.doesNotMatch(container.children.map(chipText).join(' '), /Hybrid/);
+});
+
+test('advanced stacks use short labels but keep the full name in the tooltip', () => {
+  const compact = mapStackChipModel(
+    CONTROLLER_STACKS.find((stack) => stack.id === 'bd-ortho'),
+    'bd-ortho',
+  );
+  assert.equal(compact.label, 'BDO');
+  assert.equal(compact.title, 'BD ORTHO 50 cm');
+  const primary = mapStackChipModel(
+    CONTROLLER_STACKS.find((stack) => stack.id === 'osm'),
+    'osm',
+  );
+  assert.equal(primary.label, 'OSM');
 });
 
 test('re-rendering replaces the previous chips instead of stacking a second row', () => {

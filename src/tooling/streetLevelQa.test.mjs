@@ -639,7 +639,7 @@ test('CI runs the gates hermetically against a production build, strict, with ev
   );
   assert.match(
     gate,
-    /MAPILLARY_CLIENT_TOKEN: 'MLY\|0\|qa-fixture'\s+run: \|\s+npx vite preview --port 4173 --strictPort/,
+    /MAPILLARY_CLIENT_TOKEN: 'MLY\|0\|qa-fixture'\s+run: \|\s+\.\/node_modules\/\.bin\/vite preview --host 127\.0\.0\.1 --port 4173 --strictPort/,
   );
   assert.doesNotMatch(gate, /npx vite --port/);
   assert.equal(

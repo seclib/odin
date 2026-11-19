@@ -5,8 +5,9 @@ export class AircraftDisplay {
       readDataManager,
       _layoutRightPanels: layout,
     });
-    // Both aircraft layers default to models enabled in proximity mode.
-    this._models3dEnabled = true;
+    // Clean first load: aircraft models stay off until the operator enables
+    // them; proximity remains the default mode when they do.
+    this._models3dEnabled = false;
     this._models3dMode = 'proximity';
     this._models3dModeBtns = [
       document.getElementById('models3d-mode-proximity'),

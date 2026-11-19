@@ -1,0 +1,72 @@
+- generic [active] [ref=e1]:
+  - region "Cibles visibles sur la carte" [ref=e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Actions du globe" [ref=e8]:
+    - button "Effacer les couches de données sélectionnées" [ref=e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e10]: layers_clear
+    - button "Copier le lien de partage" [ref=e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e12]: 🔗
+    - button "Remettre la carte en vue verticale" [pressed] [ref=e158] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e14]: view_in_ar
+    - 'button "Réorienter la carte nord en haut. Orientation actuelle : 15 degrés" [ref=e159] [cursor=pointer]':
+      - generic [aria-hidden] [ref=e16]: "N"
+      - generic [aria-hidden] [ref=e17]: navigation
+    - button "Revenir à la vue du globe entier" [ref=e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e19]: public
+    - button "Paramètres généraux" [ref=e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e21]: settings
+    - 'button "Langue : Français" [ref=e71] [cursor=pointer]':
+      - generic [aria-hidden] [ref=e76]: FR
+  - generic: synchro du réseau routier
+  - generic:
+    - generic: chargement des images
+    - generic: 0/0
+  - navigation "Sélecteur de vue"
+  - generic "Commandes de navigation, de voix et de préréglages visuels" [ref=e27]:
+    - button "Développer LIEU" [ref=e36] [cursor=pointer]:
+      - generic [ref=e37]: LIEU
+    - generic [ref=e79]:
+      - generic [ref=e80]:
+        - generic [ref=e81]: "OFF"
+        - generic [ref=e82]:
+          - button "STD" [ref=e83] [cursor=pointer]
+          - generic "Coût estimé de la session sur gpt-realtime-2 — 0 réponse(s). Alerte à ~$2.00, fin de session à ~$5.00." [ref=e84]: ~$0.00
+      - button "Commande vocale — activer/désactiver ; maintenez Space pour parler" [ref=e85] [cursor=pointer]:
+        - generic [ref=e87]: ON/OFF
+      - generic [ref=e104]: VOIX EN VEILLE
+    - button "Développer PRÉRÉGLAGES VISUELS" [ref=e106] [cursor=pointer]:
+      - generic [ref=e31]: PRÉRÉGLAGES VISUELS
+  - generic [ref=e107]:
+    - button "COUCHES" [ref=e108] [cursor=pointer]:
+      - generic [aria-hidden]: database
+      - text: COUCHES
+    - button "SCENES" [ref=e109] [cursor=pointer]:
+      - generic [aria-hidden]: movie
+      - text: SCENES
+  - complementary [ref=e110]:
+    - button "AFFICHAGE" [ref=e111] [cursor=pointer]:
+      - generic [aria-hidden]: tune
+      - text: AFFICHAGE
+    - button "CCTV" [ref=e112] [cursor=pointer]:
+      - generic [aria-hidden]: videocam
+      - text: CCTV
+    - text: MÉTÉO IMAGERIE RÉCENTE
+    - button "NIVEAU RUE" [ref=e114] [cursor=pointer]:
+      - generic [aria-hidden]: my_location
+      - text: NIVEAU RUE
+    - button "CONTEXTE" [ref=e115] [cursor=pointer]:
+      - generic [aria-hidden]: radar
+      - text: CONTEXTE
+  - generic: NORMAL
+  - generic [ref=e64]:
+    - link [ref=e67] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=e68]
+    - generic [ref=e152]:
+      - link "Upgrade for commercial use." [ref=e154] [cursor=pointer]:
+        - /url: https://cesium.com/pricing/
+      - text: •
+      - img "Google" [ref=e156]
+    - button "Attribution des données" [ref=e157] [cursor=pointer]

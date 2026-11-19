@@ -10,7 +10,10 @@ import {
   registerOpenFreeMapProjection,
   clearSharedOpenFreeMapTiles,
 } from './openFreeMap.js';
-import { createVectorTileSource, createSharedDecodedTileCache } from './vectorTiles.js';
+import {
+  createVectorTileSource,
+  createSharedDecodedTileCache,
+} from './vectorTiles.js';
 const fixture = (name) =>
   readFileSync(new URL(`../data/fixtures/${name}`, import.meta.url));
 
@@ -388,10 +391,7 @@ test('shared decoded cache avoids refetch across two sources', async () => {
   const source2 = makeSource();
   await source2.fetchBounds(box, { zoom: 14 });
   // Second source reuses the shared decoded tile: only metadata fetch is new
-  assert.ok(
-    calls.length > callsAfterSource1,
-    'second source fetches metadata',
-  );
+  assert.ok(calls.length > callsAfterSource1, 'second source fetches metadata');
   assert.equal(
     calls.filter((u) => !u.endsWith('/planet')).length,
     callsAfterSource1 - 1,
@@ -424,8 +424,7 @@ test('createOpenFreeMapSource without sharedDecodedCache fetches independently p
   await source2.fetchBounds(box, { zoom: 14 });
   // Without shared cache, each source fetches its own tiles
   assert.ok(
-    calls.filter((u) => !u.endsWith('/planet')).length >
-      callsAfterSource1 - 1,
+    calls.filter((u) => !u.endsWith('/planet')).length > callsAfterSource1 - 1,
     'second source fetches its own tiles',
   );
   source1.clear();

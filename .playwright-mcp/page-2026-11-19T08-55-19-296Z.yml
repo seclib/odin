@@ -1,0 +1,94 @@
+- generic [ref=e1]:
+  - region "Visible map targets" [ref=e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=e8]:
+    - button "Clear selected data layers" [ref=e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e10]: layers_clear
+    - button "Copy share link" [ref=e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e12]: 🔗
+    - button "Tilt map to oblique view" [ref=e143] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e14]: view_in_ar
+    - button "Reset map to north up. Current heading 0 degrees" [ref=e144] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e16]: "N"
+      - generic [aria-hidden] [ref=e17]: navigation
+    - button "Reset to full globe view" [ref=e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e19]: public
+    - button "General settings" [ref=e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e21]: settings
+    - 'button "Language: English" [ref=e72] [cursor=pointer]':
+      - generic [aria-hidden] [ref=e77]: EN
+  - generic: syncing road network
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic "Navigation, voice, and visual preset controls" [ref=e27]:
+    - generic [ref=e34]:
+      - button "Collapse LOCATION" [expanded] [active] [ref=e202] [cursor=pointer]:
+        - generic [ref=e37]: LOCATION
+      - generic [ref=e81]:
+        - button "Pin location tray" [ref=e82] [cursor=pointer]
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - button "Austin" [ref=e86] [cursor=pointer]
+            - button "San Francisco" [ref=e87] [cursor=pointer]
+            - button "New York" [ref=e88] [cursor=pointer]
+            - button "Tokyo" [ref=e89] [cursor=pointer]
+            - button "London" [ref=e90] [cursor=pointer]
+            - button "Paris" [ref=e91] [cursor=pointer]
+            - button "Dubai" [ref=e92] [cursor=pointer]
+            - button "Washington DC" [ref=e93] [cursor=pointer]
+            - button "Tallinn" [ref=e94] [cursor=pointer]
+          - generic [ref=e95]:
+            - button "🔎" [ref=e96] [cursor=pointer]
+            - textbox "Search location by name or coordinates" [ref=e98]:
+              - /placeholder: Search any location...
+    - generic [ref=e99]:
+      - generic [ref=e100]:
+        - generic: AI AGENT
+        - generic [ref=e101]: "OFF"
+        - generic [ref=e102]:
+          - button "STD" [ref=e103] [cursor=pointer]
+          - generic "Estimated session cost on gpt-realtime-2 — 0 response(s). Warns at ~$2.00, ends the session at ~$5.00." [ref=e104]: ~$0.00
+      - button "Voice control — activate to toggle voice; hold Space to speak" [ref=e105] [cursor=pointer]:
+        - generic [ref=e107]: ON/OFF
+      - generic [ref=e124]: VOICE STANDBY
+    - button "Expand VISUAL PRESETS" [ref=e203] [cursor=pointer]:
+      - generic [ref=e31]: VISUAL PRESETS
+  - generic [ref=e127]:
+    - button "DATA LAYERS" [ref=e128] [cursor=pointer]:
+      - generic [aria-hidden]: database
+      - text: DATA LAYERS
+    - button "SCENES" [ref=e129] [cursor=pointer]:
+      - generic [aria-hidden]: movie
+      - text: SCENES
+  - complementary [ref=e130]:
+    - button "DISPLAY" [ref=e131] [cursor=pointer]:
+      - generic [aria-hidden]: tune
+      - text: DISPLAY
+    - button "CCTV" [ref=e132] [cursor=pointer]:
+      - generic [aria-hidden]: videocam
+      - text: CCTV
+    - text: WEATHER RECENT IMAGERY
+    - button "STREET LEVEL" [ref=e134] [cursor=pointer]:
+      - generic [aria-hidden]: my_location
+      - text: STREET LEVEL
+    - button "CONTEXT" [ref=e135] [cursor=pointer]:
+      - generic [aria-hidden]: radar
+      - text: CONTEXT
+  - generic: NORMAL
+  - generic [ref=e64]:
+    - link [ref=e67] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=e68]
+    - generic [ref=e136]:
+      - link "Upgrade for commercial use." [ref=e199] [cursor=pointer]:
+        - /url: https://cesium.com/pricing/
+      - text: •
+      - generic [ref=e200]:
+        - link "IGN" [ref=e201] [cursor=pointer]:
+          - /url: https://www.ign.fr
+        - text: — Géoplateforme (Licence Ouverte 2.0)
+    - button "Data attribution" [ref=e141] [cursor=pointer]

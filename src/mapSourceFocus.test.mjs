@@ -118,6 +118,12 @@ function harness({ hidden = false, selected = true, noChips = false } = {}) {
   const manager = {
     _lifetime: { frame() {} },
     _panelLayout: { _leftStackPreferredPanelId: null, _rightStackPreferredPanelId: null },
+    // Rail flyouts are outside this headless harness; the working tree's
+    // `setPanelCollapsed` evaluates these seams unconditionally, so the stub
+    // answers "not a rail flyout" and stops there.
+    _isRailFlyoutPanel() { return false; },
+    _closeOpenRailFlyouts() {},
+    _closeDockPopovers() {},
     ...methods,
     _savePanelCollapsedState(...args) { saves.push(args); },
     _scheduleLeftPanelLayout() {}, _scheduleRightPanelLayout() {},

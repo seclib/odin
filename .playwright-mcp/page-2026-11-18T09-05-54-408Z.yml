@@ -1,0 +1,111 @@
+- generic [active] [ref=e1]:
+  - region "Visible map targets" [ref=e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=e8]:
+    - button "Clear selected data layers" [ref=e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e10]: layers_clear
+    - button "Copy share link" [ref=e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e12]: 🔗
+    - button "Tilt map to oblique view" [ref=e13] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e14]: view_in_ar
+    - button "Reset map to north up. Current heading 1 degrees" [ref=e75] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e16]: "N"
+      - generic [aria-hidden] [ref=e17]: navigation
+    - button "Reset to full globe view" [ref=e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e19]: public
+    - button "General settings" [ref=e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e21]: settings
+    - 'button "Language: English" [ref=e77] [cursor=pointer]':
+      - generic [aria-hidden] [ref=e82]: EN
+  - generic: syncing road network
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic "Navigation, voice, and visual preset controls" [ref=e27]:
+    - button "Expand LOCATION" [ref=e36] [cursor=pointer]:
+      - generic [ref=e37]: LOCATION
+    - generic [ref=e85]:
+      - generic [ref=e86]:
+        - generic: AI AGENT
+        - generic [ref=e87]: "OFF"
+        - generic [ref=e88]:
+          - button "STD" [ref=e89] [cursor=pointer]
+          - generic "Estimated session cost on gpt-realtime-2 — 0 response(s). Warns at ~$2.00, ends the session at ~$5.00." [ref=e90]: ~$0.00
+      - button "Voice control — activate to toggle voice; hold Space to speak" [ref=e91] [cursor=pointer]:
+        - generic [ref=e93]: ON/OFF
+      - generic [ref=e110]: VOICE STANDBY
+    - button "Expand VISUAL PRESETS" [ref=e112] [cursor=pointer]:
+      - generic [ref=e31]: VISUAL PRESETS
+  - generic:
+    - generic [ref=e41]:
+      - generic [ref=e42]: DATA LAYERS
+      - button "Expand DATA LAYERS" [ref=e113] [cursor=pointer]: +
+    - generic [ref=e52]:
+      - generic [ref=e53]: SCENES
+      - button "Expand SCENES" [ref=e114] [cursor=pointer]: +
+  - complementary:
+    - generic [ref=e23]:
+      - generic [ref=e24]: DISPLAY
+      - button "Expand DISPLAY" [ref=e115] [cursor=pointer]: ◀
+    - generic [ref=e46]:
+      - generic [ref=e47]: CCTV
+      - button "Expand CCTV" [ref=e116] [cursor=pointer]: ◀
+    - generic [ref=e119]:
+      - generic [ref=e120]: STREET LEVEL
+      - button "Expand STREET LEVEL" [ref=e121] [cursor=pointer]: ◀
+    - generic [ref=e58]:
+      - generic [ref=e59]: CONTEXT
+      - button "Open compact Radio controls" [ref=e61] [cursor=pointer]:
+        - generic [aria-hidden] [ref=e62]: radio
+      - button "Expand CONTEXT" [ref=e122] [cursor=pointer]: ◀
+  - generic: NORMAL
+  - generic:
+    - generic:
+      - generic: ┌
+      - generic:
+        - generic: TOP SECRET // SI-TK // NOFORN
+        - generic: KH11-4062 OPS-4196
+        - generic: NORMAL
+        - generic:
+          - generic: SUMMARY
+          - generic: NORMAL METRO NEAR FROST BANK TOWER (AUSTIN) 0KM | NORTH AMERICA | ALT 25.0KM | WINDOW 29x21KM | SUN -53° | ONA 0° | UTC-7
+    - generic:
+      - generic:
+        - generic: REC 2026-11-18 09:05:53Z
+        - generic: "ORB: 47482 PASS: DESC-144"
+      - generic: ┐
+    - generic:
+      - generic: └
+      - generic:
+        - generic: "MGRS: 14R PU 2090 4906"
+        - generic: 30°16'01.92"N 097°44'35.16"W
+    - generic:
+      - generic:
+        - generic: "GSD: 8.89m NIIRS: 1.8"
+        - generic: "ALT: 23728m SUN: -53.4° EL"
+        - generic: "AIS: --"
+      - generic: ┘
+    - generic:
+      - generic: "COLL: 09:05:54Z"
+      - generic: "ONA: 3.2°"
+    - generic:
+      - generic: "BAND: PAN"
+      - generic: "BITS: 11"
+      - generic: "LVL: 1A"
+  - generic:
+    - generic:
+      - heading "ODIN" [level=2]
+      - paragraph: Flying to Austin, TX...
+  - generic [ref=e70]:
+    - link [ref=e73] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=e74]
+    - generic [ref=e123]:
+      - link "Upgrade for commercial use." [ref=e125] [cursor=pointer]:
+        - /url: https://cesium.com/pricing/
+      - text: •
+      - img "Google" [ref=e127]
+    - button "Data attribution" [ref=e128] [cursor=pointer]

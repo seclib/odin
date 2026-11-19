@@ -14,6 +14,19 @@ import { keySetupRequirementEnvVars } from './keySetupCore.mjs';
 import { t } from './i18n/index.js';
 
 export const MAP_STACK_CHIP_CLASS = 'map-stack-chip';
+
+/**
+ * Regional and specialist stacks use their short label in the compact chip
+ * row; the full product name stays in the tooltip and in the controller.
+ */
+const COMPACT_LABEL_STACK_IDS = new Set([
+  'plan-ign',
+  'ortho-ign',
+  'bd-ortho',
+  'openfreemap',
+  'lidar-shade',
+]);
+
 export const PRESENTED_MAP_STACK_IDS = Object.freeze([
   'photoreal',
   'bing-aerial',
@@ -21,6 +34,11 @@ export const PRESENTED_MAP_STACK_IDS = Object.freeze([
   'esri-imagery',
   'osm',
   'carto-dark',
+  'plan-ign',
+  'ortho-ign',
+  'bd-ortho',
+  'openfreemap',
+  'lidar-shade',
 ]);
 
 /**
@@ -31,13 +49,19 @@ export const PRESENTED_MAP_STACK_IDS = Object.freeze([
  * case), and a future stack may have its own reason. The ION badge is therefore
  * gated on the stack's own `requiresIon` flag, and the tooltip quotes the
  * controller's `unavailableReason` rather than assuming one.
- * @param {{id: string, label: string, available?: boolean, requiresIon?: boolean, unavailableReason?: string|null}} stack - Stack descriptor from `getStacks()`.
+ * @param {{id: string, label: string, shortLabel?: string, available?: boolean, requiresIon?: boolean, unavailableReason?: string|null}} stack - Stack descriptor from `getStacks()`.
  * @param {string|null} activeId - Currently active stack id.
  * @returns {{id: string, label: string, available: boolean, active: boolean, requiresIon: boolean, requirement: string, unavailableHint: string, title: string}}
  */
 export function mapStackChipModel(stack, activeId) {
   const available = stack?.available !== false;
-  const label = String(stack?.label ?? stack?.id ?? '');
+  const fullLabel = String(stack?.label ?? stack?.id ?? '');
+  // Keep the primary chip labels unchanged; only the regional/specialist row
+  // compresses, because a full product name would overflow the six-column grid.
+  const label =
+    COMPACT_LABEL_STACK_IDS.has(String(stack?.id)) && stack?.shortLabel
+      ? String(stack.shortLabel)
+      : fullLabel;
   const requiresIon = stack?.requiresIon === true;
   // Stack labels are provider names and stay English; the sentence translates.
   const fallbackReason = requiresIon
@@ -61,7 +85,7 @@ export function mapStackChipModel(stack, activeId) {
     // unavailable chip carries the real reason in its tooltip.
     requirement: !available && requiresIon ? 'ION' : '',
     unavailableHint,
-    title: available ? label : unavailableHint,
+    title: available ? fullLabel : unavailableHint,
   };
 }
 

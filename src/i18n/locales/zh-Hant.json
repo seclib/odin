@@ -1,4 +1,5 @@
 {
+  "CARTO basemaps require an API key from carto.com; anonymous tiles return placeholder images": "CARTO底圖需要carto.com的API金鑰；匿名圖塊會回傳佔位圖像。",
   "General settings": "一般設定",
   "GROUND STATION · SETTINGS": "GROUND STATION · 設定",
   "Close settings": "關閉設定",
@@ -1816,8 +1817,6 @@
   "Decoder feeds: {feeds}": "解碼器數據源：{feeds}",
   "Language: {language}": "語言：{language}",
   "Change the interface language": "更改界面語言",
-  "Interface language": "界面語言",
-  "Search languages": "搜索語言",
   "No matching languages": "沒有匹配的語言",
   "📍 Location: --": "📍 位置：--",
   "Landmark: --": "地標：--",
@@ -2885,7 +2884,6 @@
   "NEW": "NEW",
   "CAPTURE SHOT": "CAPTURE SHOT",
   "START": "START",
-  "EXPORT PRESETS": "EXPORT PRESETS",
   "Buildings": "建築",
   "GROUND STATION · LOCAL DATA": "地面站 · 本機資料",
   "DISABLED": "已停用",

@@ -1,13 +1,92 @@
+<!-- gev:template layer-panels -->
+<style>
+  :root {
+    --gev-panel-bg: rgba(10, 10, 20, 0.6);
+    --gev-panel-bg-hover: rgba(15, 15, 30, 0.7);
+    --gev-panel-border: rgba(255, 255, 255, 0.15);
+    --gev-panel-border-focus: rgba(255, 255, 255, 0.4);
+    --gev-panel-fg: #e0e0e8;
+    --gev-panel-fg-muted: #808090;
+    --gev-panel-accent: #00d4aa;
+    --gev-radius: 8px;
+    --gev-border-width: 1px;
+    --gev-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --gev-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.4);
+    --gev-transition-base: 180ms ease-out;
+    --gev-transition-hover: 150ms ease-in;
+  }
+
+  #data-panel {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+    transition: background var(--gev-transition-base),
+                border var(--gev-transition-base);
+  }
+  #data-panel.collapsed {
+    background: var(--gev-panel-bg-hover);
+  }
+
+  #cctv-panel {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+    transition: background var(--gev-transition-base),
+                border var(--gev-transition-base);
+  }
+  #cctv-panel.collapsed {
+    background: var(--gev-panel-bg-hover);
+  }
+
+  #street-level-panel {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+    transition: background var(--gev-transition-base),
+                border var(--gev-transition-base);
+  }
+  #street-level-panel.collapsed {
+    background: var(--gev-panel-bg-hover);
+  }
+
+  #scene-panel {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+    transition: background var(--gev-transition-base),
+                border var(--gev-transition-base);
+  }
+  #scene-panel.collapsed {
+    background: var(--gev-panel-bg-hover);
+  }
+
+  .panel-header {
+    color: var(--gev-panel-fg);
+    transition: color var(--gev-transition-hover);
+  }
+  .panel-header:hover {
+    color: var(--gev-panel-accent);
+  }
+
+  .panel-divider {
+    border-color: var(--gev-panel-border);
+  }
+</style>
   <div id="left-panel-stack">
   <!-- Data Layer Toggle Panel -->
   <div id="data-panel" class="panel-collapsible collapsed active" data-panel-id="data-panel">
     <div class="panel-glow"></div>
-    <div class="data-panel-inner">
-      <div class="panel-header">
-        <span class="panel-title" data-i18n>DATA LAYERS</span>
-        <span class="panel-divider"></span>
-        <button class="panel-collapse-btn" data-collapse-target="data-panel" title="Collapse panel" data-i18n-title>+</button>
-      </div>
+    <div class="panel-header panel-tab" data-panel-tab="data-panel">
+      <span class="material-symbols-outlined panel-tab-icon" aria-hidden="true">database</span>
+      <span class="panel-title" data-i18n>DATA LAYERS</span>
+      <span class="panel-divider"></span>
+      <button class="panel-collapse-btn" data-collapse-target="data-panel" title="Collapse panel" data-i18n-title>+</button>
+    </div>
+    <div class="data-panel-inner panel-flyout-body">
       <div id="data-toggles" class="data-toggle-list"></div>
     </div>
   </div>
@@ -15,12 +94,13 @@
   <!-- CCTV Coverage Panel -->
   <div id="cctv-panel" class="panel-collapsible collapsed" data-panel-id="cctv-panel">
     <div class="panel-glow"></div>
-    <div class="cctv-panel-inner" data-rail-scroller>
-      <div class="panel-header">
-        <span class="panel-title" data-i18n>CCTV</span>
-        <span class="panel-divider"></span>
-        <button class="panel-collapse-btn" data-collapse-target="cctv-panel" title="Collapse panel" data-i18n-title>+</button>
-      </div>
+    <div class="panel-header panel-tab" data-panel-tab="cctv-panel">
+      <span class="material-symbols-outlined panel-tab-icon" aria-hidden="true">videocam</span>
+      <span class="panel-title" data-i18n>CCTV</span>
+      <span class="panel-divider"></span>
+      <button class="panel-collapse-btn" data-collapse-target="cctv-panel" title="Collapse panel" data-i18n-title>+</button>
+    </div>
+    <div class="cctv-panel-inner panel-flyout-body" data-rail-scroller>
       <div class="cyber-panel-body" data-rail-scroller>
       <div id="cctv-frame-wrap" class="cctv-frame-wrap">
         <span class="cctv-frame-caption" aria-hidden="true" data-i18n>ACQUIRING FRAME</span>
@@ -76,13 +156,14 @@
   <!-- Street Level Panel (moved into #right-context-rail at runtime) -->
   <div id="street-level-panel" class="panel-collapsible collapsed" data-panel-id="street-level-panel">
     <div class="panel-glow"></div>
-    <div class="street-level-panel-inner" data-rail-scroller>
-      <div class="panel-header">
-        <span class="panel-title" data-i18n>STREET LEVEL</span>
-        <span class="panel-divider"></span>
-        <button id="sl-status" class="sl-status" type="button" aria-pressed="false" title="Turn Street Level on or off" data-i18n-title data-i18n>OFF</button>
-        <button class="panel-collapse-btn" data-collapse-target="street-level-panel" title="Expand panel" data-i18n-title>◀</button>
-      </div>
+    <div class="panel-header panel-tab" data-panel-tab="street-level-panel">
+      <span class="material-symbols-outlined panel-tab-icon" aria-hidden="true">my_location</span>
+      <span class="panel-title" data-i18n>STREET LEVEL</span>
+      <span class="panel-divider"></span>
+      <button id="sl-status" class="sl-status" type="button" aria-pressed="false" title="Turn Street Level on or off" data-i18n-title data-i18n>OFF</button>
+      <button class="panel-collapse-btn" data-collapse-target="street-level-panel" title="Expand panel" data-i18n-title>◀</button>
+    </div>
+    <div class="street-level-panel-inner panel-flyout-body" data-rail-scroller>
       <div id="sl-body" class="sl-body">
         <div class="sl-main">
           <div id="sl-viewer-wrap" class="sl-viewer-wrap" hidden>
@@ -150,12 +231,13 @@
   <!-- Scene Director Panel -->
   <div id="scene-panel" class="panel-collapsible collapsed" data-panel-id="scene-panel">
     <div class="panel-glow"></div>
-    <div class="scene-panel-inner">
-      <div class="panel-header">
-        <span class="panel-title" data-i18n>SCENES</span>
-        <span class="panel-divider"></span>
-        <button class="panel-collapse-btn" data-collapse-target="scene-panel" title="Collapse panel" data-i18n-title>+</button>
-      </div>
+    <div class="panel-header panel-tab" data-panel-tab="scene-panel">
+      <span class="material-symbols-outlined panel-tab-icon" aria-hidden="true">movie</span>
+      <span class="panel-title" data-i18n>SCENES</span>
+      <span class="panel-divider"></span>
+      <button class="panel-collapse-btn" data-collapse-target="scene-panel" title="Collapse panel" data-i18n-title>+</button>
+    </div>
+    <div class="scene-panel-inner panel-flyout-body">
       <div class="scene-controls">
         <select id="scene-select" aria-label="Scene recipe" data-i18n-aria-label></select>
         <button id="scene-new-btn" class="scene-btn" data-i18n>NEW</button>
@@ -172,7 +254,7 @@
         <button id="scene-next-btn" class="scene-btn" data-i18n>NEXT</button>
       </div>
       <div class="scene-controls">
-        <button id="scene-export-btn" class="scene-btn" data-i18n>EXPORT PRESETS</button>
+        <button id="scene-export-btn" class="scene-btn" data-i18n>EXPORT</button>
         <button id="scene-import-btn" class="scene-btn" data-i18n>IMPORT</button>
         <button id="scene-download-btn" class="scene-btn" data-i18n>RUN LOG</button>
         <input type="file" id="scene-import-file" accept="application/json,.json" hidden />

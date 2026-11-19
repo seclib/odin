@@ -388,7 +388,7 @@ const OPTION_GROUPS = Object.freeze({
     // `v=2&l=f&lo=f.m.a` (an OFF link that remembered mode All) would have come
     // back as ON+All. The price is that ON is now written explicitly (`f.e.1`)
     // instead of ridden in on the omission; see `absentTokenValue`.
-    booleanOption('models3d', 'e', true, { absentValue: false }),
+    booleanOption('models3d', 'e', false, { absentValue: false }),
     enumOption('models3dMode', 'm', 'proximity', ['proximity', 'all'], {
       proximity: 'p',
       all: 'a',

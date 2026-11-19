@@ -194,57 +194,57 @@
   flex-shrink: 1;
   min-height: 0;
 }
-#right-context-rail #cctv-panel.collapsed:not(.panel-floating),
-#right-context-rail #street-level-panel.collapsed:not(.panel-floating),
-#right-context-rail #weather-panel.collapsed,
-#right-context-rail #recent-imagery-panel.collapsed {
+#right-context-rail:not([data-rail-mode="flyout"]) #cctv-panel.collapsed:not(.panel-floating),
+#right-context-rail:not([data-rail-mode="flyout"]) #street-level-panel.collapsed:not(.panel-floating),
+#right-context-rail:not([data-rail-mode="flyout"]) #weather-panel.collapsed,
+#right-context-rail:not([data-rail-mode="flyout"]) #recent-imagery-panel.collapsed {
   width: var(--right-display-collapsed-width);
   margin-left: auto;
 }
-#right-context-rail > #pp-toggles.collapsed {
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles.collapsed {
   width: var(--right-display-collapsed-width);
   margin-left: auto;
 }
-#right-context-rail > #pp-toggles.collapsed .pp-header-row {
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles.collapsed .pp-header-row {
   width: 100%;
 }
-#right-context-rail > #pp-toggles.collapsed .pp-header-row,
-#right-context-rail #cctv-panel.collapsed .cctv-panel-inner,
-#right-context-rail #street-level-panel.collapsed .street-level-panel-inner,
-#right-context-rail #weather-panel.collapsed .weather-panel-inner,
-#right-context-rail #recent-imagery-panel.collapsed .recent-imagery-panel-inner,
-#right-context-rail
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles.collapsed .pp-header-row,
+#right-context-rail:not([data-rail-mode="flyout"]) #cctv-panel.collapsed .cctv-panel-inner,
+#right-context-rail:not([data-rail-mode="flyout"]) #street-level-panel.collapsed .street-level-panel-inner,
+#right-context-rail:not([data-rail-mode="flyout"]) #weather-panel.collapsed .weather-panel-inner,
+#right-context-rail:not([data-rail-mode="flyout"]) #recent-imagery-panel.collapsed .recent-imagery-panel-inner,
+#right-context-rail:not([data-rail-mode="flyout"])
   #global-context-panel.collapsed
   .global-context-panel-inner {
   height: 50px;
   min-height: 50px;
   box-sizing: border-box;
 }
-#right-context-rail #cctv-panel:not(.collapsed) .cctv-panel-inner,
-#right-context-rail
+#right-context-rail:not([data-rail-mode="flyout"]) #cctv-panel:not(.collapsed) .cctv-panel-inner,
+#right-context-rail:not([data-rail-mode="flyout"])
   #street-level-panel:not(.collapsed)
   .street-level-panel-inner {
   max-height: 100%;
   overflow-y: auto;
   scrollbar-gutter: stable;
 }
-#right-context-rail .global-context-panel-inner {
+#right-context-rail:not([data-rail-mode="flyout"]) .global-context-panel-inner {
   max-height: 100%;
 }
-#right-context-rail
+#right-context-rail:not([data-rail-mode="flyout"])
   #global-context-panel:not(.collapsed)
   .global-context-panel-inner {
   max-height: 100%;
   overflow-y: auto;
   scrollbar-gutter: stable;
 }
-#right-context-rail #global-context-panel.collapsed {
+#right-context-rail:not([data-rail-mode="flyout"]) #global-context-panel.collapsed {
   width: var(--right-context-collapsed-width);
   /* Keep the compact Context tab on the rail edge rather than leaving it
      stranded at the rail's expanded-width origin. */
   margin-left: auto;
 }
-#right-context-rail
+#right-context-rail:not([data-rail-mode="flyout"])
   #global-context-panel.collapsed
   .global-context-panel-inner {
   min-height: 42px;
@@ -253,7 +253,7 @@
   overflow: visible;
   padding: 8px 10px 8px 14px;
 }
-#right-context-rail #global-context-panel.collapsed .panel-header {
+#right-context-rail:not([data-rail-mode="flyout"]) #global-context-panel.collapsed .panel-header {
   margin: 0;
 }
 #right-context-rail.layout-focus {
@@ -1737,4 +1737,843 @@ body.recording-mode #right-context-rail > [data-panel-id] {
   #right-context-rail #recent-imagery-panel.collapsed {
     width: 100%;
   }
+}
+
+/* ── ODIN side rails & panel identity (scoped) ─────────────────────────── */
+:is(#left-panel-stack, #right-context-rail) {
+  --odin-accent: #00d4aa;
+  --odin-accent-rgb: 0, 212, 170;
+  --odin-accent-dim: rgba(var(--odin-accent-rgb), 0.16);
+  --odin-accent-soft: rgba(var(--odin-accent-rgb), 0.08);
+  --odin-surface: rgba(10, 14, 20, 0.72);
+  --odin-surface-strong: rgba(13, 18, 25, 0.84);
+  --odin-border: rgba(255, 255, 255, 0.14);
+  --odin-border-strong: rgba(255, 255, 255, 0.22);
+  --odin-text: #e8edf4;
+  --odin-text-muted: rgba(232, 237, 244, 0.68);
+  --odin-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+  --odin-radius: 10px;
+  --odin-radius-sm: 8px;
+  --odin-blur: 8px;
+  --odin-focus-ring: 0 0 0 2px rgba(var(--odin-accent-rgb), 0.35);
+}
+
+:is(#left-panel-stack, #right-context-rail)
+  :is(
+    .data-panel-inner,
+    .cctv-panel-inner,
+    .street-level-panel-inner,
+    .scene-panel-inner,
+    .weather-panel-inner,
+    .recent-imagery-panel-inner,
+    .global-context-panel-inner,
+    .radio-panel-inner,
+    #pp-toggles:not(.collapsed),
+    #pp-toggles > .pp-header-row
+  ) {
+  background: var(--odin-surface) !important;
+  border: 1px solid var(--odin-border) !important;
+  border-radius: var(--odin-radius) !important;
+  box-shadow:
+    var(--odin-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(var(--odin-blur)) saturate(1.15) !important;
+  -webkit-backdrop-filter: blur(var(--odin-blur)) saturate(1.15) !important;
+}
+
+:is(#left-panel-stack, #right-context-rail)
+  .panel-collapsible.collapsed
+  :is(
+    .data-panel-inner,
+    .cctv-panel-inner,
+    .street-level-panel-inner,
+    .scene-panel-inner,
+    .weather-panel-inner,
+    .recent-imagery-panel-inner,
+    .global-context-panel-inner,
+    .radio-panel-inner
+  ),
+#right-context-rail > #pp-toggles.collapsed .pp-header-row {
+  background: var(--odin-surface-strong) !important;
+  border-color: var(--odin-border) !important;
+  border-radius: var(--odin-radius) !important;
+}
+
+:is(#left-panel-stack, #right-context-rail)
+  .panel-collapsible:not(.collapsed):hover
+  :is(
+    .data-panel-inner,
+    .cctv-panel-inner,
+    .street-level-panel-inner,
+    .scene-panel-inner,
+    .weather-panel-inner,
+    .recent-imagery-panel-inner,
+    .global-context-panel-inner,
+    .radio-panel-inner
+  ),
+:is(#left-panel-stack, #right-context-rail)
+  .panel-collapsible:not(.collapsed):focus-within
+  :is(
+    .data-panel-inner,
+    .cctv-panel-inner,
+    .street-level-panel-inner,
+    .scene-panel-inner,
+    .weather-panel-inner,
+    .recent-imagery-panel-inner,
+    .global-context-panel-inner,
+    .radio-panel-inner
+  ),
+#right-context-rail > #pp-toggles:not(.collapsed):hover,
+#right-context-rail > #pp-toggles:not(.collapsed):focus-within {
+  border-color: var(--odin-border-strong) !important;
+}
+
+:is(#left-panel-stack, #right-context-rail)
+  .panel-collapsible:not(.collapsed)
+  :is(
+    .data-panel-inner,
+    .cctv-panel-inner,
+    .street-level-panel-inner,
+    .scene-panel-inner,
+    .weather-panel-inner,
+    .recent-imagery-panel-inner,
+    .global-context-panel-inner,
+    .radio-panel-inner
+  ) {
+  border-color: rgba(var(--odin-accent-rgb), 0.22) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--odin-accent-rgb), 0.06) inset,
+    0 10px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+:is(#left-panel-stack, #right-context-rail) .panel-header,
+:is(#left-panel-stack, #right-context-rail) #pp-toggles > .pp-header-row {
+  gap: 10px !important;
+  min-height: 34px;
+  color: var(--odin-text);
+}
+
+:is(#left-panel-stack, #right-context-rail) .panel-title,
+:is(#left-panel-stack, #right-context-rail) .pp-header-label {
+  color: var(--odin-text) !important;
+  font-family: var(--font-sans) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+}
+
+:is(#left-panel-stack, #right-context-rail) .panel-divider {
+  background: linear-gradient(
+    90deg,
+    rgba(var(--odin-accent-rgb), 0.45),
+    rgba(255, 255, 255, 0.08)
+  ) !important;
+  opacity: 1 !important;
+}
+
+:is(#left-panel-stack, #right-context-rail) .panel-collapse-btn,
+:is(#left-panel-stack, #right-context-rail) .pp-collapse-btn {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(var(--odin-accent-rgb), 0.35) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--odin-accent) !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+:is(#left-panel-stack, #right-context-rail) .panel-collapse-btn:hover,
+:is(#left-panel-stack, #right-context-rail) .pp-collapse-btn:hover {
+  background: var(--odin-accent-dim) !important;
+  border-color: rgba(var(--odin-accent-rgb), 0.7) !important;
+  color: #dffff7 !important;
+  box-shadow: 0 0 0 1px rgba(var(--odin-accent-rgb), 0.12) inset;
+}
+
+:is(#left-panel-stack, #right-context-rail) .panel-collapse-btn:focus-visible,
+:is(#left-panel-stack, #right-context-rail) .pp-collapse-btn:focus-visible {
+  outline: none !important;
+  box-shadow: var(--odin-focus-ring) !important;
+}
+
+:is(#left-panel-stack, #right-context-rail) .panel-collapse-btn:active,
+:is(#left-panel-stack, #right-context-rail) .pp-collapse-btn:active {
+  transform: scale(0.96);
+  background: rgba(var(--odin-accent-rgb), 0.22) !important;
+}
+
+:is(#left-panel-stack, #right-context-rail)
+  .panel-collapsible.collapsed
+  .panel-header:hover
+  .panel-collapse-btn,
+:is(#left-panel-stack, #right-context-rail)
+  #pp-toggles.collapsed
+  .pp-header-row:hover
+  .pp-collapse-btn {
+  border-color: rgba(var(--odin-accent-rgb), 0.75) !important;
+}
+
+:is(#left-panel-stack, #right-context-rail)
+  .panel-collapsible:not(.collapsed)
+  .panel-header
+  .panel-collapse-btn,
+:is(#left-panel-stack, #right-context-rail)
+  #pp-toggles:not(.collapsed)
+  .pp-collapse-btn {
+  background: var(--odin-accent-soft) !important;
+}
+
+:is(#left-panel-stack, #right-context-rail)
+  .panel-collapsible.collapsed
+  :is(.panel-title, .panel-divider, .pp-header-label),
+#right-context-rail
+  #cctv-panel.collapsed
+  .panel-header
+  > span:not(.panel-title):not(.panel-divider),
+#right-context-rail
+  #weather-panel.collapsed
+  .panel-header
+  > span:not(.panel-title):not(.panel-divider),
+#right-context-rail
+  #recent-imagery-panel.collapsed
+  .panel-header
+  > span:not(.panel-title):not(.panel-divider) {
+  color: var(--odin-text) !important;
+}
+
+:is(#left-panel-stack, #right-context-rail) > .panel-collapsible,
+:is(#left-panel-stack, #right-context-rail) #data-panel.panel-collapsible {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+#left-panel-stack #data-panel.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+:is(#left-panel-stack, #right-context-rail) .panel-glow {
+  opacity: 0.12 !important;
+  filter: blur(18px) !important;
+}
+
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles:not(.collapsed) {
+  background: var(--odin-surface) !important;
+  border: 1px solid rgba(var(--odin-accent-rgb), 0.22) !important;
+  border-radius: var(--odin-radius) !important;
+  box-shadow:
+    var(--odin-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles:not(.collapsed) > .pp-header-row {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Collapsed rail items: compact circular icon buttons */
+#left-panel-stack:not([data-rail-mode="flyout"]) > .panel-collapsible.collapsed:not(#data-panel),
+#right-context-rail:not([data-rail-mode="flyout"]) > .panel-collapsible.collapsed:not(.panel-floating),
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles.collapsed {
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  height: 44px !important;
+  flex: 0 0 44px !important;
+}
+
+:is(#left-panel-stack, #right-context-rail):not([data-rail-mode="flyout"])
+  > .panel-collapsible.collapsed:not(#data-panel)
+  :is(
+    .data-panel-inner,
+    .cctv-panel-inner,
+    .street-level-panel-inner,
+    .scene-panel-inner,
+    .weather-panel-inner,
+    .recent-imagery-panel-inner,
+    .global-context-panel-inner,
+    .radio-panel-inner
+  ),
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles.collapsed .pp-header-row {
+  width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0 !important;
+  overflow: hidden;
+}
+
+:is(#left-panel-stack, #right-context-rail):not([data-rail-mode="flyout"])
+  > .panel-collapsible.collapsed
+  .panel-header {
+  width: 100%;
+  height: 100%;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0 !important;
+  border: 0 !important;
+}
+
+:is(#left-panel-stack, #right-context-rail):not([data-rail-mode="flyout"])
+  > .panel-collapsible.collapsed:not(#data-panel)
+  .panel-header
+  > :not(.panel-collapse-btn),
+#right-context-rail:not([data-rail-mode="flyout"])
+  > #pp-toggles.collapsed
+  .pp-header-row
+  > :not(.pp-collapse-btn) {
+  display: none !important;
+}
+
+:is(#left-panel-stack, #right-context-rail):not([data-rail-mode="flyout"])
+  > .panel-collapsible.collapsed
+  .panel-collapse-btn,
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles.collapsed .pp-collapse-btn {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 16px !important;
+}
+
+:is(#left-panel-stack, #right-context-rail):not([data-rail-mode="flyout"])
+  > .panel-collapsible.collapsed:hover
+  :is(
+    .data-panel-inner,
+    .cctv-panel-inner,
+    .street-level-panel-inner,
+    .scene-panel-inner,
+    .weather-panel-inner,
+    .recent-imagery-panel-inner,
+    .global-context-panel-inner,
+    .radio-panel-inner
+  ),
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles.collapsed:hover .pp-header-row {
+  border-color: rgba(var(--odin-accent-rgb), 0.65) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--odin-accent-rgb), 0.2) inset,
+    var(--odin-shadow) !important;
+}
+
+:is(#left-panel-stack, #right-context-rail):not([data-rail-mode="flyout"])
+  > .panel-collapsible.collapsed:focus-within
+  :is(
+    .data-panel-inner,
+    .cctv-panel-inner,
+    .street-level-panel-inner,
+    .scene-panel-inner,
+    .weather-panel-inner,
+    .recent-imagery-panel-inner,
+    .global-context-panel-inner,
+    .radio-panel-inner
+  ),
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles.collapsed:focus-within .pp-header-row {
+  box-shadow: var(--odin-focus-ring), var(--odin-shadow) !important;
+}
+
+/* Active/open rail items: visible turquoise state */
+:is(#left-panel-stack, #right-context-rail):not([data-rail-mode="flyout"])
+  > .panel-collapsible:not(.collapsed)
+  .panel-header,
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles:not(.collapsed) .pp-header-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+}
+
+#right-context-rail:not([data-rail-mode="flyout"]) > #pp-toggles:not(.collapsed) .pp-header-row {
+  margin-bottom: 0;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+
+/* === ODIN compact rail bars (icon tabs + anchored flyouts) === */
+/*
+ * The rails are permanent, compact palettes: one square tab per panel, with an
+ * anchored flyout beside the bar. The rail must not create a containing block
+ * (no transform/filter/backdrop-filter) because the flyout body is positioned
+ * fixed in viewport coordinates by panelChrome.js.
+ */
+#left-panel-stack[data-rail-mode="flyout"],
+#right-context-rail[data-rail-mode="flyout"] {
+  position: fixed;
+  /* Auto margins between opposing anchors centre the bar at 50vh without a
+     transform: a transformed rail would become the containing block of its
+     viewport-fixed flyouts and break their anchoring. */
+  top: 0;
+  bottom: 0;
+  height: fit-content;
+  margin-block: auto;
+  width: 58px;
+  max-height: calc(100dvh - 96px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 7px;
+  overflow: visible;
+  pointer-events: auto;
+  z-index: 140;
+  isolation: isolate;
+  background: transparent;
+  border: 1px solid var(--chrome-border);
+  border-radius: var(--chrome-radius);
+  box-shadow:
+    var(--chrome-shadow),
+    0 0 0 1px rgba(255, 255, 255, 0.035) inset,
+    0 0 18px var(--chrome-glow);
+  scrollbar-width: none;
+}
+
+/* The rail itself stays free of transform/filter/backdrop-filter: those would
+   make it the containing block of its viewport-fixed flyouts. The same glass
+   and blur are painted on a background layer instead. */
+#left-panel-stack[data-rail-mode="flyout"]::before,
+#right-context-rail[data-rail-mode="flyout"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--chrome-surface);
+  backdrop-filter: blur(var(--chrome-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--chrome-blur)) saturate(1.2);
+  pointer-events: none;
+}
+
+/* Both bars keep the same viewport inset so the pair stays symmetric and
+   leaves room for the globe between them. The inset also clears the bottom
+   command dock without moving either bar vertically. */
+#left-panel-stack[data-rail-mode="flyout"] {
+  left: max(28px, env(safe-area-inset-left, 0px));
+  right: auto;
+}
+
+#right-context-rail[data-rail-mode="flyout"] {
+  right: max(28px, env(safe-area-inset-right, 0px));
+  left: auto;
+}
+
+#left-panel-stack[data-rail-mode="flyout"]::-webkit-scrollbar,
+#right-context-rail[data-rail-mode="flyout"]::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Short viewports tighten the bars before they can cross an edge; below the
+   last threshold every icon stays reachable through the rail's own scroll. */
+@media (max-height: 520px) {
+  #left-panel-stack[data-rail-mode="flyout"],
+  #right-context-rail[data-rail-mode="flyout"] {
+    gap: 4px;
+    padding: 4px;
+  }
+}
+
+@media (max-height: 320px) {
+  #left-panel-stack[data-rail-mode="flyout"],
+  #right-context-rail[data-rail-mode="flyout"] {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* Every rail entry becomes one square tab; its body is detached visually. */
+#left-panel-stack[data-rail-mode="flyout"] > [data-panel-id],
+#right-context-rail[data-rail-mode="flyout"] > [data-panel-id] {
+  position: relative !important;
+  inset: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 0 0 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  pointer-events: auto;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  overflow: visible;
+  z-index: auto !important;
+}
+
+/* The Display wrapper regains a themed backdrop-filter as soon as it opens.
+   On a flyout rail that would turn the 42px wrapper into the containing block
+   of its viewport-fixed body and offset the panel by the tab position. */
+#left-panel-stack[data-rail-mode="flyout"] > #pp-toggles:not(.collapsed),
+#right-context-rail[data-rail-mode="flyout"] > #pp-toggles:not(.collapsed) {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* The wrapper only hosts the square tab; the flyout body is a fixed sibling. */
+#left-panel-stack[data-rail-mode="flyout"] .panel-tab,
+#right-context-rail[data-rail-mode="flyout"] .panel-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
+  color: rgba(196, 222, 238, 0.86);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(123, 189, 211, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+/* Icon-only when the rail is at rest: the label survives for a11y/tooltip. */
+#left-panel-stack[data-rail-mode="flyout"] .panel-tab > :not(.panel-tab-icon),
+#right-context-rail[data-rail-mode="flyout"] .panel-tab > :not(.panel-tab-icon) {
+  display: none !important;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .panel-tab-icon,
+#right-context-rail[data-rail-mode="flyout"] .panel-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  line-height: 1;
+  color: currentColor;
+  pointer-events: none;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .panel-tab:hover,
+#right-context-rail[data-rail-mode="flyout"] .panel-tab:hover {
+  color: var(--accent, #00d4ff);
+  background: rgba(0, 212, 255, 0.08);
+  border-color: rgba(0, 212, 255, 0.4);
+}
+
+#left-panel-stack[data-rail-mode="flyout"] [data-panel-id]:not(.collapsed) > .panel-tab,
+#right-context-rail[data-rail-mode="flyout"] [data-panel-id]:not(.collapsed) > .panel-tab {
+  color: var(--accent, #00d4ff);
+  background: rgba(0, 212, 255, 0.14);
+  border-color: rgba(0, 212, 255, 0.56);
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 255, 0.18) inset,
+    0 0 14px rgba(0, 212, 255, 0.12);
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .panel-tab:focus-visible,
+#right-context-rail[data-rail-mode="flyout"] .panel-tab:focus-visible {
+  outline: 2px solid rgba(0, 212, 255, 0.8);
+  outline-offset: 2px;
+}
+
+/* On-brand tooltip, mirrored per side. */
+#left-panel-stack[data-rail-mode="flyout"] .panel-tab[data-rail-tooltip]::after,
+#right-context-rail[data-rail-mode="flyout"] .panel-tab[data-rail-tooltip]::after {
+  content: attr(data-rail-tooltip);
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 12px);
+  z-index: 400;
+  padding: 6px 9px;
+  color: #e8f7ff;
+  background: rgba(7, 16, 24, 0.97);
+  border: 1px solid rgba(0, 212, 255, 0.36);
+  border-radius: 7px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  font:
+    500 11px/1.2 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-50%) translateX(-3px);
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+
+#right-context-rail[data-rail-mode="flyout"] .panel-tab[data-rail-tooltip]::after {
+  right: calc(100% + 12px);
+  left: auto;
+  transform: translateY(-50%) translateX(3px);
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .panel-tab[data-rail-tooltip]:hover::after,
+#left-panel-stack[data-rail-mode="flyout"] .panel-tab[data-rail-tooltip]:focus-visible::after,
+#right-context-rail[data-rail-mode="flyout"] .panel-tab[data-rail-tooltip]:hover::after,
+#right-context-rail[data-rail-mode="flyout"] .panel-tab[data-rail-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Hide the collapsed body; an open body becomes the anchored flyout. */
+#left-panel-stack[data-rail-mode="flyout"] > [data-panel-id].collapsed > .panel-flyout-body,
+#right-context-rail[data-rail-mode="flyout"] > [data-panel-id].collapsed > .panel-flyout-body {
+  display: none !important;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] > [data-panel-id]:not(.collapsed):not([hidden]) > .panel-flyout-body,
+#right-context-rail[data-rail-mode="flyout"] > [data-panel-id]:not(.collapsed):not([hidden]) > .panel-flyout-body {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  z-index: 160;
+  width: min(380px, calc(100vw - 110px));
+  min-width: 280px;
+  max-width: min(420px, calc(100vw - 110px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 13px 14px;
+  box-sizing: border-box;
+  color: var(--text-primary, #e8f4ff);
+  background: var(--chrome-surface);
+  border: 1px solid var(--chrome-border);
+  border-radius: var(--chrome-radius);
+  box-shadow:
+    var(--chrome-shadow),
+    0 0 0 1px rgba(255, 255, 255, 0.035) inset,
+    0 0 18px var(--chrome-glow);
+  backdrop-filter: blur(var(--chrome-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--chrome-blur)) saturate(1.2);
+  scrollbar-width: thin;
+}
+
+/* Left flyouts are sized to their content, not to the map: a narrow shell,
+   tight category spacing and compact rows. Text stays readable, controls
+   stay clickable, and the internal scrollers carry any overflow. */
+#left-panel-stack[data-rail-mode="flyout"] > [data-panel-id]:not(.collapsed):not([hidden]) > .panel-flyout-body {
+  width: min(258px, calc(100vw - 110px));
+  max-width: min(278px, calc(100vw - 110px));
+  min-width: 220px;
+  padding: 8px 9px;
+  gap: 5px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .data-panel-inner {
+  padding: 8px 9px 6px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .scene-panel-inner {
+  padding: 8px 9px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .data-toggle-list {
+  gap: 0;
+  padding-right: 0;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .data-layer-group-heading {
+  margin: 4px 5px 1px;
+  padding-top: 6px;
+  font-size: 9px;
+  letter-spacing: 0.8px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .data-toggle-row {
+  padding: 5px 6px 4px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .data-toggle-top,
+#left-panel-stack[data-rail-mode="flyout"] .data-toggle-left,
+#left-panel-stack[data-rail-mode="flyout"] .data-toggle-right {
+  gap: 4px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .data-icon {
+  font-size: 14px;
+  width: 16px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .data-name {
+  font-size: 12px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .data-count {
+  font-size: 10px;
+  min-width: 24px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .data-toggle-btn {
+  min-width: 34px;
+  padding: 3px 7px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .data-toggle-meta,
+#left-panel-stack[data-rail-mode="flyout"] .data-toggle-controls {
+  padding-left: 18px;
+  gap: 3px 6px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .scene-controls {
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .scene-btn {
+  padding: 5px 7px;
+  min-width: 58px;
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .scene-shot-list {
+  gap: 3px;
+  padding: 2px 1px 3px;
+  margin-bottom: 5px;
+  max-height: 140px;
+  min-height: 80px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .scene-shot-row {
+  padding: 5px 6px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .scene-shot-label {
+  font-size: 9px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .scene-shot-meta {
+  font-size: 8px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .scene-shot-actions {
+  gap: 4px;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .scene-shot-btn {
+  padding: 3px 5px;
+}
+
+/* Panel-specific inner classes (Data/Scenes/CCTV/Context…) carry their own
+   glass rules. This shared, higher-specificity surface keeps every flyout on
+   the same chrome as the top bar instead of drifting per panel. */
+#left-panel-stack[data-rail-mode="flyout"]
+  > :is(#data-panel, #scene-panel)
+  > .panel-flyout-body,
+#right-context-rail[data-rail-mode="flyout"]
+  > :is(
+    #pp-toggles,
+    #cctv-panel,
+    #weather-panel,
+    #recent-imagery-panel,
+    #street-level-panel,
+    #global-context-panel
+  )
+  > .panel-flyout-body {
+  /* The legacy rail-surface rule below is !important; match its weight. */
+  background: var(--chrome-surface) !important;
+  border: 1px solid var(--chrome-border) !important;
+  border-radius: var(--chrome-radius) !important;
+  box-shadow:
+    var(--chrome-shadow),
+    0 0 0 1px rgba(255, 255, 255, 0.035) inset,
+    0 0 18px var(--chrome-glow) !important;
+  backdrop-filter: blur(var(--chrome-blur)) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(var(--chrome-blur)) saturate(1.2) !important;
+}
+
+/* Display-only compaction. The other right-rail flyouts keep their original
+   width and gutters; here only the shell and row spacing tighten, leaving
+   every control, label and slider at its existing readable size. */
+#right-context-rail[data-rail-mode="flyout"] #pp-toggles[data-panel-id]:not(.collapsed) > .panel-flyout-body {
+  width: min(340px, calc(100vw - 110px));
+  max-width: min(360px, calc(100vw - 110px));
+  padding: 10px 11px;
+  gap: 6px;
+}
+
+#right-context-rail[data-rail-mode="flyout"] #pp-toggles:not(.collapsed) .pp-toggle-btn {
+  min-height: 34px;
+  padding: 6px 10px;
+}
+
+#right-context-rail[data-rail-mode="flyout"] #pp-toggles:not(.collapsed) .pp-slider-row {
+  padding: 4px 9px 5px;
+}
+
+#right-context-rail[data-rail-mode="flyout"] #pp-toggles:not(.collapsed) .param-panel-header {
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Keep the legacy glow/inner wrappers from adding visual noise. */
+#left-panel-stack[data-rail-mode="flyout"] .panel-glow,
+#right-context-rail[data-rail-mode="flyout"] .panel-glow {
+  display: none !important;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] #data-panel,
+#left-panel-stack[data-rail-mode="flyout"] #data-panel.active {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 42px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+#left-panel-stack[data-rail-mode="flyout"] .panel-flyout-body,
+#right-context-rail[data-rail-mode="flyout"] .panel-flyout-body {
+  gap: 8px;
+}
+
+#right-context-rail[data-rail-mode="flyout"] #global-context-panel .global-context-panel-inner.panel-flyout-body .cyber-panel-body,
+#right-context-rail[data-rail-mode="flyout"] #cctv-panel .cctv-panel-inner.panel-flyout-body .cyber-panel-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#right-context-rail[data-rail-mode="flyout"] #pp-toggles > .pp-panel-body.panel-flyout-body {
+  gap: 8px;
 }

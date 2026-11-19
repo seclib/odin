@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createGoogleTokenSource, GOOGLE_TOKEN_PATH } from './googleTokens.js';
+import {
+  createGoogleTokenSource,
+  GOOGLE_TOKEN_PATH,
+  shouldRequestServerTokens,
+} from './googleTokens.js';
 
 function server(answers) {
   const calls = [];
@@ -17,6 +21,19 @@ function server(answers) {
 
 const offer = (accessToken, expiresAt) =>
   Response.json({ accessToken, expiresAt });
+
+test('the token endpoint is only consulted when no other Google route is configured', () => {
+  assert.equal(shouldRequestServerTokens({}), true);
+  assert.equal(shouldRequestServerTokens({ googleApiKey: '', cesiumToken: '' }), true);
+  assert.equal(
+    shouldRequestServerTokens({ googleApiKey: 'browser-key', cesiumToken: '' }),
+    false,
+  );
+  assert.equal(
+    shouldRequestServerTokens({ googleApiKey: '', cesiumToken: 'ion-token' }),
+    false,
+  );
+});
 
 test('a token is reused until shortly before it expires', async () => {
   let now = 1_000_000;

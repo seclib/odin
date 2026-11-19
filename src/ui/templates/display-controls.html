@@ -1,11 +1,12 @@
   <!-- Post-processing toggles (top-right) -->
   <div id="pp-toggles" class="panel-collapsible collapsed" data-panel-id="pp-toggles">
-    <div class="compact pp-header-row">
+    <div class="compact pp-header-row panel-tab" data-panel-tab="pp-toggles">
+      <span class="material-symbols-outlined panel-tab-icon" aria-hidden="true">tune</span>
       <span data-i18n class="pp-header-label">DISPLAY</span>
       <span class="panel-divider" aria-hidden="true"></span>
       <button class="panel-collapse-btn pp-collapse-btn" data-collapse-target="pp-toggles" title="Collapse panel" data-i18n-title>&#x25C0;</button>
     </div>
-    <div class="pp-panel-body" data-rail-scroller>
+    <div class="pp-panel-body panel-flyout-body" data-rail-scroller>
     <div class="pp-toggle-group">
       <button class="pp-toggle-btn" id="hud-toggle" title="Intelligence HUD (H)" data-i18n-title>
         <span class="pp-icon">&#x25CE;</span>
@@ -89,15 +90,14 @@
       <div id="param-sliders"></div>
     </div>
     <div class="pp-toggle-group">
-      <!-- 3D aircraft is DEFAULT-ON in Proximity (owner directive 2026-08-22), so the
-           button ships lit and the mode row ships open — the same markup-carries-the-default
-           convention as #scope-toggle. ui.js re-syncs both from durable layer state, which
-           is what flips them back for a share link or a stored session carrying 3D off. -->
-      <button class="pp-toggle-btn active" id="models3d-toggle" aria-pressed="true" title="3D aircraft — flat icons zoomed out, 3D models up close" data-i18n-title>
+      <!-- Clean first load: aircraft models ship off, with proximity kept as
+           the mode they adopt when the operator switches them on. ui.js
+           re-syncs both from durable layer or share state. -->
+      <button class="pp-toggle-btn" id="models3d-toggle" aria-pressed="false" title="3D aircraft — flat icons zoomed out, 3D models up close" data-i18n-title>
         <span class="pp-icon">&#x2708;</span>
         <span class="pp-label">3D</span>
       </button>
-      <div class="pp-slider-row visible" id="models3d-mode-row">
+      <div class="pp-slider-row" id="models3d-mode-row">
         <span class="pp-slider-mini-label" data-i18n>Models</span>
         <div class="pp-mode-seg" role="radiogroup" aria-label="3D model coverage" data-i18n-aria-label>
           <button class="pp-mode-btn active" id="models3d-mode-proximity" data-mode="proximity" role="radio" aria-checked="true" data-i18n>Proximity</button>
@@ -106,11 +106,11 @@
       </div>
     </div>
     <div class="pp-toggle-group">
-      <button class="pp-toggle-btn active" id="scope-toggle" title="Scope — the circular viewport mask" aria-pressed="true" data-i18n-title>
+      <button class="pp-toggle-btn" id="scope-toggle" title="Scope — the circular viewport mask" aria-pressed="false" data-i18n-title>
         <span class="pp-icon material-symbols-outlined" aria-hidden="true">adjust</span>
         <span class="pp-label" data-i18n>Scope</span>
       </button>
-      <div class="pp-slider-row visible" id="scope-slider-row">
+      <div class="pp-slider-row" id="scope-slider-row">
         <span class="pp-slider-mini-label" data-i18n>Feather</span>
         <!-- Feather starts at an 11% soft scope-mask edge (owner final lock
              2026-08-24, superseding the 08-22 hard-crop and 08-23 8% rulings);

@@ -41,15 +41,24 @@ jobs:
         env:
           MAPILLARY_CLIENT_TOKEN: 'MLY|0|qa-fixture'
         run: |
-          npx vite preview --port 4173 --strictPort > /tmp/odin-vite-preview.log 2>&1 &
+          ./node_modules/.bin/vite preview --host 127.0.0.1 --port 4173 --strictPort > /tmp/odin-vite-preview.log 2>&1 &
           echo $! > /tmp/odin-vite-preview.pid
       - name: Wait for production preview
         run: |
+          pid="$(cat /tmp/odin-vite-preview.pid)"
           for attempt in $(seq 1 60); do
-            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            if curl --fail --silent --max-time 2 http://127.0.0.1:4173/ >/dev/null; then
+              exit 0
+            fi
+            if ! kill -0 "$pid" 2>/dev/null; then
+              echo "Vite preview process exited before becoming ready."
+              cat /tmp/odin-vite-preview.log || true
+              exit 1
+            fi
             sleep 1
           done
-          cat /tmp/odin-vite-preview.log
+          echo "Timed out waiting for Vite preview to become ready."
+          cat /tmp/odin-vite-preview.log || true
           exit 1
       - name: Run street-level browser fixtures
         env:

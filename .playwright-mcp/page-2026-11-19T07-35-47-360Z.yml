@@ -1,0 +1,72 @@
+- generic [active] [ref=f9e1]:
+  - region "Visible map targets" [ref=f9e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=f9e8]:
+    - button "Clear selected data layers" [ref=f9e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f9e10]: layers_clear
+    - button "Copy share link" [ref=f9e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f9e12]: 🔗
+    - button "Return map to straight-down view" [pressed] [ref=f9e13] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f9e14]: view_in_ar
+    - button "Reset map to north up. Current heading 15 degrees" [ref=f9e15] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f9e16]: "N"
+      - generic [aria-hidden] [ref=f9e17]: navigation
+    - button "Reset to full globe view" [ref=f9e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f9e19]: public
+    - button "General settings" [ref=f9e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f9e21]: settings
+    - 'button "Language: English" [ref=f9e23] [cursor=pointer]':
+      - generic [aria-hidden] [ref=f9e28]: EN
+  - generic: syncing road network
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic "Navigation, voice, and visual preset controls" [ref=f9e31]:
+    - button "Expand LOCATION" [ref=f9e35] [cursor=pointer]:
+      - generic [ref=f9e36]: LOCATION
+    - generic [ref=f9e38]:
+      - generic [ref=f9e39]:
+        - generic: AI AGENT
+        - generic [ref=f9e40]: "OFF"
+        - generic [ref=f9e41]:
+          - button "STD" [ref=f9e42] [cursor=pointer]
+          - generic "Estimated session cost on gpt-realtime-2 — 0 response(s). Warns at ~$2.00, ends the session at ~$5.00." [ref=f9e43]: ~$0.00
+      - button "Voice control — activate to toggle voice; hold Space to speak" [ref=f9e44] [cursor=pointer]:
+        - generic [ref=f9e46]: ON/OFF
+      - generic [ref=f9e63]: VOICE STANDBY
+    - button "Expand VISUAL PRESETS" [ref=f9e67] [cursor=pointer]:
+      - generic [ref=f9e68]: VISUAL PRESETS
+  - generic [ref=f9e70]:
+    - button "DATA LAYERS" [ref=f9e72] [cursor=pointer]:
+      - generic [aria-hidden]: database
+      - text: DATA LAYERS
+    - button "SCENES" [ref=f9e74] [cursor=pointer]:
+      - generic [aria-hidden]: movie
+      - text: SCENES
+  - complementary [ref=f9e75]:
+    - button "DISPLAY" [ref=f9e77] [cursor=pointer]:
+      - generic [aria-hidden]: tune
+      - text: DISPLAY
+    - button "CCTV" [ref=f9e79] [cursor=pointer]:
+      - generic [aria-hidden]: videocam
+      - text: CCTV
+    - text: WEATHER RECENT IMAGERY
+    - button "STREET LEVEL" [ref=f9e81] [cursor=pointer]:
+      - generic [aria-hidden]: my_location
+      - text: STREET LEVEL
+    - button "CONTEXT" [ref=f9e83] [cursor=pointer]:
+      - generic [aria-hidden]: radar
+      - text: CONTEXT
+  - generic [ref=f9e84]:
+    - link [ref=f9e87] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=f9e88]
+    - generic [ref=f9e89]:
+      - link "Upgrade for commercial use." [ref=f9e91] [cursor=pointer]:
+        - /url: https://cesium.com/pricing/
+      - text: •
+      - img "Google" [ref=f9e93]
+    - button "Data attribution" [ref=f9e94] [cursor=pointer]

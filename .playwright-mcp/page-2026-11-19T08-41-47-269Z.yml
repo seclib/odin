@@ -1,0 +1,106 @@
+- generic [ref=f1e1]:
+  - region "Visible map targets" [ref=f1e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=f1e8]:
+    - button "Clear selected data layers" [ref=f1e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e10]: layers_clear
+    - button "Copy share link" [ref=f1e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e12]: 🔗
+    - button "Tilt map to oblique view" [ref=f1e168] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e14]: view_in_ar
+    - button "Reset map to north up. Current heading 0 degrees" [ref=f1e172] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e16]: "N"
+      - generic [aria-hidden] [ref=f1e17]: navigation
+    - button "Reset to full globe view" [ref=f1e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e19]: public
+    - button "General settings" [ref=f1e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f1e21]: settings
+    - 'button "Language: English" [ref=f1e69] [cursor=pointer]':
+      - generic [aria-hidden] [ref=f1e74]: EN
+  - generic: syncing road network
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic "Navigation, voice, and visual preset controls" [ref=f1e27]:
+    - button "Expand LOCATION" [ref=f1e36] [cursor=pointer]:
+      - generic [ref=f1e37]: LOCATION
+    - generic [ref=f1e77]:
+      - generic [ref=f1e78]:
+        - generic: AI AGENT
+        - generic [ref=f1e79]: "OFF"
+        - generic [ref=f1e80]:
+          - button "STD" [ref=f1e81] [cursor=pointer]
+          - generic "Estimated session cost on gpt-realtime-2 — 0 response(s). Warns at ~$2.00, ends the session at ~$5.00." [ref=f1e82]: ~$0.00
+      - button "Voice control — activate to toggle voice; hold Space to speak" [ref=f1e83] [cursor=pointer]:
+        - generic [ref=f1e85]: ON/OFF
+      - generic [ref=f1e102]: VOICE STANDBY
+    - button "Expand VISUAL PRESETS" [ref=f1e176] [cursor=pointer]:
+      - generic [ref=f1e31]: VISUAL PRESETS
+  - generic [ref=f1e105]:
+    - button "DATA LAYERS" [ref=f1e106] [cursor=pointer]:
+      - generic [aria-hidden]: database
+      - text: DATA LAYERS
+    - button "SCENES" [ref=f1e107] [cursor=pointer]:
+      - generic [aria-hidden]: movie
+      - text: SCENES
+  - complementary [ref=f1e108]:
+    - button "DISPLAY" [active] [ref=f1e109] [cursor=pointer]:
+      - generic [aria-hidden]: tune
+      - text: DISPLAY
+    - button "CCTV" [ref=f1e110] [cursor=pointer]:
+      - generic [aria-hidden]: videocam
+      - text: CCTV
+    - text: WEATHER RECENT IMAGERY
+    - button "STREET LEVEL" [ref=f1e112] [cursor=pointer]:
+      - generic [aria-hidden]: my_location
+      - text: STREET LEVEL
+    - button "CONTEXT" [ref=f1e113] [cursor=pointer]:
+      - generic [aria-hidden]: radar
+      - text: CONTEXT
+  - generic: NORMAL
+  - generic:
+    - generic:
+      - generic: ┌
+      - generic:
+        - generic: TOP SECRET // SI-TK // NOFORN
+        - generic: KH11-4083 OPS-4150
+        - generic: NORMAL
+        - generic:
+          - generic: SUMMARY
+          - generic: NORMAL GLOBAL SECTOR 21.23N 101.11W | NORTH AMERICA | ALT 17082.3KM | WINDOW 1x19980KM | SUN -63° | ONA 0° | UTC-7
+    - generic:
+      - generic:
+        - generic: ● REC 2026-11-19 08:41:46Z
+        - generic: "ORB: 47038 PASS: DESC-193"
+      - generic: ┐
+    - generic:
+      - generic: └
+      - generic:
+        - generic: "MGRS: 14Q KJ 8057 4947"
+        - generic: 21°14'01.21"N 101°06'51.43"W
+    - generic:
+      - generic:
+        - generic: "GSD: 6405.87m NIIRS: 0.0"
+        - generic: "ALT: 17082326m SUN: -62.6° EL"
+        - generic: "AIS: --"
+      - generic: ┘
+    - generic:
+      - generic: "COLL: 08:41:47Z"
+      - generic: "ONA: 0.1°"
+    - generic:
+      - generic: "BAND: PAN"
+      - generic: "BITS: 11"
+      - generic: "LVL: 1A"
+  - generic [ref=f1e62]:
+    - link [ref=f1e65] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=f1e66]
+    - generic [ref=f1e114]:
+      - link "Upgrade for commercial use." [ref=f1e167] [cursor=pointer]:
+        - /url: https://cesium.com/pricing/
+      - text: •
+      - img "Google" [ref=f1e175]
+    - button "Data attribution" [ref=f1e119] [cursor=pointer]

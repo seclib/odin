@@ -6,9 +6,8 @@
  * shell decides what a choice does (confirm, reload).
  *
  * The list follows the ARIA listbox pattern: the button opens it, focus moves
- * into the list (or into the search field, which is a combobox, once there are
- * more than LOCALE_SEARCH_THRESHOLD languages), and aria-activedescendant
- * marks the active option.
+ * into the list and aria-activedescendant marks the active option. Every
+ * language is listed directly, without a search field.
  */
 
 import { t } from '../i18n/index.js';
@@ -374,7 +373,8 @@ export function mountLocalePicker({
   onSelect,
   locales = LOCALES,
   nativeNames = LOCALE_NAMES,
-  searchThreshold = LOCALE_SEARCH_THRESHOLD,
+  // Every shipped language is shown directly: no search field or filtering.
+  searchThreshold = Number.POSITIVE_INFINITY,
 }) {
   const documentRef = root.ownerDocument;
   const windowRef = documentRef.defaultView;
@@ -421,31 +421,13 @@ export function mountLocalePicker({
   const popup = element(documentRef, 'div', 'locale-picker-popup');
   popup.id = ids.popup;
   popup.hidden = true;
-  const heading = element(documentRef, 'div', 'locale-picker-heading');
-  heading.id = ids.heading;
-  heading.textContent = t('Interface language');
-  popup.append(heading);
 
   const listbox = element(documentRef, 'ul', 'locale-picker-list');
   listbox.id = ids.listbox;
   listbox.setAttribute('role', 'listbox');
-  listbox.setAttribute('aria-labelledby', ids.heading);
+  // The trigger already names the control, so the list needs no in-menu title.
+  listbox.setAttribute('aria-label', button.getAttribute('aria-label'));
   listbox.tabIndex = -1;
-
-  let search = null;
-  if (model.searchable) {
-    search = element(documentRef, 'input', 'locale-picker-search');
-    search.type = 'search';
-    search.autocomplete = 'off';
-    search.spellcheck = false;
-    search.setAttribute('role', 'combobox');
-    search.setAttribute('aria-autocomplete', 'list');
-    search.setAttribute('aria-expanded', 'true');
-    search.setAttribute('aria-controls', ids.listbox);
-    search.setAttribute('aria-label', t('Search languages'));
-    search.placeholder = t('Search languages');
-    popup.append(search);
-  }
   popup.append(listbox);
   const empty = element(documentRef, 'p', 'locale-picker-empty');
   empty.setAttribute('role', 'status');
@@ -479,7 +461,7 @@ export function mountLocalePicker({
     optionNodes.set(option.code, item);
   }
 
-  const focusTarget = () => search || listbox;
+  const focusTarget = () => listbox;
 
   const render = () => {
     const visible = new Set(model.visible.map((option) => option.code));
@@ -525,8 +507,25 @@ export function mountLocalePicker({
   const open = () => {
     if (model.open) return;
     model.openList();
-    if (search) search.value = '';
     popup.hidden = false;
+    // Centre the menu under its trigger, then clamp inside the viewport so a
+    // language list near either screen edge stays fully visible.
+    const buttonRect = button.getBoundingClientRect();
+    const rootRect = root.getBoundingClientRect();
+    const menuRect = popup.getBoundingClientRect();
+    const margin = 8;
+    const left = Math.max(
+      margin,
+      Math.min(
+        buttonRect.left + buttonRect.width / 2 - menuRect.width / 2,
+        windowRef.innerWidth - menuRect.width - margin,
+      ),
+    );
+    popup.style.insetInlineStart = `${Math.round(left - rootRect.left)}px`;
+    popup.style.insetInlineEnd = 'auto';
+    popup.style.insetBlockStart = `${Math.round(
+      buttonRect.bottom - rootRect.top + 6,
+    )}px`;
     root.classList.add('is-open');
     button.setAttribute('aria-expanded', 'true');
     render();
@@ -592,11 +591,6 @@ export function mountLocalePicker({
     render();
   };
 
-  const onSearchInput = () => {
-    model.setQuery(search.value);
-    render();
-  };
-
   const onFocusOut = (event) => {
     const next = event.relatedTarget;
     if (model.open && next && !root.contains(next)) close();
@@ -607,7 +601,6 @@ export function mountLocalePicker({
   button.addEventListener('keyup', onButtonKeyUp);
   listbox.addEventListener('click', onListClick);
   listbox.addEventListener('pointermove', onListPointerMove);
-  search?.addEventListener('input', onSearchInput);
   root.addEventListener('focusout', onFocusOut);
 
   return {
@@ -621,7 +614,6 @@ export function mountLocalePicker({
       button.removeEventListener('keyup', onButtonKeyUp);
       listbox.removeEventListener('click', onListClick);
       listbox.removeEventListener('pointermove', onListPointerMove);
-      search?.removeEventListener('input', onSearchInput);
       root.removeEventListener('focusout', onFocusOut);
       root.textContent = '';
     },

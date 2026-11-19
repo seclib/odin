@@ -1,4 +1,3 @@
-
 import * as Cesium from 'cesium';
 
 function finite(value) {
@@ -38,7 +37,10 @@ export function cumulativeGeodesicDistanceMeters(positions) {
 
   let total = 0;
   for (let i = 1; i < normalized.length; i += 1) {
-    const segment = geodesicSurfaceDistanceMeters(normalized[i - 1], normalized[i]);
+    const segment = geodesicSurfaceDistanceMeters(
+      normalized[i - 1],
+      normalized[i],
+    );
     if (segment === null) return null;
     total += segment;
   }

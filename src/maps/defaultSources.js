@@ -58,6 +58,15 @@ export function createDefaultMapSources({
           available: Boolean(googleTileset),
           unavailableReason: photorealUnavailableReason(hasIon || hasGoogle),
           tileset: googleTileset,
+          // A tileset object resolves before its first tile is fetched, so a
+          // bad key or a blocked CDN still yields an "available" stack with
+          // nothing to draw. Watch its tile failures and land on a globe
+          // imagery stack rather than hiding the globe over an empty tileset.
+          tilesetFailureFallback: {
+            id: 'osm',
+            threshold: 3,
+            message: 'Google 3D tiles failed to load; using OSM',
+          },
         };
       const imagery =
         descriptor.kind === 'ion'
@@ -74,9 +83,27 @@ export function createDefaultMapSources({
                     ? createIgnBdOrthoImagery
                     : descriptor.id === 'lidar-shade'
                       ? createIgnLidarHillshadeImagery
-                    : descriptor.id === 'openfreemap'
-                      ? createOpenFreeMapImagery
-                      : createEsriImagery;
+                      : descriptor.id === 'openfreemap'
+                        ? createOpenFreeMapImagery
+                        : createEsriImagery;
+      // Direct evidence (2026-11-19): basemaps.cartocdn.com answers
+      // anonymous tile requests with a 256×256 "API KEY REQUIRED"
+      // placeholder PNG (identical bytes with and without the old `{r}`
+      // tag). ODIN ships no CARTO basemap key, so this stack cannot draw
+      // — offering it anyway meant a black globe with a lit chip. The
+      // option stays in the tray but unavailable with the reason in its
+      // tooltip, the same contract as an ion stack without a token.
+      if (descriptor.id === 'carto-dark') {
+        return {
+          ...common,
+          available: false,
+          unavailableReason: t(
+            'CARTO basemaps require an API key from carto.com; anonymous tiles return placeholder images',
+          ),
+          imagery,
+          terrain,
+        };
+      }
       if (descriptor.id === 'openfreemap') {
         const enabled =
           typeof import.meta !== 'undefined' &&

@@ -1,4 +1,5 @@
 {
+  "CARTO basemaps require an API key from carto.com; anonymous tiles return placeholder images": "Les fonds de carte CARTO exigent une clé API de carto.com ; les tuiles anonymes renvoient des images d'attente.",
   "General settings": "Paramètres généraux",
   "GROUND STATION · SETTINGS": "GROUND STATION · PARAMÈTRES",
   "Close settings": "Fermer les paramètres",
@@ -1859,8 +1860,6 @@
   "Decoder feeds: {feeds}": "Flux du décodeur : {feeds}",
   "Language: {language}": "Langue : {language}",
   "Change the interface language": "Changer la langue de l'interface",
-  "Interface language": "Langue de l'interface",
-  "Search languages": "Rechercher une langue",
   "No matching languages": "Aucune langue correspondante",
   "📍 Location: --": "📍 Lieu : --",
   "Landmark: --": "Repère : --",
@@ -3005,7 +3004,6 @@
   "NEW": "NEW",
   "CAPTURE SHOT": "CAPTURE SHOT",
   "START": "START",
-  "EXPORT PRESETS": "EXPORT PRESETS",
   "Buildings": "Bâtiments",
   "GROUND STATION · LOCAL DATA": "GROUND STATION · DONNÉES LOCALES",
   "DISABLED": "DÉSACTIVÉ",

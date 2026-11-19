@@ -16,6 +16,8 @@ export function createMapSourceControls({
 }) {
   let destroyed = false;
   let generation = 0;
+  /** Last error already surfaced; avoids a duplicate toast per switch. */
+  let shownError = null;
   const removers = [];
   const bind = (element, type, listener) => {
     element.addEventListener(type, listener);
@@ -36,8 +38,8 @@ export function createMapSourceControls({
   async function select(stackId, { syncShare = true } = {}) {
     if (destroyed) return null;
     const current = ++generation;
+    shownError = null;
     if (syncShare) claimSelection();
-    const before = controller.getActiveId();
     render(controller.getState('switching'));
     let state;
     try {
@@ -50,9 +52,15 @@ export function createMapSourceControls({
       throw error;
     }
     if (destroyed || current !== generation) return state;
-    render(controller.getState());
-    if (state?.activeId === before && stackId !== before && state?.lastError)
-      onError(state.lastError);
+    const settled = controller.getState();
+    render(settled);
+    // A failure is worth reporting even when the controller landed on a
+    // fallback stack: the lit chip tells WHERE we landed, the toast tells WHY.
+    const message = settled.lastError || state?.lastError;
+    if (message && message !== shownError) {
+      shownError = message;
+      onError(message);
+    }
     if (syncShare) onStateChanged();
     return state;
   }
@@ -70,7 +78,15 @@ export function createMapSourceControls({
   }
   const unsubscribe = subscribe(() => {
     if (destroyed) return;
-    render(controller.getState());
+    const state = controller.getState();
+    render(state);
+    // Automatic fallbacks never pass through select(): report their error on
+    // the same status feed that keeps the chips in sync with the controller.
+    if (!state.lastError) shownError = null;
+    else if (state.lastError !== shownError) {
+      shownError = state.lastError;
+      onError(state.lastError);
+    }
     onStateChanged();
   });
   refresh();

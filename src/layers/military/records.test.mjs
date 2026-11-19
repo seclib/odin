@@ -210,7 +210,12 @@ test('military records do not derive track when speed is below threshold', () =>
 test('military records hold reported courseDeg when available', () => {
   const records = store();
   const first = records.receive(
-    observation({ courseDeg: 45, latitude: 0, longitude: 0, positionTimeMs: 1000 }),
+    observation({
+      courseDeg: 45,
+      latitude: 0,
+      longitude: 0,
+      positionTimeMs: 1000,
+    }),
     context(),
   );
   assert.equal(first.meta.track, 45);

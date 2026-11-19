@@ -1,4 +1,5 @@
 {
+  "CARTO basemaps require an API key from carto.com; anonymous tiles return placeholder images": "מפות הבסיס של CARTO דורשות מפתח API מ-carto.com; אריחים אנונימיים מחזירים תמונות מצייני מקום.",
   "General settings": "הגדרות כלליות",
   "GROUND STATION · SETTINGS": "GROUND STATION · הגדרות",
   "Close settings": "סגירת הגדרות",
@@ -2432,8 +2433,6 @@
   "Reset map bearing to north": "איפוס כיוון המפה לצפון",
   "Language: {language}": "שפה: {language}",
   "Change the interface language": "שינוי שפת הממשק",
-  "Interface language": "שפת הממשק",
-  "Search languages": "חיפוש שפות",
   "No matching languages": "אין שפות תואמות",
   "Selected Space Mission": "משימת החלל הנבחרת",
   "SELECTED SPACE MISSION": "משימת החלל הנבחרת",
@@ -3021,7 +3020,6 @@
   "NEW": "NEW",
   "CAPTURE SHOT": "CAPTURE SHOT",
   "START": "START",
-  "EXPORT PRESETS": "EXPORT PRESETS",
   "Buildings": "בניינים",
   "GROUND STATION · LOCAL DATA": "עמדת קרקע · נתונים מקומיים",
   "DISABLED": "מושבת",

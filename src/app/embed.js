@@ -137,6 +137,9 @@ function flyTo(viewer, camera) {
         roll: 0,
       },
       duration: FLIGHT_SECONDS,
+      // Match world focus and share restoration: an eased flight keeps the
+      // hand-off between globe and local view free of a camera snap.
+      easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
       complete: () => resolve(true),
       cancel: () => resolve(false),
     });

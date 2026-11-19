@@ -22,8 +22,12 @@ test('CCTV and Context keep their headers outside Cyber-only scroll bodies', () 
       'utf8',
     );
     assert.match(markup, /class="cyber-panel-body" data-rail-scroller/);
+    // Every panel header in these templates is a `.panel-header`, optionally
+    // carrying the rail-tab hooks, so match the class token rather than one
+    // exact attribute value. A header that drifted inside the scroll body
+    // would sit after the first body in source order and fail here.
     assert.ok(
-      markup.indexOf('class="panel-header"') <
+      markup.indexOf('class="panel-header') <
         markup.indexOf('class="cyber-panel-body"'),
     );
   }

@@ -20,9 +20,9 @@ export const ALTIMETRIC_REFERENCE = Object.freeze({
 
 /** Provider ids known to ODIN. */
 export const TERRAIN_PROVIDER_IDS = Object.freeze({
-  WORLD: 'world',       // Cesium ion (high-res, token required)
-  KEYLESS: 'keyless',    // Re:Earth / Mapterhorn (CC BY 4.0)
-  ELLIPSOID: 'ellipsoid',// Flat ellipsoid fallback
+  WORLD: 'world', // Cesium ion (high-res, token required)
+  KEYLESS: 'keyless', // Re:Earth / Mapterhorn (CC BY 4.0)
+  ELLIPSOID: 'ellipsoid', // Flat ellipsoid fallback
 });
 
 /** Centralized provider catalog. */
@@ -35,6 +35,12 @@ export const TERRAIN_PROVIDERS = Object.freeze({
     supportsExaggeration: true,
     supportsVertexNormals: true,
     altimetricReference: ALTIMETRIC_REFERENCE.ELLIPSOIDAL,
+    // Verified for Phase 3: Cesium ion content is licensed under the Cesium ion
+    // Terms of Use; the ion token is mandatory and attribution must stay visible.
+    license: 'Cesium ion Terms of Use',
+    attribution: 'Cesium ion · Cesium World Terrain',
+    coverage: 'Global',
+    heightSource: 'Cesium World Terrain (ellipsoidal)',
     cache: { maxTiles: 2000, ttlMs: 86400000 },
     resolution: { maxScreenSpaceError: 2, lodBias: 1.0 },
     limits: { maxZoom: 19, maxConcurrent: 16 },
@@ -47,6 +53,12 @@ export const TERRAIN_PROVIDERS = Object.freeze({
     supportsExaggeration: false,
     supportsVertexNormals: true,
     altimetricReference: ALTIMETRIC_REFERENCE.ELLIPSOIDAL,
+    // Re:Earth / Mapterhorn quantized-mesh tiles are CC BY 4.0: attribution is
+    // a licence obligation, not a courtesy. No API key is involved.
+    license: 'CC BY 4.0',
+    attribution: 'Re:Earth / Mapterhorn (CC BY 4.0)',
+    coverage: 'Global quantized-mesh tiles',
+    heightSource: 'Re:Earth ellipsoidal mesh',
     cache: { maxTiles: 1000, ttlMs: 86400000 },
     resolution: { maxScreenSpaceError: 4, lodBias: 1.0 },
     limits: { maxZoom: 15, maxConcurrent: 8 },
@@ -59,6 +71,12 @@ export const TERRAIN_PROVIDERS = Object.freeze({
     supportsExaggeration: false,
     supportsVertexNormals: false,
     altimetricReference: ALTIMETRIC_REFERENCE.ELLIPSOIDAL,
+    // No external dataset: the WGS84 reference ellipsoid is a mathematical
+    // surface, so there is no third-party licence and no terrain to exaggerate.
+    license: 'No external data (reference ellipsoid)',
+    attribution: 'Cesium ellipsoid — no third-party data',
+    coverage: 'Global reference surface (no relief)',
+    heightSource: 'WGS84 ellipsoid (0 m)',
     cache: { maxTiles: 0, ttlMs: 0 },
     resolution: { maxScreenSpaceError: 16, lodBias: 1.0 },
     limits: { maxZoom: 0, maxConcurrent: 0 },

@@ -111,7 +111,7 @@ export class ShareLinkManager {
     // question and deliberately stays at 5.
     this._detectionOutsideOpacityPct = 1;
     this._celestialRingEnabled = false;
-    this._scopeEnabled = true;
+    this._scopeEnabled = false;
     // Feather opens on a soft 11% scope-mask edge (owner final lock 2026-08-24,
     // superseding the 08-22 hard-crop and 08-23 8% rulings) — mirrors
     // SCOPE_FEATHER_RATIO_DEFAULT in scopeMask.js and the slider's markup value.
@@ -152,7 +152,15 @@ export class ShareLinkManager {
   /**
    * Parse URL hash on page load. Returns parsed state or null.
    */
-  parseInitialHash() {
+  parseInitialHash({ requireShareIntent = false } = {}) {
+    // The app writes its own hash while the operator works. A plain reload of
+    // that hash must open a clean globe, not resurrect a previous session:
+    // only an explicit shared link (?share=1, added by copyLink) restores it.
+    if (
+      requireShareIntent &&
+      !new URLSearchParams(window.location.search).has('share')
+    )
+      return null;
     const hash = window.location.hash.slice(1);
     if (!hash) return null;
 
@@ -214,7 +222,7 @@ export class ShareLinkManager {
         Math.min(100, Math.round(parseOr(params.get('ko'), 5))),
       ),
       celestialRing: params.has('cr') ? params.get('cr') === '1' : false,
-      scopeEnabled: params.has('sc') ? params.get('sc') === '1' : true,
+      scopeEnabled: params.has('sc') ? params.get('sc') === '1' : false,
       // Deliberately still 35 through both later default moves (0 on
       // 2026-08-22, 8 on 2026-08-23). This is the PARSE fallback for a link that
       // predates `scf` entirely, and such a link was authored when 35 was what
@@ -513,6 +521,9 @@ export class ShareLinkManager {
     const copiedUrl = new URL(window.location.href);
     // ?lang is the sender's language override; the recipient keeps their own.
     copiedUrl.searchParams.delete('lang');
+    // Marks the link as an intentional shared view so its saved visual state
+    // is restored on arrival, unlike a self-written hash after a reload.
+    copiedUrl.searchParams.set('share', '1');
     copiedUrl.hash = params.toString();
     try {
       await navigator.clipboard.writeText(copiedUrl.href);

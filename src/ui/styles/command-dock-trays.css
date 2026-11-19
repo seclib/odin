@@ -9,7 +9,9 @@
     var(--dock-side-compact) * 2 + var(--dock-voice-width)
   );
   --dock-location-open: max(34rem, calc(var(--dock-unified-width) + 0.75rem));
-  --dock-presets-open: max(34rem, calc(var(--dock-unified-width) + 0.75rem));
+  /* Slightly wider than the location wing so long option labels fit; the
+     tray keeps its compact, proportionate read. */
+  --dock-presets-open: max(36.5rem, calc(var(--dock-unified-width) + 0.75rem));
 }
 
 #command-dock .panel-title,
@@ -145,7 +147,7 @@
 }
 
 #command-dock .dock-popover-content {
-  padding: 0.7rem;
+  padding: 0.75rem;
 }
 
 #command-dock .dock-pin-btn {

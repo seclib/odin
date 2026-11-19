@@ -26,12 +26,18 @@ const MEMORY_KEYS = ['usedJSHeapSize', 'totalJSHeapSize', 'jsHeapSizeLimit'];
 function readMemory() {
   const memory = performance?.memory;
   if (!memory) {
-    return { available: false, usedJSHeapSize: null, totalJSHeapSize: null, jsHeapSizeLimit: null };
+    return {
+      available: false,
+      usedJSHeapSize: null,
+      totalJSHeapSize: null,
+      jsHeapSizeLimit: null,
+    };
   }
   const out = { available: true };
   for (const key of MEMORY_KEYS) {
     const value = memory[key];
-    out[key] = typeof value === 'number' && Number.isFinite(value) ? value : null;
+    out[key] =
+      typeof value === 'number' && Number.isFinite(value) ? value : null;
   }
   return out;
 }
@@ -94,9 +100,11 @@ export function createPerformanceMonitor({
   historyCapacity = DEFAULT_HISTORY_CAPACITY,
   sampleIntervalMs = DEFAULT_SAMPLE_INTERVAL_MS,
 } = {}) {
-  if (!scene) throw new TypeError('createPerformanceMonitor requires a Cesium scene');
+  if (!scene)
+    throw new TypeError('createPerformanceMonitor requires a Cesium scene');
 
-  const _windowMs = Number.isFinite(windowMs) && windowMs > 0 ? windowMs : DEFAULT_WINDOW_MS;
+  const _windowMs =
+    Number.isFinite(windowMs) && windowMs > 0 ? windowMs : DEFAULT_WINDOW_MS;
   const _capacity =
     Number.isFinite(historyCapacity) && historyCapacity > 0
       ? Math.floor(historyCapacity)
@@ -117,7 +125,10 @@ export function createPerformanceMonitor({
   function _trimFrameTimestamps(now) {
     const cutoff = now - _windowMs;
     let start = 0;
-    while (start < _frameTimestamps.length && _frameTimestamps[start] < cutoff) {
+    while (
+      start < _frameTimestamps.length &&
+      _frameTimestamps[start] < cutoff
+    ) {
       start += 1;
     }
     if (start > 0) _frameTimestamps.splice(0, start);
@@ -182,12 +193,14 @@ export function createPerformanceMonitor({
       out.primitives = null;
     }
     try {
-      out.entities = viewer?.entities?.length != null ? viewer.entities.length : null;
+      out.entities =
+        viewer?.entities?.length != null ? viewer.entities.length : null;
     } catch {
       out.entities = null;
     }
     try {
-      out.dataSources = viewer?.dataSources?.length != null ? viewer.dataSources.length : null;
+      out.dataSources =
+        viewer?.dataSources?.length != null ? viewer.dataSources.length : null;
     } catch {
       out.dataSources = null;
     }
@@ -230,63 +243,67 @@ export function createPerformanceMonitor({
     }, _sampleIntervalMs);
   }
 
-  return /** @type {import('./sourceNormalizer.js').NormalizedResult} */ (/** @type any */ ({
-    /** Begin collecting frames and periodic snapshots. */
-    start() {
-      if (_started) return;
-      _started = true;
-      _frameTimestamps = [];
-      _lastFrameTime = null;
-      if (
-        scene.postRender &&
-        typeof scene.postRender.addEventListener === 'function'
-      ) {
-        const listener = () => _recordFrame();
-        scene.postRender.addEventListener(listener);
-        _disposeFns.push(() => scene.postRender.removeEventListener(listener));
-      }
-      takeSnapshot();
-      _scheduleTimer();
-    },
-    /** Stop collecting and release listeners. */
-    stop() {
-      _started = false;
-      if (_timer) {
-        clearTimeout(_timer);
-        _timer = null;
-      }
-      for (const fn of _disposeFns) fn();
-      _disposeFns.length = 0;
-    },
-    /** Take a snapshot now and push it to the bounded history. */
-    takeSnapshot,
-    /** Return the last snapshot, or compute a fresh one without history. */
-    getSnapshot() {
-      return _lastSnapshot ?? computeSnapshot();
-    },
-    /** Return a copy of the bounded history. */
-    getHistory() {
-      return _history.slice();
-    },
-    /** Clear frame samples, history and last snapshot. */
-    reset() {
-      _frameTimestamps = [];
-      _lastFrameTime = null;
-      _history = [];
-      _lastSnapshot = null;
-    },
-    /** Current configuration. */
-    getOptions() {
-      return {
-        windowMs: _windowMs,
-        historyCapacity: _capacity,
-        sampleIntervalMs: _sampleIntervalMs,
-      };
-    },
-    /** Stop and clear all collected state. */
-    dispose() {
-      this.stop();
-      this.reset();
-    },
-  })); // <-- This is line 314, the closing }/); of the Object.freeze return
+  return /** @type {import('./sourceNormalizer.js').NormalizedResult} */ (
+    /** @type any */ ({
+      /** Begin collecting frames and periodic snapshots. */
+      start() {
+        if (_started) return;
+        _started = true;
+        _frameTimestamps = [];
+        _lastFrameTime = null;
+        if (
+          scene.postRender &&
+          typeof scene.postRender.addEventListener === 'function'
+        ) {
+          const listener = () => _recordFrame();
+          scene.postRender.addEventListener(listener);
+          _disposeFns.push(() =>
+            scene.postRender.removeEventListener(listener),
+          );
+        }
+        takeSnapshot();
+        _scheduleTimer();
+      },
+      /** Stop collecting and release listeners. */
+      stop() {
+        _started = false;
+        if (_timer) {
+          clearTimeout(_timer);
+          _timer = null;
+        }
+        for (const fn of _disposeFns) fn();
+        _disposeFns.length = 0;
+      },
+      /** Take a snapshot now and push it to the bounded history. */
+      takeSnapshot,
+      /** Return the last snapshot, or compute a fresh one without history. */
+      getSnapshot() {
+        return _lastSnapshot ?? computeSnapshot();
+      },
+      /** Return a copy of the bounded history. */
+      getHistory() {
+        return _history.slice();
+      },
+      /** Clear frame samples, history and last snapshot. */
+      reset() {
+        _frameTimestamps = [];
+        _lastFrameTime = null;
+        _history = [];
+        _lastSnapshot = null;
+      },
+      /** Current configuration. */
+      getOptions() {
+        return {
+          windowMs: _windowMs,
+          historyCapacity: _capacity,
+          sampleIntervalMs: _sampleIntervalMs,
+        };
+      },
+      /** Stop and clear all collected state. */
+      dispose() {
+        this.stop();
+        this.reset();
+      },
+    })
+  ); // <-- This is line 314, the closing }/); of the Object.freeze return
 } // <-- This closes the function

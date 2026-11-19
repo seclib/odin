@@ -292,7 +292,9 @@ test('parseIgnElevations: zonly=true numeric rows', async () => {
 test('parseIgnElevations: measure objects and defensive reads', async () => {
   const { parseIgnElevations } = await import('./terrainHeightsProxy.js');
   const out = parseIgnElevations(
-    JSON.stringify({ elevations: [{ z: 164.34 }, { z: '141.33' }, { z: -99999 }] }),
+    JSON.stringify({
+      elevations: [{ z: 164.34 }, { z: '141.33' }, { z: -99999 }],
+    }),
     3,
   );
   assert.deepEqual(out, [164.34, 141.33, null]);
@@ -301,7 +303,10 @@ test('parseIgnElevations: measure objects and defensive reads', async () => {
 test('parseIgnElevations: throws on garbage or missing array instead of inventing heights', async () => {
   const { parseIgnElevations } = await import('./terrainHeightsProxy.js');
   assert.throws(() => parseIgnElevations('not json', 1), /not valid JSON/);
-  assert.throws(() => parseIgnElevations('{"nope":[]}', 1), /no elevations array/);
+  assert.throws(
+    () => parseIgnElevations('{"nope":[]}', 1),
+    /no elevations array/,
+  );
 });
 
 test('parseIgnElevations: fewer rows yields trailing nulls, never fabrications', async () => {
@@ -332,8 +337,16 @@ test('fetchIgnPoints: Réunion-shaped mock returns orthometric NGF heights', asy
   assert.match(calls[0], /resource=ign_rge_alti_par_territoires/);
   assert.match(calls[0], /lon=55\.45%7C55\.465/);
   assert.deepEqual(results, [
-    { heightOrthometric: 31.34, source: 'ign-rge-alti', verticalDatum: 'NGF-IGN69' },
-    { heightOrthometric: 2006.91, source: 'ign-rge-alti', verticalDatum: 'NGF-IGN69' },
+    {
+      heightOrthometric: 31.34,
+      source: 'ign-rge-alti',
+      verticalDatum: 'NGF-IGN69',
+    },
+    {
+      heightOrthometric: 2006.91,
+      source: 'ign-rge-alti',
+      verticalDatum: 'NGF-IGN69',
+    },
   ]);
 });
 
@@ -369,9 +382,8 @@ test('fetchIgnPoints: HTTP 429 is retryable, carries Retry-After, and throws', a
 });
 
 test('resolveTerrainHeightRequest: IGN orthometric entries are valid cacheable real results', async () => {
-  const { resolveTerrainHeightRequest, terrainPointKey } = await import(
-    './terrainHeightsProxy.js'
-  );
+  const { resolveTerrainHeightRequest, terrainPointKey } =
+    await import('./terrainHeightsProxy.js');
   const key = terrainPointKey([55.45, -20.88]);
   const now = 1_000_000;
   const cache = new Map([
@@ -414,7 +426,11 @@ test('fetchIgnPoints: 1m pyramid -99999 falls back to static pyramid', async () 
   });
   assert.equal(calls.length, 2);
   assert.deepEqual(results, [
-    { heightOrthometric: 31.54, source: 'ign-rge-alti', verticalDatum: 'NGF-IGN69' },
+    {
+      heightOrthometric: 31.54,
+      source: 'ign-rge-alti',
+      verticalDatum: 'NGF-IGN69',
+    },
   ]);
 });
 

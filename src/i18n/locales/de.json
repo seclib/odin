@@ -1,4 +1,5 @@
 {
+  "CARTO basemaps require an API key from carto.com; anonymous tiles return placeholder images": "CARTO-Karten benötigen einen API-Schlüssel von carto.com; anonyme Tiles liefern Platzhalterbilder.",
   "General settings": "Allgemeine Einstellungen",
   "GROUND STATION · SETTINGS": "GROUND STATION · EINSTELLUNGEN",
   "Close settings": "Einstellungen schließen",
@@ -2170,8 +2171,6 @@
   "Decoder feeds: {feeds}": "Decoder-Feeds: {feeds}",
   "Language: {language}": "Sprache: {language}",
   "Change the interface language": "Sprache der Oberfläche ändern",
-  "Interface language": "Sprache der Oberfläche",
-  "Search languages": "Sprachen durchsuchen",
   "No matching languages": "Keine passenden Sprachen",
   "Detailed outline unavailable": "Detaillierter Umriss nicht verfügbar",
   "Austin": "Austin",
@@ -2953,7 +2952,6 @@
   "NEW": "NEW",
   "CAPTURE SHOT": "CAPTURE SHOT",
   "START": "START",
-  "EXPORT PRESETS": "EXPORT PRESETS",
   "Buildings": "Gebäude",
   "GROUND STATION · LOCAL DATA": "GROUND STATION · LOKALE DATEN",
   "DISABLED": "DEAKTIVIERT",

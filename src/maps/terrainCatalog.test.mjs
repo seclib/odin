@@ -55,3 +55,35 @@ test('catalogs are frozen', () => {
   assert.ok(Object.isFrozen(TERRAIN_PROVIDERS));
   assert.ok(Object.isFrozen(TERRAIN_PROFILES));
 });
+
+test('each provider documents verified license, attribution and coverage', () => {
+  for (const id of listTerrainProviders()) {
+    const p = getTerrainProvider(id);
+    for (const field of ['license', 'attribution', 'coverage', 'heightSource']) {
+      assert.equal(typeof p[field], 'string', `${id}.${field}`);
+      assert.ok(p[field].trim().length > 0, `${id}.${field} is empty`);
+    }
+  }
+});
+
+test('keyless terrain attribution carries its CC BY 4.0 obligation', () => {
+  const keyless = getTerrainProvider('keyless');
+  assert.match(keyless.license, /CC BY 4\.0/);
+  assert.match(keyless.attribution, /Re:Earth/);
+  assert.match(keyless.attribution, /Mapterhorn/);
+  assert.equal(keyless.requiresToken, false);
+});
+
+test('world terrain records its ion licence and token requirement', () => {
+  const world = getTerrainProvider('world');
+  assert.match(world.license, /Cesium ion/i);
+  assert.equal(world.requiresToken, true);
+  assert.equal(world.supportsExaggeration, true);
+});
+
+test('ellipsoid fallback declares no external data and no exaggeration', () => {
+  const ellipsoid = getTerrainProvider('ellipsoid');
+  assert.equal(ellipsoid.supports3D, false);
+  assert.equal(ellipsoid.supportsExaggeration, false);
+  assert.match(ellipsoid.coverage, /référence|reference|ellipsoïde|ellipsoid/i);
+});

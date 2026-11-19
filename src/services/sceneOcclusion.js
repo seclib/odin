@@ -68,8 +68,14 @@ export function createSceneOcclusionProbe(viewer) {
     }
 
     const cameraPosition = camera.positionWC || camera.position;
-    const contactDistance = Cesium.Cartesian3.distance(cameraPosition, contactCartesian);
-    const pickedDistance = Cesium.Cartesian3.distance(cameraPosition, pickedPosition);
+    const contactDistance = Cesium.Cartesian3.distance(
+      cameraPosition,
+      contactCartesian,
+    );
+    const pickedDistance = Cesium.Cartesian3.distance(
+      cameraPosition,
+      pickedPosition,
+    );
 
     if (!Number.isFinite(contactDistance) || !Number.isFinite(pickedDistance)) {
       return { occluded: false, method: 'invalid-distance' };
@@ -78,7 +84,12 @@ export function createSceneOcclusionProbe(viewer) {
     const margin = Math.max(3, Number(marginM) || 3);
     const occluded = pickedDistance < contactDistance - margin;
 
-    return { occluded, method: 'pickPosition', pickedDistance, contactDistance };
+    return {
+      occluded,
+      method: 'pickPosition',
+      pickedDistance,
+      contactDistance,
+    };
   }
 
   return { probe, available };

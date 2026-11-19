@@ -28,7 +28,7 @@ export const near = defineTool({
   name: 'near',
   title: 'Entités voisines',
   description:
-    'Retourne les entités (appareils, feux, séismes) à moins d\'un rayon donné d\'un point ou d\'une aire, triés par distance croissante.',
+    "Retourne les entités (appareils, feux, séismes) à moins d'un rayon donné d'un point ou d'une aire, triés par distance croissante.",
   inputSchema: {
     type: 'object',
     properties: {
@@ -108,29 +108,37 @@ export const near = defineTool({
 
       // Sort by distance from center
       filtered.sort((a, b) => {
-        const aDist = a.latitude && a.longitude
-          ? distanceKm(center, { lat: a.latitude, lon: a.longitude })
-          : Infinity;
-        const bDist = b.latitude && b.longitude
-          ? distanceKm(center, { lat: b.latitude, lon: b.longitude })
-          : Infinity;
+        const aDist =
+          a.latitude && a.longitude
+            ? distanceKm(center, { lat: a.latitude, lon: a.longitude })
+            : Infinity;
+        const bDist =
+          b.latitude && b.longitude
+            ? distanceKm(center, { lat: b.latitude, lon: b.longitude })
+            : Infinity;
         return aDist - bDist;
       });
 
-      results.push(...filtered.map((record) => ({
-        ...record,
-        _distance_km:
-          record.latitude && record.longitude
-            ? distanceKm(center, { lat: record.latitude, lon: record.longitude })
-            : null,
-      })));
+      results.push(
+        ...filtered.map((record) => ({
+          ...record,
+          _distance_km:
+            record.latitude && record.longitude
+              ? distanceKm(center, {
+                  lat: record.latitude,
+                  lon: record.longitude,
+                })
+              : null,
+        })),
+      );
     };
 
     // Collect from aircraft source
     if (services.aircraft) {
       try {
         const snapshot = await services.aircraft.getSnapshot({ signal });
-        if (signal?.aborted) throw new ToolError('cancelled', 'Query cancelled');
+        if (signal?.aborted)
+          throw new ToolError('cancelled', 'Query cancelled');
         await addRecords(snapshot.records);
       } catch (error) {
         // Non-fatal: continue with other sources
@@ -141,7 +149,8 @@ export const near = defineTool({
     if (services.fires) {
       try {
         const snapshot = await services.fires.getSnapshot({ signal });
-        if (signal?.aborted) throw new ToolError('cancelled', 'Query cancelled');
+        if (signal?.aborted)
+          throw new ToolError('cancelled', 'Query cancelled');
         await addRecords(snapshot.fires || []);
       } catch (error) {
         // Non-fatal: continue with other sources
@@ -152,7 +161,8 @@ export const near = defineTool({
     if (services.earthquakes) {
       try {
         const snapshot = await services.earthquakes.getSnapshot({ signal });
-        if (signal?.aborted) throw new ToolError('cancelled', 'Query cancelled');
+        if (signal?.aborted)
+          throw new ToolError('cancelled', 'Query cancelled');
         await addRecords(snapshot.events || snapshot.records || []);
       } catch (error) {
         // Non-fatal: continue with other sources
@@ -189,7 +199,9 @@ export const near = defineTool({
           lon: center.lon,
         },
         altitudeM: 15_000_000,
-        layers: hasLocation ? ['aircraft', 'fires', 'earthquakes'] : ['aircraft', 'fires', 'earthquakes'],
+        layers: hasLocation
+          ? ['aircraft', 'fires', 'earthquakes']
+          : ['aircraft', 'fires', 'earthquakes'],
       };
     }
 

@@ -3163,7 +3163,12 @@ function normalizeLocationId(value) {
 
 // getCurrentViewState now delegates to src/agent/worldPacket.js (getWorldPacket).
 // Kept as a thin adapter for the voice action runner's signature.
-function getCurrentViewState(viewer, styleManager, dataManager, sceneDirector = null) {
+function getCurrentViewState(
+  viewer,
+  styleManager,
+  dataManager,
+  sceneDirector = null,
+) {
   return getWorldPacket({ viewer, styleManager, dataManager, sceneDirector });
 }
 

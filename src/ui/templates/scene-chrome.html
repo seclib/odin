@@ -1,3 +1,84 @@
+<!-- gev:template scene-chrome -->
+<style>
+  :root {
+    --gev-panel-bg: rgba(10, 10, 20, 0.6);
+    --gev-panel-bg-hover: rgba(15, 15, 30, 0.7);
+    --gev-panel-border: rgba(255, 255, 255, 0.15);
+    --gev-panel-border-focus: rgba(255, 255, 255, 0.4);
+    --gev-panel-fg: #e0e0e8;
+    --gev-panel-fg-muted: #808090;
+    --gev-panel-accent: #00d4aa;
+    --gev-radius: 8px;
+    --gev-border-width: 1px;
+    --gev-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --gev-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.4);
+    --gev-transition-base: 180ms ease-out;
+    --gev-transition-hover: 150ms ease-in;
+  }
+
+  #global-context-panel {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+    transition: background var(--gev-transition-base),
+                border var(--gev-transition-base);
+  }
+  #global-context-panel:hover {
+    background: var(--gev-panel-bg-hover);
+    border-color: var(--gev-panel-border-focus);
+  }
+
+  .panel-collapsible {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+    transition: background var(--gev-transition-base),
+                border var(--gev-transition-base);
+  }
+  .panel-collapsible:hover {
+    background: var(--gev-panel-bg-hover);
+  }
+
+  .panel-header {
+    color: var(--gev-panel-fg);
+    transition: color var(--gev-transition-hover);
+  }
+  .panel-header:hover {
+    color: var(--gev-panel-accent);
+  }
+
+  .panel-divider {
+    border-color: var(--gev-panel-border);
+  }
+
+  .dock-tray-toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .style-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--gev-panel-accent);
+  }
+
+  .panel-mini-status {
+    color: var(--gev-panel-fg-muted);
+  }
+
+  #context-radio-dock {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+  }
+
+  /* No local override here: `modern.css` already renders #title-bar with the
+     exact same surface chrome as the top dock (`#top-center-actions`) —
+     var(--surface-panel), var(--border-subtle), var(--panel-radius),
+     var(--modern-shadow-md). The former rgba(10,10,20,0.5) was translucent;
+     deleting it makes the chip as opaque as the dock. */
+</style>
 <div id="cesiumContainer"></div>
 <div id="world-overlay-root" aria-hidden="true">
   <canvas id="world-overlay-canvas"></canvas>

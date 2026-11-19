@@ -43,12 +43,24 @@ function renderProviders(content, doc, closeSettings) {
   content.replaceChildren();
   content.append(el('h2', 'gs-title', t(msg('Providers'))));
   content.append(
-    el('p', 'gs-intro', t(msg('Provider keys and credentials configured for this ODIN installation.'))),
+    el(
+      'p',
+      'gs-intro',
+      t(
+        msg(
+          'Provider keys and credentials configured for this ODIN installation.',
+        ),
+      ),
+    ),
   );
   const ks = doc.getElementById('key-setup');
   if (!ks) {
     content.append(
-      el('p', 'gs-note', t(msg('Provider settings are not available in this build.'))),
+      el(
+        'p',
+        'gs-note',
+        t(msg('Provider settings are not available in this build.')),
+      ),
     );
     return;
   }
@@ -69,7 +81,8 @@ export function initGeneralSettings({ documentRef = document, signal } = {}) {
   const button = doc.getElementById('settings-btn');
   const dialog = doc.getElementById('general-settings');
   if (!button || !dialog) return { open() {}, render() {}, destroy() {} };
-  if (dialog.dataset.initialized === 'true') return { open() {}, render() {}, destroy() {} };
+  if (dialog.dataset.initialized === 'true')
+    return { open() {}, render() {}, destroy() {} };
   dialog.dataset.initialized = 'true';
 
   let destroyed = false;
@@ -111,7 +124,8 @@ export function initGeneralSettings({ documentRef = document, signal } = {}) {
     // Restore the key-setup dialog to its home when leaving Providers.
     if (id !== 'providers') restoreKeySetup();
     for (const item of nav.querySelectorAll('[data-rubrique]')) {
-      if (item.dataset.rubrique === id) item.setAttribute('aria-current', 'page');
+      if (item.dataset.rubrique === id)
+        item.setAttribute('aria-current', 'page');
       else item.removeAttribute('aria-current');
     }
     if (id === 'local-data') rubriqueHandle = mountLocalDataRubrique(content);

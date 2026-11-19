@@ -404,6 +404,99 @@ for (const reactivate of [false, true]) {
   });
 }
 
+test('a 3D tileset that fails its tiles falls back to a globe imagery stack with a safe error', async () => {
+  const tileFailed = event();
+  const tileset = { show: true, tileFailed };
+  const osmProvider = { id: 'osm', errorEvent: event() };
+  const registry = {
+    defaultId: 'photoreal',
+    recoveryId: 'photoreal',
+    unknownId: 'photoreal',
+    state: {},
+    sources: [
+      {
+        descriptor: descriptor('photoreal'),
+        tileset,
+        tilesetFailureFallback: {
+          id: 'osm',
+          threshold: 2,
+          message: 'Google 3D tiles failed; using OSM',
+        },
+      },
+      { descriptor: descriptor('osm'), imagery: async () => osmProvider },
+    ],
+  };
+  const errors = [];
+  const env = fixture(registry, { onError: (message) => errors.push(message) });
+  await env.controller.setStack('photoreal');
+  assert.equal(env.viewer.scene.globe.show, false);
+  // A failed tile carries a credential-bearing URL in Cesium's payload; none
+  // of it may reach the UI or the console through our fallback message.
+  for (let i = 0; i < 2; i++)
+    tileFailed.raise({
+      url: 'https://tile.googleapis.com/x?key=SECRET_KEY',
+      message: 'net::ERR_FAILED',
+    });
+  await settle();
+  assert.equal(env.controller.getActiveId(), 'osm');
+  assert.equal(env.viewer.scene.globe.show, true);
+  assert.equal(env.imagery.length, 1);
+  assert.equal(env.imagery[0].provider, osmProvider);
+  assert.ok(errors.some((message) => /Google 3D tiles failed/.test(message)));
+  assert.ok(errors.every((message) => !/SECRET_KEY/.test(message)));
+  assert.equal(
+    env.controller.getState().lastError,
+    'Google 3D tiles failed; using OSM',
+  );
+  assert.equal(env.changes.at(-1).status, 'error');
+  env.controller.destroy();
+});
+
+test('a healthy tileset keeps its stack after its initial tiles loaded', async () => {
+  const tileFailed = event();
+  const initialTilesLoaded = event();
+  const tileset = { show: true, tileFailed, initialTilesLoaded };
+  const osmProvider = { id: 'osm', errorEvent: event() };
+  const registry = {
+    defaultId: 'photoreal',
+    unknownId: 'photoreal',
+    state: {},
+    sources: [
+      {
+        descriptor: descriptor('photoreal'),
+        tileset,
+        tilesetFailureFallback: {
+          id: 'osm',
+          threshold: 2,
+          message: 'Google 3D tiles failed; using OSM',
+        },
+      },
+      { descriptor: descriptor('osm'), imagery: async () => osmProvider },
+    ],
+  };
+  const errors = [];
+  const env = fixture(registry, { onError: (message) => errors.push(message) });
+  await env.controller.setStack('photoreal');
+  initialTilesLoaded.raise();
+  for (let i = 0; i < 5; i++) tileFailed.raise({ message: 'transient' });
+  await settle();
+  assert.equal(env.controller.getActiveId(), 'photoreal');
+  assert.equal(env.viewer.scene.globe.show, false);
+  assert.equal(env.imagery.length, 0);
+  assert.deepEqual(errors, []);
+  env.controller.destroy();
+});
+
+test('the photoreal source declares a globe imagery fallback for tile failures', () => {
+  const registry = createDefaultMapSources({ googleTileset: { show: true } });
+  const source = registry.sources.find(
+    (entry) => entry.descriptor.id === 'photoreal',
+  );
+  assert.equal(source.tilesetFailureFallback?.id, 'osm');
+  assert.ok(source.tilesetFailureFallback.threshold >= 1);
+  assert.ok(source.tilesetFailureFallback.message);
+});
+
 test('a failed recovery reports its error and leaves switching settled', async () => {
   const errors = [];
   const env = fixture(

@@ -33,7 +33,7 @@ test('Street Level is an ordinary collapsible GEV panel that starts collapsed', 
   assert.doesNotMatch(html, /sl-mark|mly-mark/);
   assert.match(
     html,
-    /<div class="street-level-panel-inner" data-rail-scroller>/,
+    /<div class="street-level-panel-inner panel-flyout-body" data-rail-scroller>/,
   );
   assert.doesNotMatch(
     html,

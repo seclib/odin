@@ -94,10 +94,13 @@ export function localDataBreakdown(status) {
         .join(' · ')}`,
     );
   }
-  if (meta.schemaVersion) lines.push(`${msg('Manifest schema')}: v${meta.schemaVersion}`);
+  if (meta.schemaVersion)
+    lines.push(`${msg('Manifest schema')}: v${meta.schemaVersion}`);
   if (status.checksumsPresent === true)
     lines.push(
-      t(msg('Integrity: {count} SHA-256 hashes'), { count: status.checksumsCount ?? 0 }),
+      t(msg('Integrity: {count} SHA-256 hashes'), {
+        count: status.checksumsCount ?? 0,
+      }),
     );
   return lines;
 }
@@ -194,7 +197,11 @@ export async function readLocalDataStatus(fetchImpl) {
 
 /* ── mount & wire ─────────────────────────────────────────────────────── */
 
-const noopHandle = () => ({ open: () => {}, render: () => {}, destroy: () => {} });
+const noopHandle = () => ({
+  open: () => {},
+  render: () => {},
+  destroy: () => {},
+});
 
 /* ── mounting ───────────────────────────────────────────────────────────
  * The POWER UP dialog only survives when the dev server answers
@@ -313,7 +320,15 @@ export function initLocalData({ documentRef = document, signal } = {}) {
     let busy = false;
     const setBusy = (value) => {
       busy = value;
-      for (const el of [applyBtn, rescanBtn, verifyBtn, deployBtn, delTilesBtn, delEnrichedBtn, delSourceBtn])
+      for (const el of [
+        applyBtn,
+        rescanBtn,
+        verifyBtn,
+        deployBtn,
+        delTilesBtn,
+        delEnrichedBtn,
+        delSourceBtn,
+      ])
         el.setAttribute('aria-disabled', String(value));
     };
 
@@ -334,13 +349,17 @@ export function initLocalData({ documentRef = document, signal } = {}) {
         stateEl.className = 'ld-chip ld-chip-off';
         configuredEl.hidden = true;
         breakdownEl.textContent = '';
-        statsEl.textContent = msg('The local server did not answer. The buildings layer stays off until the server can serve the tileset.');
+        statsEl.textContent = msg(
+          'The local server did not answer. The buildings layer stays off until the server can serve the tileset.',
+        );
         pathInput.value = '';
         enabledToggle.checked = false;
-        for (const el of section.querySelectorAll('button')) el.setAttribute('aria-disabled', 'true');
+        for (const el of section.querySelectorAll('button'))
+          el.setAttribute('aria-disabled', 'true');
         return;
       }
-      for (const el of section.querySelectorAll('button')) el.removeAttribute('aria-disabled');
+      for (const el of section.querySelectorAll('button'))
+        el.removeAttribute('aria-disabled');
       // "Configured" is an independent fact from "data available": a path can
       // be saved and writable while the store is still missing or partial.
       configuredEl.hidden = status.configured !== true;
@@ -348,21 +367,43 @@ export function initLocalData({ documentRef = document, signal } = {}) {
         enabled: status.enabled,
         ...(status.summary ?? {}),
       }).join('\n');
-      const meta = localDataStateMeta(status.summary?.state ?? (status.enabled ? 'absent' : 'disabled'));
+      const meta = localDataStateMeta(
+        status.summary?.state ?? (status.enabled ? 'absent' : 'disabled'),
+      );
       stateEl.textContent = meta.label;
       stateEl.className = `ld-chip ld-chip-${meta.tone}`;
 
       const counts = status.summary?.counts ?? null;
       if (!status.enabled) {
-        statsEl.textContent = msg('Storage disabled. Toggle it on to keep the buildings data on this machine.');
-      } else if (!counts || (counts.tiles === 0 && counts.sourceFiles === 0 && counts.enrichedLines === 0)) {
-        statsEl.textContent = msg('No data yet. Run the offline toolchain (tools/buildings/) to build the local store.');
+        statsEl.textContent = msg(
+          'Storage disabled. Toggle it on to keep the buildings data on this machine.',
+        );
+      } else if (
+        !counts ||
+        (counts.tiles === 0 &&
+          counts.sourceFiles === 0 &&
+          counts.enrichedLines === 0)
+      ) {
+        statsEl.textContent = msg(
+          'No data yet. Run the offline toolchain (tools/buildings/) to build the local store.',
+        );
       } else {
         const parts = [];
         if (counts.buildings)
-          parts.push(tn(counts.buildings, msg('{count} building'), msg('{count} buildings'), { count: counts.buildings }));
-        if (counts.tiles) parts.push(t(msg('{count} tiles'), { count: counts.tiles }));
-        if (counts.sourceFiles) parts.push(t(msg('{count} source files'), { count: counts.sourceFiles }));
+          parts.push(
+            tn(
+              counts.buildings,
+              msg('{count} building'),
+              msg('{count} buildings'),
+              { count: counts.buildings },
+            ),
+          );
+        if (counts.tiles)
+          parts.push(t(msg('{count} tiles'), { count: counts.tiles }));
+        if (counts.sourceFiles)
+          parts.push(
+            t(msg('{count} source files'), { count: counts.sourceFiles }),
+          );
         if (counts.bytes) parts.push(formatBytes(counts.bytes));
         statsEl.textContent = parts.join(' · ');
       }
@@ -372,9 +413,13 @@ export function initLocalData({ documentRef = document, signal } = {}) {
       if (status.error?.error) {
         noteEl.textContent = String(status.error.error);
       } else if (status.summary?.state === 'ready') {
-        noteEl.textContent = msg('Ready. Enable the layer from Data Layers to use it on the map.');
+        noteEl.textContent = msg(
+          'Ready. Enable the layer from Data Layers to use it on the map.',
+        );
       } else if (status.summary?.state === 'partial') {
-        noteEl.textContent = msg('Partial data — re-run the offline toolchain to complete it, or delete the generated tiles and rebuild.');
+        noteEl.textContent = msg(
+          'Partial data — re-run the offline toolchain to complete it, or delete the generated tiles and rebuild.',
+        );
       } else if (status.summary?.state === 'error') {
         noteEl.textContent = status.summary?.reason
           ? String(status.summary.reason)
@@ -383,7 +428,10 @@ export function initLocalData({ documentRef = document, signal } = {}) {
 
       const heightNote = $('[data-role="height-note"]');
       const h = status.summary?.manifest?.defaultHeightM ?? 6.0;
-      heightNote.textContent = t(msg('Heights are a constant default of {height} m — not measured.'), { height: h });
+      heightNote.textContent = t(
+        msg('Heights are a constant default of {height} m — not measured.'),
+        { height: h },
+      );
     };
 
     const refresh = async () => {
@@ -411,7 +459,10 @@ export function initLocalData({ documentRef = document, signal } = {}) {
         };
         const result = await post('/api/local-data/configure', body);
         if (result && result.ok) render(result);
-        else noteEl.textContent = result?.error ? String(result.error) : msg('Could not save the storage settings.');
+        else
+          noteEl.textContent = result?.error
+            ? String(result.error)
+            : msg('Could not save the storage settings.');
       } finally {
         setBusy(false);
       }
@@ -428,7 +479,9 @@ export function initLocalData({ documentRef = document, signal } = {}) {
         const result = await post('/api/local-data/configure', body);
         if (result && result.ok) render(result);
         else {
-          noteEl.textContent = result?.error ? String(result.error) : msg('Could not update the storage settings.');
+          noteEl.textContent = result?.error
+            ? String(result.error)
+            : msg('Could not update the storage settings.');
           enabledToggle.checked = !enabledToggle.checked;
         }
       } finally {
@@ -445,9 +498,14 @@ export function initLocalData({ documentRef = document, signal } = {}) {
         if (result?.present === false) {
           noteEl.textContent = msg('No checksums recorded for this store.');
         } else if (result?.ok) {
-          noteEl.textContent = t(msg('Checksums OK — {count} files verified.'), { count: result.verified ?? 0 });
+          noteEl.textContent = t(
+            msg('Checksums OK — {count} files verified.'),
+            { count: result.verified ?? 0 },
+          );
         } else {
-          noteEl.textContent = t(msg('Checksum mismatch in {count} file(s).'), { count: (result?.mismatches ?? []).length });
+          noteEl.textContent = t(msg('Checksum mismatch in {count} file(s).'), {
+            count: (result?.mismatches ?? []).length,
+          });
         }
       } catch {
         noteEl.textContent = msg('Checksum verification failed.');
@@ -460,23 +518,33 @@ export function initLocalData({ documentRef = document, signal } = {}) {
       if (busy) return;
       if (typeof globalThis.prompt !== 'function') return;
       const typed = globalThis.prompt(
-        msg('Copy the generated tiles into dist/ for deployment? Type exactly "COPY TO DIST" to confirm.'),
+        msg(
+          'Copy the generated tiles into dist/ for deployment? Type exactly "COPY TO DIST" to confirm.',
+        ),
       );
       if (typed !== 'COPY TO DIST') {
-        noteEl.textContent = msg('Deployment cancelled — confirmation phrase did not match.');
+        noteEl.textContent = msg(
+          'Deployment cancelled — confirmation phrase did not match.',
+        );
         return;
       }
       setBusy(true);
       try {
         noteEl.textContent = msg('Copying tiles to dist/…');
-        const result = await post('/api/local-data/deploy', { confirm: 'COPY TO DIST' });
+        const result = await post('/api/local-data/deploy', {
+          confirm: 'COPY TO DIST',
+        });
         if (result?.ok) {
           noteEl.textContent = t(
-            msg('Copied {count} files ({bytes}) to dist/odin-local-buildings/ — the master store is unchanged.'),
+            msg(
+              'Copied {count} files ({bytes}) to dist/odin-local-buildings/ — the master store is unchanged.',
+            ),
             { count: result.files ?? 0, bytes: formatBytes(result.bytes ?? 0) },
           );
         } else {
-          noteEl.textContent = result?.error ? String(result.error) : msg('Deployment failed.');
+          noteEl.textContent = result?.error
+            ? String(result.error)
+            : msg('Deployment failed.');
         }
       } catch {
         noteEl.textContent = msg('Deployment failed.');
@@ -496,22 +564,33 @@ export function initLocalData({ documentRef = document, signal } = {}) {
       const phrase = CONFIRM_PHRASES[scope];
       const confirmText =
         scope === 'source'
-          ? msg('This deletes the original GMLFP downloads. Type exactly "DELETE SOURCE" to confirm.')
+          ? msg(
+              'This deletes the original GMLFP downloads. Type exactly "DELETE SOURCE" to confirm.',
+            )
           : t(msg('Type exactly "{phrase}" to confirm.'), { phrase });
       if (typeof globalThis.prompt !== 'function') return;
       const typed = globalThis.prompt(confirmText);
       if (typed !== phrase) {
-        noteEl.textContent = msg('Deletion cancelled — confirmation phrase did not match.');
+        noteEl.textContent = msg(
+          'Deletion cancelled — confirmation phrase did not match.',
+        );
         return;
       }
       setBusy(true);
       try {
-        const result = await post('/api/local-data/delete', { scope, confirm: phrase });
+        const result = await post('/api/local-data/delete', {
+          scope,
+          confirm: phrase,
+        });
         if (result?.ok) {
-          noteEl.textContent = t(msg('Freed {bytes}.'), { bytes: formatBytes(result.freedBy ?? 0) });
+          noteEl.textContent = t(msg('Freed {bytes}.'), {
+            bytes: formatBytes(result.freedBy ?? 0),
+          });
           await refresh();
         } else {
-          noteEl.textContent = result?.error ? String(result.error) : msg('Deletion failed.');
+          noteEl.textContent = result?.error
+            ? String(result.error)
+            : msg('Deletion failed.');
         }
       } catch {
         noteEl.textContent = msg('Deletion failed.');
@@ -575,7 +654,9 @@ export function initLocalData({ documentRef = document, signal } = {}) {
     try {
       const [setupRes, localRes] = await Promise.all([
         fetchImpl('/api/setup/status', { cache: 'no-store' }).catch(() => null),
-        fetchImpl('/api/local-data/status', { cache: 'no-store' }).catch(() => null),
+        fetchImpl('/api/local-data/status', { cache: 'no-store' }).catch(
+          () => null,
+        ),
       ]);
       if (destroyed || signal?.aborted) return;
       if (!localRes || !localRes.ok) return; // local server cannot serve — stay invisible

@@ -237,11 +237,14 @@ export class PanelPositionControls {
     // A `portable` panel lifts out of its rail on a header drag, resizes from
     // every edge and remembers its window; the others only reposition.
     const dragSpecs = [
-      {
-        id: 'pp-toggles',
-        panel: this._ppToggles,
-        handle: this._ppToggles?.querySelector('.panel-drag-handle.compact'),
-      },
+      // pp-toggles is a right-rail flyout tab in the refonte layout.
+      ...(!this._ppToggles?.querySelector(':scope > .panel-flyout-body')
+        ? [{
+            id: 'pp-toggles',
+            panel: this._ppToggles,
+            handle: this._ppToggles?.querySelector('.panel-drag-handle.compact'),
+          }]
+        : []),
       {
         id: 'cctv-panel',
         panel: cctvPanel,
@@ -362,6 +365,35 @@ export class PanelPositionControls {
 
   _restorePanelPosition(panelId, panelEl) {
     try {
+      // Rail flyout panels are anchored by the rail/flyout layout; do not restore
+      // legacy floating/draggable positions onto them unless explicitly floating.
+      if (
+        panelEl &&
+        !panelEl.classList.contains('panel-floating') &&
+        panelEl.querySelector(':scope > .panel-flyout-body, .panel-flyout-body')
+      ) {
+        const inRail =
+          panelEl.closest?.('#left-panel-stack, #right-context-rail') ||
+          panelId === 'pp-toggles' ||
+          panelId === 'data-panel' ||
+          panelId === 'cctv-panel' ||
+          panelId === 'street-level-panel' ||
+          panelId === 'scene-panel' ||
+          panelId === 'weather-panel' ||
+          panelId === 'recent-imagery-panel' ||
+          panelId === 'global-context-panel' ||
+          panelId === 'radio-panel';
+        if (inRail) {
+          panelEl.style.removeProperty('top');
+          panelEl.style.removeProperty('left');
+          panelEl.style.removeProperty('right');
+          panelEl.style.removeProperty('bottom');
+          panelEl.style.removeProperty('width');
+          panelEl.style.removeProperty('height');
+          panelEl.style.removeProperty('position');
+          return;
+        }
+      }
       const raw = localStorage.getItem(this._panelStorageKey(panelId));
       if (!raw) return;
       const pos = JSON.parse(raw);
@@ -691,6 +723,10 @@ export class PanelPositionControls {
       this._cancelDrag?.();
       // A header press must not start a text selection across the page.
       event.preventDefault();
+      // preventDefault keeps the press from moving focus, so put it on the
+      // handle deliberately: a rail tab opened by pointer must still be
+      // reachable by Enter/Space and announce its expanded state.
+      handleEl.focus?.({ preventScroll: true });
       const entry = this._portablePanels.get(panelId);
       let lifted = false;
       let before = null;

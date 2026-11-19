@@ -186,7 +186,8 @@ export function scaleToGeodeticSurface(position, ellipsoid) {
     intersection.y * oneOverRadiiSquaredY * 2.0,
     intersection.z * oneOverRadiiSquaredZ * 2.0,
   );
-  let lambda = (1.0 - ratio) * magnitude(position) / (0.5 * magnitude(gradient));
+  let lambda =
+    ((1.0 - ratio) * magnitude(position)) / (0.5 * magnitude(gradient));
   let correction = 0.0;
   let func;
   let denominator;
@@ -204,11 +205,7 @@ export function scaleToGeodeticSurface(position, ellipsoid) {
     xMultiplier3 = xMultiplier2 * xMultiplier;
     yMultiplier3 = yMultiplier2 * yMultiplier;
     zMultiplier3 = zMultiplier2 * zMultiplier;
-    func =
-      x2 * xMultiplier2 +
-      y2 * yMultiplier2 +
-      z2 * zMultiplier2 -
-      1.0;
+    func = x2 * xMultiplier2 + y2 * yMultiplier2 + z2 * zMultiplier2 - 1.0;
     denominator =
       x2 * xMultiplier3 * oneOverRadiiSquaredX +
       y2 * yMultiplier3 * oneOverRadiiSquaredY +

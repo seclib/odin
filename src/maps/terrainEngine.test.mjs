@@ -2,9 +2,10 @@ import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { createTerrainEngine } from './terrainEngine.js';
 
-/** Scène Cesium minimale : globe avec maximumScreenSpaceError modifiable. */
+/** Scène Cesium minimale : globe + propriétés Cesium pilotables par l'engine. */
 function makeScene() {
   let maximumScreenSpaceError = undefined;
+  let verticalExaggeration = undefined;
   const globe = {
     get maximumScreenSpaceError() {
       return maximumScreenSpaceError;
@@ -13,8 +14,20 @@ function makeScene() {
       maximumScreenSpaceError = value;
     },
   };
-  const scene = { globe };
-  return { scene, getMse: () => maximumScreenSpaceError };
+  const scene = {
+    globe,
+    get verticalExaggeration() {
+      return verticalExaggeration;
+    },
+    set verticalExaggeration(value) {
+      verticalExaggeration = value;
+    },
+  };
+  return {
+    scene,
+    getMse: () => maximumScreenSpaceError,
+    getVe: () => verticalExaggeration,
+  };
 }
 
 /** Provider factice avec méthode destroy. */
@@ -229,6 +242,7 @@ test('getConfig returns a stable snapshot', () => {
     providerId: 'world',
     fallbackEnabled: false,
     maximumScreenSpaceError: 6,
+    verticalExaggeration: null,
   });
   // Mutating the returned object doesn't affect engine state.
   config.maximumScreenSpaceError = 999;
@@ -242,5 +256,60 @@ test('engine is frozen: methods cannot be replaced', () => {
   assert.throws(() => {
     engine.createProvider = () => {};
   }, TypeError);
+  engine.destroy();
+});
+
+test('vertical exaggeration is unset by default: Cesium stays at its natural 1.0', () => {
+  const { scene, getVe } = makeScene();
+  const engine = createTerrainEngine({ scene });
+  assert.equal(engine.getVerticalExaggeration(), null);
+  assert.equal(getVe(), undefined, 'no Cesium property written when unconfigured');
+  engine.destroy();
+});
+
+test('an explicit vertical exaggeration is applied to the scene', () => {
+  const { scene, getVe } = makeScene();
+  const engine = createTerrainEngine({ scene, verticalExaggeration: 1.5 });
+  assert.equal(engine.getVerticalExaggeration(), 1.5);
+  assert.equal(getVe(), 1.5);
+  engine.destroy();
+});
+
+test('setVerticalExaggeration updates the scene and the config snapshot', () => {
+  const { scene, getVe } = makeScene();
+  const engine = createTerrainEngine({ scene });
+  engine.setVerticalExaggeration(2);
+  assert.equal(engine.getVerticalExaggeration(), 2);
+  assert.equal(getVe(), 2);
+  assert.equal(engine.getConfig().verticalExaggeration, 2);
+  engine.setVerticalExaggeration(1);
+  assert.equal(getVe(), 1, '1.0 restores the natural relief');
+  engine.destroy();
+});
+
+test('setVerticalExaggeration(null) disables the override without rewriting the scene', () => {
+  const { scene, getVe } = makeScene();
+  const engine = createTerrainEngine({ scene, verticalExaggeration: 2 });
+  engine.setVerticalExaggeration(null);
+  assert.equal(engine.getVerticalExaggeration(), null);
+  assert.equal(getVe(), 2, 'Cesium value is left untouched, like maximumScreenSpaceError');
+  engine.destroy();
+});
+
+test('vertical exaggeration rejects non-finite and out-of-range values', () => {
+  const { scene, getVe } = makeScene();
+  const engine = createTerrainEngine({ scene, verticalExaggeration: 2 });
+  for (const value of [0, 0.49, 3.01, 12, NaN, Infinity, '2', {}]) {
+    assert.throws(() => engine.setVerticalExaggeration(value), TypeError, String(value));
+  }
+  assert.equal(engine.getVerticalExaggeration(), 2, 'invalid input leaves state intact');
+  assert.equal(getVe(), 2, 'invalid input never reaches Cesium');
+  engine.destroy();
+});
+
+test('vertical exaggeration tolerates a scene without the Cesium property', () => {
+  const engine = createTerrainEngine({ scene: { globe: {} } });
+  assert.doesNotThrow(() => engine.setVerticalExaggeration(1.5));
+  assert.equal(engine.getVerticalExaggeration(), 1.5);
   engine.destroy();
 });

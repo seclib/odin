@@ -195,10 +195,7 @@ test('IGN RGE ALTI results are converted with the geoid and count as real height
     'h = H_ortho + geoid undulation',
   );
   // The floor path treats IGN as real, not as a fallback
-  assert.equal(
-    terrain.cachedRealEllipsoidalGround(0, 0.001),
-    entry.ellipsoid,
-  );
+  assert.equal(terrain.cachedRealEllipsoidalGround(0, 0.001), entry.ellipsoid);
 });
 
 test('mixed batch: IGN rows and Re:Earth rows keep their own sources', async () => {
@@ -237,9 +234,7 @@ test('an upstream IGN gap (null) marks the row as upstream omission: geoid fallb
       },
     },
   });
-  const [a] = await terrain.resolveEllipsoidalGround([
-    { lat: 0, lon: 0.002 },
-  ]);
+  const [a] = await terrain.resolveEllipsoidalGround([{ lat: 0, lon: 0.002 }]);
   // A null row makes fetchChunk throw; the chunk's fallback is the geoid,
   // which is a real conversion but NOT a measurement — so `source` must be
   // 'geoid-fallback', never 'ign-rge-alti' nor 'reearth'.

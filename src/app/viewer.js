@@ -1,5 +1,6 @@
 import * as Cesium from 'cesium';
 import { applyModelAtmosphereWorkaround } from './atmosphereCompat.js';
+import { StarrySky } from '../sky/starrySky.js';
 
 const PINCH_ZOOM_MULTIPLIER = 8;
 
@@ -20,6 +21,26 @@ export const VIEWER_ANTIALIASING = Object.freeze({
   msaaSamples: 1,
   fxaa: true,
 });
+
+/**
+ * Globe render defaults.
+ *
+ * Day/night shading is enabled on the keyless globe: without it the fallback
+ * imagery covers both the lit and dark hemispheres with the same flat
+ * brightness, which removes every depth cue at low zoom. The sky-atmosphere
+ * shifts below are kept from the validated configuration — they were tuned
+ * against the horizon and must not drift while the globe gains a terminator.
+ * Ground atmosphere is explicit because it is the companion of that horizon
+ * when Cesium World Terrain is disabled and Google 3D Tiles own the mesh.
+ */
+export const GLOBE_RENDER_DEFAULTS = Object.freeze({
+  enableLighting: true,
+  showGroundAtmosphere: true,
+  atmosphereLightIntensity: 18,
+  atmosphereSaturationShift: -0.12,
+  atmosphereBrightnessShift: -0.08,
+});
+
 const MAX_PINCH_PIXEL_DELTA = 120;
 
 function boundedPinchDelta(delta) {
@@ -137,6 +158,7 @@ export function createApplicationViewer({ container, creditContainer }) {
     selectionIndicator: false,
     infoBox: false,
     baseLayer: false,
+    skyBox: new StarrySky(),
     creditContainer,
     msaaSamples: VIEWER_ANTIALIASING.msaaSamples,
     contextOptions: { webgl: { preserveDrawingBuffer: true } },
@@ -150,10 +172,18 @@ export function createApplicationViewer({ container, creditContainer }) {
     // FXAA post-process: the affordable antialiasing path when MSAA is off.
     viewer.scene.postProcessStages.fxaa.enabled = VIEWER_ANTIALIASING.fxaa;
     viewer.scene.globe.show = false;
+    // The terminator only affects the globe path; Google 3D Tiles keep their
+    // own lighting and are not dimmed by these values.
+    viewer.scene.globe.enableLighting = GLOBE_RENDER_DEFAULTS.enableLighting;
+    viewer.scene.globe.showGroundAtmosphere =
+      GLOBE_RENDER_DEFAULTS.showGroundAtmosphere;
     viewer.scene.skyAtmosphere.show = true;
-    viewer.scene.skyAtmosphere.atmosphereLightIntensity = 18;
-    viewer.scene.skyAtmosphere.saturationShift = -0.12;
-    viewer.scene.skyAtmosphere.brightnessShift = -0.08;
+    viewer.scene.skyAtmosphere.atmosphereLightIntensity =
+      GLOBE_RENDER_DEFAULTS.atmosphereLightIntensity;
+    viewer.scene.skyAtmosphere.saturationShift =
+      GLOBE_RENDER_DEFAULTS.atmosphereSaturationShift;
+    viewer.scene.skyAtmosphere.brightnessShift =
+      GLOBE_RENDER_DEFAULTS.atmosphereBrightnessShift;
     return viewer;
   } catch (error) {
     viewer.destroy();

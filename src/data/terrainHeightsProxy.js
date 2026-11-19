@@ -182,11 +182,7 @@ export async function fetchIgnPoints(
 
   // Nothing resolved anywhere although we asked twice → treat IGN as down for
   // this request so the caller can fall back to Re:Earth.
-  if (
-    firstError &&
-    zList.every((z) => z == null) &&
-    points.length > 0
-  ) {
+  if (firstError && zList.every((z) => z == null) && points.length > 0) {
     throw firstError;
   }
   return zList.map(toResult);
@@ -348,7 +344,6 @@ export function parseIgnElevations(rawText, expectedCount) {
   while (out.length < expectedCount) out.push(null);
   return out.slice(0, expectedCount);
 }
-
 
 /**
  * Fetch one upstream chunk with jittered exponential backoff. Network errors,

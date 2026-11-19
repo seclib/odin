@@ -27,6 +27,38 @@ const DEFAULT_FALLBACK_ENABLED = true;
 const DEFAULT_PARTIAL_FALLBACK_ENABLED = true;
 const GEOID_FALLBACK_COOLDOWN_MS = 60_000;
 
+/** Natural, unexaggerated relief — Cesium's own default when nothing is set. */
+export const DEFAULT_VERTICAL_EXAGGERATION = 1.0;
+/**
+ * Narrow safety band for the operator-facing exaggeration control. Beyond it,
+ * ridges look artificial and nadir-placed entities drift away from the mesh.
+ */
+export const MIN_VERTICAL_EXAGGERATION = 0.5;
+export const MAX_VERTICAL_EXAGGERATION = 3.0;
+
+/**
+ * Validate an exaggeration override. `null` means "no override" and leaves the
+ * Cesium scene untouched; anything else must be a finite number in the safety
+ * band. Rejecting instead of clamping keeps a bad value from silently changing
+ * the relief the operator sees.
+ * @param {unknown} value
+ * @returns {number|null}
+ */
+function normalizeVerticalExaggeration(value) {
+  if (value == null) return null;
+  if (
+    typeof value !== 'number' ||
+    !Number.isFinite(value) ||
+    value < MIN_VERTICAL_EXAGGERATION ||
+    value > MAX_VERTICAL_EXAGGERATION
+  ) {
+    throw new TypeError(
+      `verticalExaggeration must be a finite number in [${MIN_VERTICAL_EXAGGERATION}, ${MAX_VERTICAL_EXAGGERATION}] or null`,
+    );
+  }
+  return value;
+}
+
 /** États possibles d'un provider. */
 const _ProviderState = 'active' | 'in_cooldown' | 'fallback' | 'idle';
 
@@ -78,7 +110,10 @@ function _checkProviderState(providerId) {
  * @param {string} providerId ID du provider
  * @param {number} [durationMs=GEOID_FALLBACK_COOLDOWN_MS] durée en ms
  */
-function _startProviderCooldown(providerId, durationMs = GEOID_FALLBACK_COOLDOWN_MS) {
+function _startProviderCooldown(
+  providerId,
+  durationMs = GEOID_FALLBACK_COOLDOWN_MS,
+) {
   _providerCooldowns.set(providerId, Date.now() + durationMs);
   _providerFailureCount.set(
     providerId,
@@ -125,7 +160,11 @@ function _getProviderWithFallback(requestedId, options = {}) {
 
   // Provider en cooldown ou absent — essayer le provider de fallback
   const fallbackId =
-    requestedId === 'world' ? 'keyless' : requestedId === 'keyless' ? 'world' : null;
+    requestedId === 'world'
+      ? 'keyless'
+      : requestedId === 'keyless'
+        ? 'world'
+        : null;
 
   if (fallbackId) {
     const fallbackState = _checkProviderState(fallbackId);
@@ -177,7 +216,9 @@ function _createProviderInternal(id, options) {
     if (id === 'world') {
       const cesiumToken = options?.cesiumToken || '';
       if (!String(cesiumToken).trim()) {
-        console.warn('Terrain engine: Cesium ion token manquant pour provider "world"');
+        console.warn(
+          'Terrain engine: Cesium ion token manquant pour provider "world"',
+        );
         return { provider: null, success: false };
       }
       return {
@@ -242,7 +283,8 @@ function getConfig() {
     providerId: _activeProvider?.id || 'keyless',
     providerState: state.state,
     fallbackEnabled: DEFAULT_FALLBACK_ENABLED,
-    failureCount: _providerFailureCount.get(_activeProvider?.id || 'keyless') || 0,
+    failureCount:
+      _providerFailureCount.get(_activeProvider?.id || 'keyless') || 0,
     partialFallbackEnabled: DEFAULT_PARTIAL_FALLBACK_ENABLED,
   };
 }
@@ -267,6 +309,9 @@ function getConfig() {
  *   `globe.maximumScreenSpaceError` (Cesium). Non appliquée automatiquement :
  *   appeler `setMaximumScreenSpaceError()` pour l'activer. Quand non fournie,
  *   le comportement actuel de Cesium est conservé.
+ * @param {number|null} [options.verticalExaggeration] Facteur appliqué à
+ *   `scene.verticalExaggeration` (Cesium 1.138+). 1.0 est le relief naturel ;
+ *   non fourni, la propriété Cesium n'est pas écrite. Borne [0.5, 3].
  * @param {Function} [options.createWorldTerrain] Factory injectable (tests).
  * @param {Function} [options.createKeylessTerrain] Factory injectable (tests).
  * @returns {object} Engine gelé.
@@ -277,10 +322,12 @@ export function createTerrainEngine({
   googleApiKey,
   fallbackEnabled = DEFAULT_FALLBACK_ENABLED,
   maximumScreenSpaceError,
+  verticalExaggeration,
   createWorldTerrain: _createWorldTerrain,
   createKeylessTerrain: _createKeylessTerrain,
 } = {}) {
-  if (!scene) throw new TypeError('createTerrainEngine requires a Cesium scene');
+  if (!scene)
+    throw new TypeError('createTerrainEngine requires a Cesium scene');
 
   const createWorldTerrain =
     typeof _createWorldTerrain === 'function'
@@ -294,12 +341,26 @@ export function createTerrainEngine({
   let _active = null; // { provider, fallback, id, destroy? }
   let _providerId = resolveDefaultProviderId({ cesiumToken, googleApiKey });
   let _fallbackEnabled =
-    typeof fallbackEnabled === 'boolean' ? fallbackEnabled : DEFAULT_FALLBACK_ENABLED;
+    typeof fallbackEnabled === 'boolean'
+      ? fallbackEnabled
+      : DEFAULT_FALLBACK_ENABLED;
   let _maximumScreenSpaceError =
-    typeof maximumScreenSpaceError === 'number' && Number.isFinite(maximumScreenSpaceError)
+    typeof maximumScreenSpaceError === 'number' &&
+    Number.isFinite(maximumScreenSpaceError)
       ? maximumScreenSpaceError
       : null;
+  let _verticalExaggeration = normalizeVerticalExaggeration(verticalExaggeration);
   const _disposeFns = [];
+
+  /** Apply the configured exaggeration to Cesium's own Scene property. */
+  function _applyVerticalExaggeration() {
+    // Guard the property's presence: headless tests and future Cesium versions
+    // may expose a scene without it, and relief must never break scene startup.
+    if (_verticalExaggeration != null && 'verticalExaggeration' in scene) {
+      scene.verticalExaggeration = _verticalExaggeration;
+    }
+  }
+  _applyVerticalExaggeration();
 
   /** Détruit le provider actif s'il expose une méthode destroy. */
   function _destroyActive() {
@@ -332,10 +393,10 @@ export function createTerrainEngine({
    */
   async function createProvider(id = _providerId, { signal } = {}) {
     const requestedId = id || _providerId;
-    
+
     // Vérifier l'état du provider avant création
     const stateBefore = _checkProviderState(requestedId);
-    
+
     let result;
 
     if (requestedId === 'world') {
@@ -358,14 +419,21 @@ export function createTerrainEngine({
       fallback: Boolean(result.fallback),
       id: requestedId,
     };
+    // Only replace the tracked instance once the new provider has resolved:
+    // a failed creation leaves the previous provider alive and destroyable.
+    // `_active` is the per-engine owner; `_setActiveProvider` is the module-level
+    // state used by the cooldown/fallback policy. Both must describe the same
+    // provider or getActive()/destroy() silently lose track of it.
+    _destroyActive();
+    _active = entry;
     _setActiveProvider(entry);
     _providerId = requestedId;
-    
+
     // En cas d'échec, démarrer le cooldown
     if (!result.provider) {
       _startProviderCooldown(requestedId);
     }
-    
+
     return entry;
   }
 
@@ -412,15 +480,35 @@ export function createTerrainEngine({
   }
 
   /**
+   * Sets (or clears) the scene's vertical exaggeration. `null` stops managing
+   * the property without rewriting whatever Cesium currently holds, so a
+   * profile change can hand control back to another subsystem cleanly.
+   * @param {number|null} value
+   */
+  function setVerticalExaggeration(value) {
+    const normalized = normalizeVerticalExaggeration(value);
+    _verticalExaggeration = normalized;
+    _applyVerticalExaggeration();
+  }
+
+  /**
+   * @returns {number|null} configured exaggeration, or null when unmanaged
+   */
+  function getVerticalExaggeration() {
+    return _verticalExaggeration;
+  }
+
+  /**
    * Retourne la configuration courante de l'engine.
    * @returns {{providerId: string, fallbackEnabled: boolean,
-   *   maximumScreenSpaceError: number|null}}
+   *   maximumScreenSpaceError: number|null, verticalExaggeration: number|null}}
    */
   function getConfig() {
     return {
       providerId: _providerId,
       fallbackEnabled: _fallbackEnabled,
       maximumScreenSpaceError: _maximumScreenSpaceError,
+      verticalExaggeration: _verticalExaggeration,
     };
   }
 
@@ -441,6 +529,8 @@ export function createTerrainEngine({
     getProviderId,
     setMaximumScreenSpaceError,
     getMaximumScreenSpaceError,
+    setVerticalExaggeration,
+    getVerticalExaggeration,
     getConfig,
     destroy,
   });

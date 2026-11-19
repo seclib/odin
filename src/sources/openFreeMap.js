@@ -367,7 +367,9 @@ export function createOpenFreeMapSource(options = {}) {
   const shared = Boolean(decode === undefined && sharedDecodedCache);
   return createVectorTileSource({
     tileJsonUrl: 'https://tiles.openfreemap.org/planet',
-    decode: shared ? decodeSharedOpenFreeMapTile : decode || decodeOpenFreeMapTile,
+    decode: shared
+      ? decodeSharedOpenFreeMapTile
+      : decode || decodeOpenFreeMapTile,
     ...(shared
       ? {
           sharedDecodedCache,

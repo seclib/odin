@@ -226,7 +226,12 @@ test('civil records do not derive course when time gap is too small', () => {
 test('civil records hold reported true_track when available', () => {
   const store = records();
   const first = store.receive(
-    observation({ courseDeg: 45, latitude: 0, longitude: 0, positionTimeMs: 1000 }),
+    observation({
+      courseDeg: 45,
+      latitude: 0,
+      longitude: 0,
+      positionTimeMs: 1000,
+    }),
     view(),
   );
   assert.equal(first.meta.true_track, 45);

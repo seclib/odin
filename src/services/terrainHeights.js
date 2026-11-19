@@ -218,7 +218,12 @@ export function createTerrainHeights({
         Number.isFinite(heightOrthometric) &&
         item?.source === 'ign-rge-alti'
       ) {
-        ignPending.push([chunk[i].key, chunk[i].lat, chunk[i].lon, heightOrthometric]);
+        ignPending.push([
+          chunk[i].key,
+          chunk[i].lat,
+          chunk[i].lon,
+          heightOrthometric,
+        ]);
         continue;
       }
       const ellipsoid = body.results[i]?.ellipsoid;

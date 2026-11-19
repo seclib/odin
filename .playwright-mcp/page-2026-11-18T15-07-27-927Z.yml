@@ -1,0 +1,54 @@
+- generic [active] [ref=e1]:
+  - region "Cibles visibles sur la carte" [ref=e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Actions du globe" [ref=e8]:
+    - button "Effacer les couches de données sélectionnées" [ref=e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e10]: layers_clear
+    - button "Copier le lien de partage" [ref=e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e12]: 🔗
+    - button "Incliner la carte en vue oblique" [ref=e13] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e14]: view_in_ar
+    - button "Réorienter la carte nord en haut" [ref=e15] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e16]: "N"
+      - generic [aria-hidden] [ref=e17]: navigation
+    - button "Revenir à la vue du globe entier" [ref=e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e19]: public
+    - button "Paramètres généraux" [ref=e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e21]: settings
+  - generic:
+    - generic: synchro du réseau routier
+    - generic: 0%
+  - generic:
+    - generic: chargement des images
+    - generic: 0/0
+  - navigation "Sélecteur de vue"
+  - generic [ref=e23]:
+    - generic [aria-hidden] [ref=e24]: tune
+    - generic [ref=e25]: AFFICHAGE
+    - button "◀" [ref=e26] [cursor=pointer]
+  - generic "Commandes de navigation, de voix et de préréglages visuels" [ref=e27]:
+    - button "Développer les préréglages visuels" [ref=e30] [cursor=pointer]:
+      - generic [ref=e31]: VISUAL PRESETS
+    - button "Développer LIEU" [ref=e36] [cursor=pointer]:
+      - generic [ref=e37]: LOCATION
+  - generic:
+    - generic [ref=e40]:
+      - generic [aria-hidden] [ref=e41]: database
+      - generic [ref=e42]: COUCHES
+      - button "+" [ref=e44] [cursor=pointer]
+    - button "+" [ref=e48] [cursor=pointer]
+    - generic:
+      - generic:
+        - button "◀"
+    - button "+" [ref=e52] [cursor=pointer]
+  - complementary:
+    - button "▶" [ref=e56] [cursor=pointer]
+  - generic: NORMAL
+  - generic [ref=e61]:
+    - heading "ODIN" [level=2] [ref=e62]
+    - paragraph [ref=e63]: Chargement de Google 3D Tiles…
+  - link [ref=e67] [cursor=pointer]:
+    - /url: https://cesium.com/
+    - img "Cesium ion" [ref=e68]

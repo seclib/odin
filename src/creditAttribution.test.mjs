@@ -23,11 +23,13 @@ const ui = readShellSource();
 
 const REM_PX = 16;
 
-// Rendered sizes the stylesheet cannot supply. Measured live at
-// 600/700/800/830/900px viewports by qa-shots/quickwins/credit-probe.mjs and
-// re-measured on every run of that sweep. The CSS inputs that determine them
-// are guarded below, because a change there invalidates the constant.
-const CREDIT_HEIGHT_PX = 28;
+// Rendered sizes the stylesheet cannot supply. Re-measured 2026-11-19 for the
+// operator-mandated move of the credit line below the dock (9px font, 12px
+// logo — flush at the bottom edge). The old 28px row and its constants are
+// kept here as a note for the trail: they belonged to the above-the-dock
+// layout this repositioning replaces. The CSS inputs that determine the new
+// value are guarded below, because a change there invalidates it.
+const CREDIT_HEIGHT_PX = 14;
 const COMPACT_DOCK_HEIGHT_PX = 62;
 
 // Clear air the notice must keep above it. The stylesheet aims for 12px.
@@ -574,14 +576,17 @@ test('the full-width context rail clears the required credit at every modelled v
   assert.deepEqual(failures, [], `context rail re-enters the credit band at ${failures.join(', ')}`);
 });
 
-test('the dock anchor changes at 720px — the 2vh cancellation is band-limited', () => {
+test('the dock anchor changes at 720px — the credit stays below it everywhere', () => {
   assert.equal(resolve(['#command-dock'], 'bottom', 800, 'dock').decl.value, '2vh');
   assert.equal(resolve(['#command-dock'], 'bottom', 720, 'dock').decl.value, '8px');
-  assert.equal(
-    resolve(CREDIT_SELECTORS, 'bottom', 720, 'credit').decl.value,
-    'calc(2vh + 5rem)',
-    'the credit keeps its 2vh base below 720px — that asymmetry is the whole hazard',
-  );
+  // Operator directive 2026-11-19: the required notice was relocated to the
+  // viewport's very bottom edge — it no longer shares the dock's clear band
+  // at any width. 720px is where the old 2vh cancellation lived; the pin now
+  // holds the new invariant instead: credit below the dock everywhere,
+  // legacy above-dock anchor only below 700px where the two-row dock
+  // swallows the whole width.
+  assert.equal(resolve(CREDIT_SELECTORS, 'bottom', 720, 'credit').decl.value, '2px');
+  assert.equal(resolve(CREDIT_SELECTORS, 'bottom', 500, 'credit').decl.value, 'calc(2vh + 5rem)');
 });
 
 test('the minimal-HUD credit variant tracks the ordinary one', () => {
@@ -612,7 +617,7 @@ test('the credit line is never suppressed to make room', () => {
     assert.doesNotMatch(block, /visibility\s*:\s*hidden/, 'the credit must never be hidden');
     assert.doesNotMatch(block, /opacity\s*:\s*0(\D|$)/, 'the credit must never be faded out');
   }
-  assert.match(css, /body\.ui-clean-view #cesium-credits,\s*\n\s*body\.recording-mode #cesium-credits \{[^}]*bottom: 36px;/);
+  assert.match(css, /body\.ui-clean-view #cesium-credits,\s*\n\s*body\.recording-mode #cesium-credits \{[^}]*bottom: 2px;/);
 });
 
 

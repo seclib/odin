@@ -34,7 +34,9 @@ export function parseDmsComponent(text) {
   if (Number(minutes) >= 60 || (seconds !== undefined && Number(seconds) >= 60))
     return null;
   const magnitude =
-    Number(degrees) + Number(minutes) / 60 + (seconds ? Number(seconds) / 3600 : 0);
+    Number(degrees) +
+    Number(minutes) / 60 +
+    (seconds ? Number(seconds) / 3600 : 0);
   const value = letter === 'S' || letter === 'W' ? -magnitude : magnitude;
   const axis =
     letter === 'N' || letter === 'S'

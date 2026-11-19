@@ -170,7 +170,8 @@ export function firePerimetersProxy({
       // current fires. (InciWeb entries keep their previous behaviour.)
       if (
         previous &&
-        (key !== 'perimeters' || now() - previous.savedAt <= 24 * 60 * 60 * 1000)
+        (key !== 'perimeters' ||
+          now() - previous.savedAt <= 24 * 60 * 60 * 1000)
       )
         return { value: previous.value, stale: true };
       throw error;

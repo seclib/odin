@@ -58,7 +58,7 @@ const CLICK_DRILL_LIMIT = 8;
 const TRAIL_PICK_PREFIX = 'gev-trail:';
 /** The DISPLAY rail's first-run 3D preference, used when no reader is wired. */
 const DEFAULT_DISPLAY = Object.freeze({
-  models3d: true,
+  models3d: false,
   models3dMode: 'proximity',
 });
 

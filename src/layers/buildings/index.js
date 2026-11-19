@@ -53,7 +53,9 @@ export function createBuildingsLayer(deps = {}) {
       ? deps.createTileset
       : createLocalBuildingsTileset;
   const isEnabled =
-    typeof deps.isEnabled === 'function' ? deps.isEnabled : isLocalBuildingsEnabled;
+    typeof deps.isEnabled === 'function'
+      ? deps.isEnabled
+      : isLocalBuildingsEnabled;
   const refreshAvailability =
     typeof deps.refreshAvailability === 'function'
       ? deps.refreshAvailability
@@ -115,7 +117,9 @@ export function createBuildingsLayer(deps = {}) {
         return true;
       } catch (cause) {
         error =
-          cause instanceof Error ? cause.message : String(cause ?? 'enable failed');
+          cause instanceof Error
+            ? cause.message
+            : String(cause ?? 'enable failed');
         enabled = false;
         throw cause instanceof Error ? cause : new Error(error);
       } finally {

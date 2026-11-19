@@ -1,0 +1,53 @@
+- generic [active] [ref=e1]:
+  - region "Visible map targets" [ref=e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=e8]:
+    - button "Clear selected data layers" [ref=e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e10]: layers_clear
+    - button "Copy share link" [ref=e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e12]: 🔗
+    - button "Tilt map to oblique view" [ref=e13] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e14]: view_in_ar
+    - button "Reset map to north up" [ref=e15] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e16]: "N"
+      - generic [aria-hidden] [ref=e17]: navigation
+    - button "Reset to full globe view" [ref=e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e19]: public
+    - button "General settings" [ref=e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e21]: settings
+  - generic:
+    - generic: syncing road network
+    - generic: 0%
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic [ref=e23]:
+    - generic [aria-hidden] [ref=e24]: tune
+    - generic [ref=e25]: DISPLAY
+    - button "◀" [ref=e26] [cursor=pointer]
+  - generic "Navigation, voice, and visual preset controls" [ref=e27]:
+    - button "Expand Visual Presets" [ref=e30] [cursor=pointer]:
+      - generic [ref=e31]: VISUAL PRESETS
+    - button "Expand LOCATION" [ref=e36] [cursor=pointer]:
+      - generic [ref=e37]: LOCATION
+  - generic:
+    - generic [ref=e40]:
+      - generic [aria-hidden] [ref=e41]: database
+      - generic [ref=e42]: DATA LAYERS
+      - button "+" [ref=e44] [cursor=pointer]
+    - button "+" [ref=e48] [cursor=pointer]
+    - generic:
+      - generic:
+        - button "◀"
+    - button "+" [ref=e52] [cursor=pointer]
+  - complementary:
+    - button "▶" [ref=e56] [cursor=pointer]
+  - generic [ref=e59]:
+    - heading "ODIN" [level=2] [ref=e60]
+    - paragraph [ref=e61]: Loading Google 3D Tiles...
+  - link [ref=e65] [cursor=pointer]:
+    - /url: https://cesium.com/
+    - img "Cesium ion" [ref=e66]

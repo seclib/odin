@@ -164,6 +164,7 @@ test('a DPR change with no resize still repaints the backing store', () => {
   const dom = stubScopeMaskDom({ width: 1000, height: 800, dpr: 1 });
   try {
     installScopeMask({ container: dom.container });
+    setScopeMaskEnabled(true); // clean boot starts disabled
     // 1x monitor: backing store matches CSS pixels.
     assert.equal(dom.canvas.width, 1000);
     assert.equal(dom.canvas.height, 800);
@@ -188,6 +189,7 @@ test('destroy tears the DPR watch down (no redraw after teardown)', () => {
   const dom = stubScopeMaskDom({ width: 640, height: 480, dpr: 1 });
   try {
     installScopeMask({ container: dom.container });
+    setScopeMaskEnabled(true); // clean boot starts disabled
     assert.equal(dom.canvas.width, 640);
     destroyScopeMask();
     dom.setDpr(2);
@@ -338,6 +340,7 @@ test('the hard-crop (feather 0) path honors the same terminus alpha', () => {
   const dom = stubScopeMaskDom({ width: 1000, height: 800, dpr: 1 });
   try {
     installScopeMask({ container: dom.container });
+    setScopeMaskEnabled(true); // clean boot starts disabled
     updateScopeTerminusForHeight(SCOPE_TERMINUS_FAR_M + 5_000_000); // true full-globe view
     setScopeMaskFeather(0); // hard crop — the evenodd rect-minus-circle path
     // The globe-scale seed paint is legitimately in the history, so assert on
@@ -395,6 +398,7 @@ test('a disabled scope does no canvas work and samples no camera heights', () =>
   const rig = stubScopeViewer(dom.container, 14_000_000); // true full-globe view
   try {
     installScopeMask(rig.viewer);
+    setScopeMaskEnabled(true); // clean boot starts disabled
     assert.equal(getScopeTerminusAlpha(), SCOPE_OUTSIDE_ALPHA);
 
     // The transition must clear the painted mask EXACTLY once, and must not
@@ -439,6 +443,7 @@ test('a DPR change that also crosses a terminus step paints once, not twice', ()
   const rig = stubScopeViewer(dom.container, SCOPE_TERMINUS_FAR_M);
   try {
     installScopeMask(rig.viewer);
+    setScopeMaskEnabled(true); // clean boot starts disabled
     assert.equal(getScopeTerminusAlpha(), SCOPE_OUTSIDE_ALPHA);
 
     // Descend into the band WITHOUT a frame, then drag the window to a 2x

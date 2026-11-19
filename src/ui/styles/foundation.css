@@ -11,10 +11,18 @@
   --accent: #5b9cf6;
   --accent-dim: rgba(91, 156, 246, 0.1);
   --accent-glow: rgba(91, 156, 246, 0.16);
-    --text-primary: #e6e9ef;
+  /* One chrome language for the top bar, both rails, their flyouts and the
+     dock trays: same translucent surface, blue edge, halo and depth. */
+  --chrome-surface: rgba(20, 24, 31, 0.96);
+  --chrome-border: rgba(123, 189, 211, 0.32);
+  --chrome-glow: rgba(0, 212, 255, 0.09);
+  --chrome-shadow: 0 10px 26px rgba(0, 0, 0, 0.48);
+  --chrome-radius: 14px;
+  --chrome-blur: 16px;
+  --text-primary: #e6e9ef;
   --text-secondary: rgba(230, 233, 239, 0.72);
   --text-dim: rgba(230, 233, 239, 0.45);
-          /* Opaque surface for browser-painted menus, which cannot use --glass-bg. */
+  /* Opaque surface for browser-painted menus, which cannot use --glass-bg. */
   --menu-bg: #1a1f27;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
   --font-sans:
@@ -547,6 +555,16 @@ body.cockpit-mode #cockpit-cloud-effects.active {
   display: block;
   width: 32px;
   height: auto;
+  box-sizing: border-box;
+  /* Same glass chrome as the top dock buttons (status.css
+     `#top-center-actions button`): same surface, same border, same blur,
+     same radius. The mark is porcelain on transparent, so the glass disc
+     underneath lifts it off any background instead of a one-off tint. */
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
 }
 
@@ -647,7 +665,7 @@ body.cockpit-mode #cockpit-cloud-effects.active {
   padding: 0 8px;
   height: 36px;
   border-radius: var(--btn-radius);
-  background: var(--surface-panel, rgba(14, 18, 24, 0.90));
+  background: var(--surface-panel, rgba(14, 18, 24, 0.9));
   border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.12));
 }
 

@@ -150,7 +150,9 @@ menu {
   border: 1px solid var(--border-subtle);
   border-radius: var(--panel-radius);
   box-shadow: var(--modern-shadow-md);
-  padding: 0.5rem 0.75rem;
+  /* 4px vertical padding: the bar then hugs its 46px min-height, exactly
+     matching #top-center-actions' height instead of drifting taller. */
+  padding: 4px 0.75rem;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
@@ -350,4 +352,53 @@ menu {
 
 #scene-progress-fill {
   color: var(--text-primary);
+}
+
+/* ── Cesium ion / Google attribution strip ──────────────────────────────────
+   Lowest strip of the interface, below the command dock: the required
+   notices stay on screen in every mode and size (ion logo + "Upgrade for
+   commercial use." + the "Data attribution" toggle). Flush at the very
+   bottom edge, barely-there 9 px, still legible and still clickable. The Ion and Google Maps
+   ToS both require those notices whenever their content is on screen, so the
+   strip must never go `display: none`, `visibility: hidden`, `opacity: 0`,
+   or disappear behind another overlay — `#cesium-credits` keeps its own
+   z-index above the globe but below the HUD so the dock stays reachable. */
+/* Required notices stay flush at the very bottom in clean/recording modes. */
+body.ui-clean-view #cesium-credits,
+body.recording-mode #cesium-credits {
+  bottom: 2px;
+}
+
+#cesium-credits,
+body:not(.ui-clean-view):not(.recording-mode) #cesium-credits,
+body:not(.ui-clean-view):not(.recording-mode):has(#intel-hud[data-variant='minimal'].active) #cesium-credits {
+  bottom: 2px;
+  left: 36px;
+  width: auto !important;
+  max-width: calc(100vw - 72px) !important;
+  font-size: 9px;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+#cesium-credits .cesium-credit-logoContainer img,
+#cesium-credits .cesium-credit-textContainer img {
+  height: 12px;
+  width: auto;
+  vertical-align: baseline;
+}
+
+/* Very narrow screens: the two-row dock takes the whole width, so the
+   notices can't live below it without clipping required content.
+   Fall back to the old clearance above the dock — same notices. */
+@media (max-width: 700px) {
+  body.ui-clean-view #cesium-credits,
+  body.recording-mode #cesium-credits,
+  body:not(.ui-clean-view):not(.recording-mode) #cesium-credits,
+  #cesium-credits,
+  body:not(.ui-clean-view):not(.recording-mode):has(#intel-hud[data-variant='minimal'].active) #cesium-credits {
+    bottom: calc(2vh + 5rem);
+    left: 0.75rem;
+  }
 }

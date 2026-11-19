@@ -1,3 +1,54 @@
+<!-- gev:template command-dock -->
+<style>
+  :root {
+    --gev-panel-bg: rgba(10, 10, 20, 0.6);
+    --gev-panel-bg-hover: rgba(15, 15, 30, 0.7);
+    --gev-panel-border: rgba(255, 255, 255, 0.15);
+    --gev-panel-border-focus: rgba(255, 255, 255, 0.4);
+    --gev-panel-fg: #e0e0e8;
+    --gev-panel-fg-muted: #808090;
+    --gev-panel-accent: #00d4aa;
+    --gev-radius: 8px;
+    --gev-border-width: 1px;
+    --gev-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --gev-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.4);
+    --gev-transition-base: 180ms ease-out;
+    --gev-transition-hover: 150ms ease-in;
+  }
+
+  #control-panel {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+    transition: background var(--gev-transition-base),
+                border var(--gev-transition-base);
+  }
+  #control-panel:hover {
+    background: var(--gev-panel-bg-hover);
+  }
+
+  .panel-header {
+    color: var(--gev-panel-fg);
+    transition: color var(--gev-transition-hover);
+  }
+  .panel-header:hover {
+    color: var(--gev-panel-accent);
+  }
+
+  .panel-divider {
+    border-color: var(--gev-panel-border);
+  }
+
+  .dock-tray-toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .style-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--gev-panel-accent);
+  }
+</style>
   <!-- Unified bottom command dock: locations, voice (injected at runtime), visual presets -->
   <div id="command-dock" aria-label="Navigation, voice, and visual preset controls" data-i18n-aria-label>
   <!-- Control panel -->

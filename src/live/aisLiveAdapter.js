@@ -1,9 +1,12 @@
-import { normalizeVesselObservation } from "../sources/live/vessels.js";
-import { normalizeLiveEntity, compareLiveEntities } from "./liveEntity.js";
+import { normalizeVesselObservation } from '../sources/live/vessels.js';
+import { normalizeLiveEntity, compareLiveEntities } from './liveEntity.js';
 
-export const AIS_SOURCE_ID = "ais";
+export const AIS_SOURCE_ID = 'ais';
 
-export function aisObservationToLiveEntity(row, { source = AIS_SOURCE_ID, now = Date.now, reference = null } = {}) {
+export function aisObservationToLiveEntity(
+  row,
+  { source = AIS_SOURCE_ID, now = Date.now, reference = null } = {},
+) {
   const vessel = normalizeVesselObservation(row, reference);
   if (!vessel) return null;
 
@@ -29,7 +32,10 @@ export function aisObservationToLiveEntity(row, { source = AIS_SOURCE_ID, now = 
   );
 }
 
-export function createAISLiveAdapter({ source = AIS_SOURCE_ID, now = Date.now } = {}) {
+export function createAISLiveAdapter({
+  source = AIS_SOURCE_ID,
+  now = Date.now,
+} = {}) {
   return {
     source,
     normalize(row, reference = null) {
@@ -39,8 +45,13 @@ export function createAISLiveAdapter({ source = AIS_SOURCE_ID, now = Date.now } 
       if (!Array.isArray(rows)) return [];
       const best = new Map();
       for (const row of rows) {
-        const reference = typeof referenceFor === "function" ? referenceFor(row) : null;
-        const entity = aisObservationToLiveEntity(row, { source, now, reference });
+        const reference =
+          typeof referenceFor === 'function' ? referenceFor(row) : null;
+        const entity = aisObservationToLiveEntity(row, {
+          source,
+          now,
+          reference,
+        });
         if (!entity) continue;
         const previous = best.get(entity.id);
         if (!previous || compareLiveEntities(previous, entity) > 0) {

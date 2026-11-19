@@ -380,7 +380,7 @@ html:not([lang='en']) .panel-collapse-btn {
   right: 6px;
   font-family: var(--font-mono);
   font-size: 8px;
-  color: var(--text-dim);
+  color: rgba(230, 233, 239, 0.55);
   opacity: 0;
   transition: opacity var(--transition-fast);
 }
@@ -852,9 +852,9 @@ html:not([lang='en']) .pp-slider-row > .pp-slider-mini-label {
 /* Map Source tiles live with Visual Presets in the bottom command tray. */
 .map-source-section {
   display: grid;
-  gap: 6px;
-  margin-top: 8px;
-  padding-top: 8px;
+  gap: 7px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid rgba(123, 189, 211, 0.18);
 }
 
@@ -862,9 +862,9 @@ html:not([lang='en']) .pp-slider-row > .pp-slider-mini-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: rgba(190, 221, 230, 0.62);
+  color: rgba(196, 228, 236, 0.84);
   font-family: var(--font-mono);
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 1.35px;
 }
 
@@ -879,13 +879,13 @@ html:not([lang='en']) .pp-slider-row > .pp-slider-mini-label {
   align-items: baseline;
   justify-content: center;
   gap: 4px;
-  padding: 4px 7px;
+  padding: 5px 9px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.6px;
   text-transform: uppercase;
   white-space: nowrap;
-  color: var(--text-dim);
+  color: rgba(235, 239, 245, 0.78);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 4px;
@@ -938,7 +938,9 @@ html:not([lang='en']) .pp-slider-row > .pp-slider-mini-label {
   color: var(--accent);
   border-color: var(--accent);
   background: var(--accent-dim);
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+  box-shadow:
+    0 0 10px rgba(0, 212, 255, 0.22),
+    0 0 0 1px rgba(0, 212, 255, 0.35) inset;
 }
 
 .map-stack-chip.unavailable,
@@ -956,13 +958,13 @@ html:not([lang='en']) .pp-slider-row > .pp-slider-mini-label {
 }
 
 .pp-stack-status {
-  min-width: 42px;
+  min-width: 44px;
   max-width: 54px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.8px;
   color: var(--accent);
   text-align: center;

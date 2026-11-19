@@ -234,7 +234,7 @@ test('destroying one instance does not remove another pipeline or clock', () => 
 });
 
 test('existing baseline and military presets keep one detection default', () => {
-  assert.equal(GLOBAL_POST_DEFAULTS.detectionMode, 'DENSE');
+  assert.equal(GLOBAL_POST_DEFAULTS.detectionMode, 'OFF', 'clean first load');
   assert.equal(GLOBAL_POST_DEFAULTS.detectionDensity, 75);
   assert.equal(GLOBAL_POST_DEFAULTS.sharpen.intensity, 49);
   assert.equal(GLOBAL_POST_DEFAULTS.detectionFadePct, 7);

@@ -159,16 +159,37 @@ test('selection claims authority before requesting and never lights a pending so
   f.controls.destroy();
 });
 
-test('provider-driven fallback updates the active chip and durable state notification', () => {
+test('provider-driven fallback updates the active chip and reports the error once', () => {
   const f = fixture();
   f.change('esri-imagery');
   f.emit();
   f.change('osm', 'Source unavailable; using OSM');
   f.emit();
+  f.emit();
   assert.equal(f.chip('osm').getAttribute('aria-pressed'), 'true');
   assert.equal(f.statusElement.textContent, 'OSM');
   assert.equal(f.statusElement.classList.contains('warn'), true);
-  assert.deepEqual(f.calls, [['state'], ['state']]);
+  assert.deepEqual(f.calls, [
+    ['state'],
+    ['error', 'Source unavailable; using OSM'],
+    ['state'],
+    ['state'],
+  ]);
+  f.controls.destroy();
+});
+
+test('a switch that falls back to a different stack still reports its error', async () => {
+  const f = fixture();
+  const pending = f.controls.select('bing-aerial');
+  f.requests[0].resolve(f.change('osm', 'Bing Aerial failed; using OSM'));
+  await pending;
+  assert.equal(f.chip('osm').getAttribute('aria-pressed'), 'true');
+  assert.ok(
+    f.calls.some(
+      (call) =>
+        call[0] === 'error' && call[1] === 'Bing Aerial failed; using OSM',
+    ),
+  );
   f.controls.destroy();
 });
 

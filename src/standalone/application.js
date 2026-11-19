@@ -8,7 +8,10 @@ import { createStandaloneData } from './data.js';
 import { createStandaloneTools } from './tools.js';
 import { resolveLocale, applyDocumentLanguage } from '../i18n/locale.js';
 import { applyDocumentTranslations, setLocale } from '../i18n/index.js';
-import { createGoogleTokenSource } from '../maps/googleTokens.js';
+import {
+  createGoogleTokenSource,
+  shouldRequestServerTokens,
+} from '../maps/googleTokens.js';
 
 // The existing controls and layer catalog contain page-scoped state.
 let constructed = false;
@@ -52,9 +55,11 @@ export function createStandaloneApplication({
       const scene = await createStandaloneScene({
         ...context,
         googleApiKey,
-        // Without a key, Google 3D can still load with tokens from the
-        // app's server when it offers them.
-        googleTokens: googleApiKey ? null : createGoogleTokenSource(),
+        // Only ask the optional token endpoint when neither a browser key nor
+        // an ion token is configured; otherwise that request can never help.
+        googleTokens: shouldRequestServerTokens({ googleApiKey, cesiumToken })
+          ? createGoogleTokenSource()
+          : null,
         cesiumToken,
         loaderStatus,
       });

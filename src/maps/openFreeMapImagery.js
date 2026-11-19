@@ -194,17 +194,39 @@ export class OpenFreeMapImageryProvider {
     this._hasAlphaChannel = true;
   }
 
-  get rectangle() { return this._rectangle; }
-  get tileWidth() { return this._tileWidth; }
-  get tileHeight() { return this._tileHeight; }
-  get maximumLevel() { return this._maximumLevel; }
-  get minimumLevel() { return this._minimumLevel; }
-  get tilingScheme() { return this._tilingScheme; }
-  get tileDiscardPolicy() { return this._tileDiscardPolicy; }
-  get proxy() { return this._proxy; }
-  get errorEvent() { return this._errorEvent; }
-  get credit() { return this._credit; }
-  get hasAlphaChannel() { return this._hasAlphaChannel; }
+  get rectangle() {
+    return this._rectangle;
+  }
+  get tileWidth() {
+    return this._tileWidth;
+  }
+  get tileHeight() {
+    return this._tileHeight;
+  }
+  get maximumLevel() {
+    return this._maximumLevel;
+  }
+  get minimumLevel() {
+    return this._minimumLevel;
+  }
+  get tilingScheme() {
+    return this._tilingScheme;
+  }
+  get tileDiscardPolicy() {
+    return this._tileDiscardPolicy;
+  }
+  get proxy() {
+    return this._proxy;
+  }
+  get errorEvent() {
+    return this._errorEvent;
+  }
+  get credit() {
+    return this._credit;
+  }
+  get hasAlphaChannel() {
+    return this._hasAlphaChannel;
+  }
 
   getTileCredits() {
     return [this._credit];
@@ -228,7 +250,15 @@ export class OpenFreeMapImageryProvider {
           console.warn('[openFreeMap] tile failed', url, error?.message);
         if (this._errorEvent)
           this._errorEvent.raiseEvent(
-            new Cesium.TileProviderError(this, 'OpenFreeMap tile failed', x, y, level, 0, error),
+            new Cesium.TileProviderError(
+              this,
+              'OpenFreeMap tile failed',
+              x,
+              y,
+              level,
+              0,
+              error,
+            ),
           );
         return emptyTileCanvas();
       });

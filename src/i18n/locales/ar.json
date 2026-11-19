@@ -1,4 +1,5 @@
 {
+  "CARTO basemaps require an API key from carto.com; anonymous tiles return placeholder images": "تتطلب خرائط CARTO الأساسية مفتاح API من carto.com؛ تُرجع البلاطات المجهولة صور بديلة.",
   "General settings": "الإعدادات العامة",
   "GROUND STATION · SETTINGS": "GROUND STATION · الإعدادات",
   "Close settings": "إغلاق الإعدادات",
@@ -2288,8 +2289,6 @@
   "Decoder feeds: {feeds}": "مصادر المفكّك: {feeds}",
   "Language: {language}": "اللغة: {language}",
   "Change the interface language": "تغيير لغة الواجهة",
-  "Interface language": "لغة الواجهة",
-  "Search languages": "البحث عن لغة",
   "No matching languages": "لا توجد لغات مطابقة",
   "Detailed outline unavailable": "المخطط التفصيلي غير متاح",
   "Austin": "أوستن",
@@ -3225,7 +3224,6 @@
   "NEW": "NEW",
   "CAPTURE SHOT": "CAPTURE SHOT",
   "START": "START",
-  "EXPORT PRESETS": "EXPORT PRESETS",
   "Buildings": "المباني",
   "GROUND STATION · LOCAL DATA": "GROUND STATION · بيانات محلية",
   "DISABLED": "معطّل",

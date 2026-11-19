@@ -23,7 +23,9 @@ export const LOCAL_DATA_CATEGORIES = Object.freeze([
   Object.freeze({
     id: 'storage',
     title: msg('Storage and locations'),
-    description: msg('Choose where ODIN keeps local data, enable or disable retention, and manage existing folders.'),
+    description: msg(
+      'Choose where ODIN keeps local data, enable or disable retention, and manage existing folders.',
+    ),
     state: 'upcoming',
     planned: Object.freeze([
       msg('Choosing the storage location'),
@@ -32,20 +34,28 @@ export const LOCAL_DATA_CATEGORIES = Object.freeze([
       msg('Changing the folder'),
       msg('Managing existing data'),
     ]),
-    note: msg('Folder paths must be managed by the local ODIN server: a browser cannot write to arbitrary host directories.'),
+    note: msg(
+      'Folder paths must be managed by the local ODIN server: a browser cannot write to arbitrary host directories.',
+    ),
   }),
   Object.freeze({
     id: 'buildings',
     title: msg('3D buildings'),
-    description: msg('Microsoft GMLFP footprints, IGN altitude enrichment and generated 3D Tiles.'),
+    description: msg(
+      'Microsoft GMLFP footprints, IGN altitude enrichment and generated 3D Tiles.',
+    ),
     state: 'available',
     planned: Object.freeze([]),
-    note: msg('The 3D buildings layer is operational. Storage management will be connected here after the full dataset is validated.'),
+    note: msg(
+      'The 3D buildings layer is operational. Storage management will be connected here after the full dataset is validated.',
+    ),
   }),
   Object.freeze({
     id: 'terrain',
     title: msg('Terrain models'),
-    description: msg('Local elevation data and terrain tiles kept on this machine.'),
+    description: msg(
+      'Local elevation data and terrain tiles kept on this machine.',
+    ),
     state: 'upcoming',
     planned: Object.freeze([]),
     note: null,
@@ -107,7 +117,11 @@ function renderMain(container, categories, openCategory) {
     el(
       'p',
       'ldh-intro',
-      t(msg('Data kept by ODIN on this machine is organized below. Each category evolves independently.')),
+      t(
+        msg(
+          'Data kept by ODIN on this machine is organized below. Each category evolves independently.',
+        ),
+      ),
     ),
   );
   const list = el('div', 'ldh-categories');
@@ -158,7 +172,15 @@ function renderCategoryDetail(container, categories, id, goBack) {
   // Upcoming categories intentionally have no action buttons: an inert button
   // would suggest the feature already exists.
   container.append(
-    el('p', 'ldh-footnote', t(msg('No interactive controls are shown for categories that are not implemented yet.'))),
+    el(
+      'p',
+      'ldh-footnote',
+      t(
+        msg(
+          'No interactive controls are shown for categories that are not implemented yet.',
+        ),
+      ),
+    ),
   );
 }
 
@@ -168,7 +190,10 @@ function renderCategoryDetail(container, categories, id, goBack) {
  * @param {{documentRef?:Document}} [options]
  * @returns {{render():void, goBack():void, active():string|null}}
  */
-export function mountLocalDataRubrique(container, { categories = localDataHubCategories() } = {}) {
+export function mountLocalDataRubrique(
+  container,
+  { categories = localDataHubCategories() } = {},
+) {
   const main = el('div', 'ldh-main');
   main.dataset.localDataHubSection = 'main';
   const detail = el('div', 'ldh-detail');
@@ -188,7 +213,9 @@ export function mountLocalDataRubrique(container, { categories = localDataHubCat
     main.hidden = true;
     detail.hidden = false;
     renderCategoryDetail(detail, categories, id, goBack);
-    detail.querySelector('[data-role="back"]')?.focus?.({ preventScroll: true });
+    detail
+      .querySelector('[data-role="back"]')
+      ?.focus?.({ preventScroll: true });
   };
   renderMain(main, categories, openCategory);
   return {

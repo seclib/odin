@@ -1,0 +1,340 @@
+- generic [active] [ref=f7e1]:
+  - region "Visible map targets" [ref=f7e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=f7e8]:
+    - button "Clear selected data layers" [ref=f7e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f7e10]: layers_clear
+    - button "Copy share link" [ref=f7e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f7e12]: 🔗
+    - button "Tilt map to oblique view" [ref=f7e13] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f7e14]: view_in_ar
+    - button "Reset map to north up. Current heading 13 degrees" [ref=f7e69] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f7e16]: "N"
+      - generic [aria-hidden] [ref=f7e17]: navigation
+    - button "Reset to full globe view" [ref=f7e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f7e19]: public
+    - button "General settings" [ref=f7e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f7e21]: settings
+    - 'button "Language: English" [ref=f7e71] [cursor=pointer]':
+      - generic [aria-hidden] [ref=f7e76]: EN
+  - generic: syncing road network
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic "Navigation, voice, and visual preset controls" [ref=f7e27]:
+    - button "Expand LOCATION" [ref=f7e36] [cursor=pointer]:
+      - generic [ref=f7e37]: LOCATION
+    - generic [ref=f7e79]:
+      - generic [ref=f7e80]:
+        - generic: AI AGENT
+        - generic [ref=f7e81]: "OFF"
+        - generic [ref=f7e82]:
+          - button "STD" [ref=f7e83] [cursor=pointer]
+          - generic "Estimated session cost on gpt-realtime-2 — 0 response(s). Warns at ~$2.00, ends the session at ~$5.00." [ref=f7e84]: ~$0.00
+      - button "Voice control — activate to toggle voice; hold Space to speak" [ref=f7e85] [cursor=pointer]:
+        - generic [ref=f7e87]: ON/OFF
+      - generic [ref=f7e104]: VOICE STANDBY
+    - button "Expand VISUAL PRESETS" [ref=f7e106] [cursor=pointer]:
+      - generic [ref=f7e31]: VISUAL PRESETS
+  - generic [ref=f7e107]:
+    - generic [ref=f7e39]:
+      - button "DATA LAYERS" [expanded] [ref=f7e108] [cursor=pointer]:
+        - generic [aria-hidden]: database
+        - text: DATA LAYERS
+      - generic [ref=f7e109]:
+        - heading "Movement" [level=3] [ref=f7e110]
+        - generic [ref=f7e111]:
+          - generic [ref=f7e112]:
+            - generic [ref=f7e113]:
+              - generic [aria-hidden] [ref=f7e114]: 🛰️
+              - generic [ref=f7e115]: Satellites
+            - generic [ref=f7e116]:
+              - generic [ref=f7e117]: —
+              - 'button "Satellites: OFF" [ref=f7e118] [cursor=pointer]': "OFF"
+          - generic [ref=f7e119]: CelesTrak · never
+        - generic [ref=f7e120]:
+          - generic [ref=f7e121]:
+            - generic [ref=f7e122]:
+              - generic [aria-hidden] [ref=f7e123]: ✈️
+              - generic [ref=f7e124]: Live Flights
+            - generic [ref=f7e125]:
+              - generic [ref=f7e126]: —
+              - 'button "Live Flights: OFF" [ref=f7e127] [cursor=pointer]': "OFF"
+          - generic [ref=f7e128]: Flights · never
+        - generic [ref=f7e129]:
+          - generic [ref=f7e130]:
+            - generic [ref=f7e131]:
+              - generic [aria-hidden] [ref=f7e132]: 🎖️
+              - generic [ref=f7e133]: Military Flights
+            - generic [ref=f7e134]:
+              - generic [ref=f7e135]: —
+              - 'button "Military Flights: OFF" [ref=f7e136] [cursor=pointer]': "OFF"
+          - generic [ref=f7e137]: Military aircraft · never
+        - generic [ref=f7e138]:
+          - generic [ref=f7e139]:
+            - generic [ref=f7e140]:
+              - generic [aria-hidden] [ref=f7e141]: 📡
+              - generic [ref=f7e142]: Local ADS-B
+            - generic [ref=f7e143]:
+              - generic [ref=f7e144]: —
+              - 'button "Local ADS-B: OFF" [ref=f7e145] [cursor=pointer]': "OFF"
+          - generic [ref=f7e146]: RTL-SDR · WebUSB · never
+        - generic [ref=f7e147]:
+          - generic [ref=f7e148]:
+            - generic [ref=f7e149]:
+              - generic [aria-hidden] [ref=f7e150]: ◭
+              - generic [ref=f7e151]: Live Vessels
+            - generic [ref=f7e152]:
+              - generic [ref=f7e153]: —
+              - 'button "Live Vessels: OFF" [ref=f7e154] [cursor=pointer]': "OFF"
+          - generic [ref=f7e155]: Vessels · never
+        - generic [ref=f7e156]:
+          - generic [ref=f7e157]:
+            - generic [ref=f7e158]:
+              - generic [aria-hidden] [ref=f7e159]: 🚗
+              - generic [ref=f7e160]: Street Traffic
+            - generic [ref=f7e161]:
+              - generic [ref=f7e162]: —
+              - 'button "Street Traffic: OFF" [ref=f7e163] [cursor=pointer]': "OFF"
+          - generic [ref=f7e164]: OpenStreetMap / TomTom · never
+        - generic [ref=f7e165]:
+          - generic [ref=f7e166]:
+            - generic [ref=f7e167]:
+              - generic [aria-hidden] [ref=f7e168]: 🚌
+              - generic [ref=f7e169]: Transit
+            - generic [ref=f7e170]:
+              - generic [ref=f7e171]: —
+              - 'button "Transit: OFF" [ref=f7e172] [cursor=pointer]': "OFF"
+          - generic [ref=f7e173]: GTFS-RT · never
+        - generic [ref=f7e174]:
+          - generic [ref=f7e175]:
+            - generic [ref=f7e176]:
+              - generic [aria-hidden] [ref=f7e177]: 🚲
+              - generic [ref=f7e178]: Bike Share
+            - generic [ref=f7e179]:
+              - generic [ref=f7e180]: —
+              - 'button "Bike Share: OFF" [ref=f7e181] [cursor=pointer]': "OFF"
+          - generic [ref=f7e182]: GBFS · never
+        - heading "Cameras" [level=3] [ref=f7e183]
+        - generic [ref=f7e184]:
+          - generic [ref=f7e185]:
+            - generic [ref=f7e186]:
+              - generic [aria-hidden] [ref=f7e187]: 📹
+              - generic [ref=f7e188]: Cameras
+            - generic [ref=f7e189]:
+              - generic [ref=f7e190]: —
+              - 'button "Cameras: OFF" [ref=f7e191] [cursor=pointer]': "OFF"
+          - generic [ref=f7e192]: CCTV + Street View fallback · never
+        - generic [ref=f7e193]:
+          - generic [ref=f7e194]:
+            - generic [ref=f7e195]:
+              - generic [aria-hidden] [ref=f7e196]: 🛰
+              - generic [ref=f7e197]: Recent Imagery
+            - generic [ref=f7e198]:
+              - generic [ref=f7e199]: —
+              - 'button "Recent Imagery: OFF" [ref=f7e200] [cursor=pointer]': "OFF"
+          - generic [ref=f7e201]: NASA GIBS · HLS + VIIRS · never
+        - generic [ref=f7e202]:
+          - generic [ref=f7e203]:
+            - generic [ref=f7e204]:
+              - generic [aria-hidden] [ref=f7e205]: 📷
+              - generic [ref=f7e206]: Street Level
+            - generic [ref=f7e207]:
+              - generic [ref=f7e208]: —
+              - 'button "Street Level: OFF" [ref=f7e209] [cursor=pointer]': "OFF"
+          - generic [ref=f7e210]: Mapillary · Google Street View · KartaView · Panoramax · never
+        - heading "Infrastructure" [level=3] [ref=f7e211]
+        - generic [ref=f7e212]:
+          - generic [ref=f7e213]:
+            - generic [ref=f7e214]:
+              - generic [aria-hidden] [ref=f7e215]: 📷
+              - generic [ref=f7e216]: Mapped ALPR Cameras
+            - generic [ref=f7e217]:
+              - generic [ref=f7e218]: —
+              - 'button "Mapped ALPR Cameras: OFF" [ref=f7e219] [cursor=pointer]': "OFF"
+          - generic [ref=f7e220]: OpenStreetMap · community mapped · never
+        - generic [ref=f7e221]:
+          - generic [ref=f7e222]:
+            - generic [ref=f7e223]:
+              - generic [aria-hidden] [ref=f7e224]: ⌖
+              - generic [ref=f7e225]: Mapped Installations
+            - generic [ref=f7e226]:
+              - generic [ref=f7e227]: —
+              - 'button "Mapped Installations: OFF" [ref=f7e228] [cursor=pointer]': "OFF"
+          - generic [ref=f7e229]: OpenStreetMap + optional Google Maps Places · never
+        - generic [ref=f7e230]:
+          - generic [ref=f7e231]:
+            - generic [ref=f7e232]:
+              - generic [aria-hidden] [ref=f7e233]: ▣
+              - generic [ref=f7e234]: Data Centers
+            - generic [ref=f7e235]:
+              - generic [ref=f7e236]: —
+              - 'button "Data Centers: OFF" [ref=f7e237] [cursor=pointer]': "OFF"
+          - generic [ref=f7e238]: Local · never
+        - generic [ref=f7e239]:
+          - generic [ref=f7e240]:
+            - generic [ref=f7e241]:
+              - generic [aria-hidden] [ref=f7e242]: ≋
+              - generic [ref=f7e243]: Submarine Cables
+            - generic [ref=f7e244]:
+              - generic [ref=f7e245]: —
+              - 'button "Submarine Cables: OFF" [ref=f7e246] [cursor=pointer]': "OFF"
+          - generic [ref=f7e247]: TeleGeography · never
+        - generic [ref=f7e248]:
+          - generic [ref=f7e249]:
+            - generic [ref=f7e250]:
+              - generic [aria-hidden] [ref=f7e251]: ▰
+              - generic [ref=f7e252]: Dams
+            - generic [ref=f7e253]:
+              - generic [ref=f7e254]: —
+              - 'button "Dams: OFF" [ref=f7e255] [cursor=pointer]': "OFF"
+          - generic [ref=f7e256]: USACE · never
+        - generic [ref=f7e257]:
+          - generic [ref=f7e258]:
+            - generic [ref=f7e259]:
+              - generic [aria-hidden] [ref=f7e260]: 🏢
+              - generic [ref=f7e261]: Buildings
+            - generic [ref=f7e262]:
+              - generic [ref=f7e263]: —
+              - 'button "Buildings: OFF" [ref=f7e264] [cursor=pointer]': "OFF"
+          - generic [ref=f7e265]: Microsoft GMLFP · 3D Tiles · heights not measured · never
+        - heading "Events" [level=3] [ref=f7e266]
+        - generic [ref=f7e267]:
+          - generic [ref=f7e268]:
+            - generic [ref=f7e269]:
+              - generic [aria-hidden] [ref=f7e270]: 🚀
+              - generic [ref=f7e271]: Space Missions (30d)
+            - generic [ref=f7e272]:
+              - generic [ref=f7e273]: —
+              - 'button "Space Missions (30d): OFF" [ref=f7e274] [cursor=pointer]': "OFF"
+          - generic [ref=f7e275]: Launch Library 2 · never
+        - generic [ref=f7e276]:
+          - generic [ref=f7e277]:
+            - generic [ref=f7e278]:
+              - generic [aria-hidden] [ref=f7e279]: 🌋
+              - generic [ref=f7e280]: Earthquakes (24h)
+            - generic [ref=f7e281]:
+              - generic [ref=f7e282]: —
+              - 'button "Earthquakes (24h): OFF" [ref=f7e283] [cursor=pointer]': "OFF"
+          - generic [ref=f7e284]: USGS · never
+        - generic [ref=f7e285]:
+          - generic [ref=f7e286]:
+            - generic [ref=f7e287]:
+              - generic [aria-hidden] [ref=f7e288]: ▲
+              - generic [ref=f7e289]: Active Fires
+            - generic [ref=f7e290]:
+              - generic [ref=f7e291]: —
+              - 'button "Active Fires: OFF" [ref=f7e292] [cursor=pointer]': "OFF"
+          - generic [ref=f7e293]: NASA FIRMS · LIVE · never
+        - generic [ref=f7e294]:
+          - generic [ref=f7e295]:
+            - generic [ref=f7e296]:
+              - generic [aria-hidden] [ref=f7e297]: 🔥
+              - generic [ref=f7e298]: Fire Perimeters
+            - generic [ref=f7e299]:
+              - generic [ref=f7e300]: —
+              - 'button "Fire Perimeters: OFF" [ref=f7e301] [cursor=pointer]': "OFF"
+          - generic [ref=f7e302]: NIFC WFIGS · never
+        - generic [ref=f7e303]:
+          - generic [ref=f7e304]:
+            - generic [ref=f7e305]:
+              - generic [aria-hidden] [ref=f7e306]: 📡
+              - generic [ref=f7e307]: GNSS Integrity
+            - generic [ref=f7e308]:
+              - generic [ref=f7e309]: —
+              - 'button "GNSS Integrity: OFF" [ref=f7e310] [cursor=pointer]': "OFF"
+          - generic [ref=f7e311]: adsb.lol · never
+        - heading "Weather" [level=3] [ref=f7e312]
+        - generic [ref=f7e313]:
+          - generic [ref=f7e314]:
+            - generic [ref=f7e315]:
+              - generic [aria-hidden] [ref=f7e316]: ◍
+              - generic [ref=f7e317]: Air quality
+            - 'button "Air quality: OFF" [ref=f7e319] [cursor=pointer]': "OFF"
+          - generic [ref=f7e320]: ECCC MSC GeoMet · never
+        - generic [ref=f7e321]:
+          - generic [ref=f7e322]:
+            - generic [ref=f7e323]:
+              - generic [aria-hidden] [ref=f7e324]: 🌬
+              - generic [ref=f7e325]: Wind
+            - 'button "Wind: OFF" [ref=f7e327] [cursor=pointer]': "OFF"
+          - generic [ref=f7e328]: GFS / ECMWF IFS · FORECAST · never
+        - generic [ref=f7e329]:
+          - generic [ref=f7e330]:
+            - generic [ref=f7e331]:
+              - generic [aria-hidden] [ref=f7e332]: ◉
+              - generic [ref=f7e333]: Rain radar
+            - 'button "Rain radar: OFF" [ref=f7e335] [cursor=pointer]': "OFF"
+          - generic [ref=f7e336]: NOAA nowCOAST · OBSERVED · never
+        - generic [ref=f7e337]:
+          - generic [ref=f7e338]:
+            - generic [ref=f7e339]:
+              - generic [aria-hidden] [ref=f7e340]: ☁
+              - generic [ref=f7e341]: Satellite clouds
+            - 'button "Satellite clouds: OFF" [ref=f7e343] [cursor=pointer]': "OFF"
+          - generic [ref=f7e344]: NOAA nowCOAST · OBSERVED · never
+        - generic [ref=f7e345]:
+          - generic [ref=f7e346]:
+            - generic [ref=f7e347]:
+              - generic [aria-hidden] [ref=f7e348]: ϟ
+              - generic [ref=f7e349]: Lightning density
+            - 'button "Lightning density: OFF" [ref=f7e351] [cursor=pointer]': "OFF"
+          - generic [ref=f7e352]: NOAA nowCOAST · OBSERVED · never
+        - generic [ref=f7e353]:
+          - generic [ref=f7e354]:
+            - generic [ref=f7e355]:
+              - generic [aria-hidden] [ref=f7e356]: ◉
+              - generic [ref=f7e357]: Cyclone advisories
+            - 'button "Cyclone advisories: OFF" [ref=f7e359] [cursor=pointer]': "OFF"
+          - generic [ref=f7e360]: NOAA NHC / CPHC · never
+        - heading "Utilities" [level=3] [ref=f7e361]
+        - generic [ref=f7e362]:
+          - generic [ref=f7e363]:
+            - generic [ref=f7e364]:
+              - generic [aria-hidden] [ref=f7e365]: 🧭
+              - generic [ref=f7e366]: Directions
+            - generic [ref=f7e367]:
+              - generic [ref=f7e368]: —
+              - 'button "Directions: OFF" [ref=f7e369] [cursor=pointer]': "OFF"
+          - generic [ref=f7e370]: OSM routing · never
+        - generic [ref=f7e371]:
+          - generic [ref=f7e372]:
+            - generic [ref=f7e373]:
+              - generic [aria-hidden] [ref=f7e374]: ◉
+              - generic [ref=f7e375]: Radio
+            - generic [ref=f7e376]:
+              - generic [ref=f7e377]: —
+              - 'button "Radio: OFF" [ref=f7e378] [cursor=pointer]': "OFF"
+          - generic [ref=f7e379]: Radio Browser · never
+    - button "SCENES" [ref=f7e380] [cursor=pointer]:
+      - generic [aria-hidden]: movie
+      - text: SCENES
+  - complementary [ref=f7e381]:
+    - button "DISPLAY" [ref=f7e382] [cursor=pointer]:
+      - generic [aria-hidden]: tune
+      - text: DISPLAY
+    - button "CCTV" [ref=f7e383] [cursor=pointer]:
+      - generic [aria-hidden]: videocam
+      - text: CCTV
+    - text: WEATHER RECENT IMAGERY
+    - button "STREET LEVEL" [ref=f7e385] [cursor=pointer]:
+      - generic [aria-hidden]: my_location
+      - text: STREET LEVEL
+    - button "CONTEXT" [ref=f7e386] [cursor=pointer]:
+      - generic [aria-hidden]: radar
+      - text: CONTEXT
+  - generic: NORMAL
+  - text: ●
+  - generic [ref=f7e64]:
+    - link [ref=f7e67] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=f7e68]
+    - generic [ref=f7e387]:
+      - link "Upgrade for commercial use." [ref=f7e389] [cursor=pointer]:
+        - /url: https://cesium.com/pricing/
+      - text: •
+      - img "Google" [ref=f7e391]
+    - button "Data attribution" [ref=f7e392] [cursor=pointer]

@@ -115,6 +115,33 @@ export class PanelLayoutController {
     }, COCKPIT_LAYOUT_SETTLE_MS);
   }
 
+  _syncLeftRailFlyoutBar() {
+    const stack = this._leftPanelStack;
+    if (!stack) return;
+    stack.classList.remove('layout-focus', 'layout-tail');
+    stack.style.removeProperty('--left-stack-safe-top');
+    stack.style.removeProperty('--left-stack-safe-bottom');
+    stack.style.removeProperty('--left-stack-centered-height');
+    stack.dataset.layoutMode = 'flyout';
+    for (const panel of stack.querySelectorAll(':scope > [data-panel-id]')) {
+      panel.style.removeProperty('--left-panel-allocated-height');
+      panel.classList.remove('layout-auto-collapsed', 'cyber-accordion-collapsed');
+    }
+  }
+
+  _syncRightRailFlyoutBar() {
+    const stack = this._rightPanelStack;
+    if (!stack) return;
+    stack.classList.remove('layout-focus', 'layout-exclusive');
+    stack.style.removeProperty('--right-stack-safe-top');
+    stack.style.removeProperty('--right-stack-max-height');
+    stack.dataset.layoutMode = 'flyout';
+    for (const panel of stack.querySelectorAll(':scope > [data-panel-id]')) {
+      panel.style.removeProperty('--right-panel-allocated-height');
+      panel.classList.remove('layout-auto-collapsed', 'cyber-accordion-collapsed');
+    }
+  }
+
   _initCommandDockTrayMetrics() {
     if (this.destroyed) return;
     const dock = document.getElementById('command-dock');
@@ -186,6 +213,7 @@ export class PanelLayoutController {
     if (this.destroyed) return;
     const stack = this._rightPanelStack;
     if (!stack || !this._ppToggles) return;
+    stack.dataset.railMode = 'flyout';
 
     this._ppToggles.style.removeProperty('top');
     this._ppToggles.style.removeProperty('right');
@@ -308,6 +336,10 @@ export class PanelLayoutController {
   _syncRightPanelAdaptiveLayout() {
     if (this.destroyed) return;
     syncRadioPanelPlacement(document);
+    if (this._rightPanelStack?.dataset.railMode === 'flyout') {
+      this._syncRightRailFlyoutBar();
+      return;
+    }
     layoutRightPanelRail({
       stack: this._rightPanelStack,
       obstacles: document.querySelectorAll(RIGHT_STACK_OBSTACLE_SELECTOR),
@@ -326,6 +358,7 @@ export class PanelLayoutController {
     if (this.destroyed) return;
     const stack = this._leftPanelStack;
     if (!stack) return;
+    stack.dataset.railMode = 'flyout';
 
     if (typeof ResizeObserver !== 'undefined') {
       this._leftStackResizeObserver = new ResizeObserver(() => {
@@ -442,6 +475,10 @@ export class PanelLayoutController {
 
   _syncLeftPanelAdaptiveLayout() {
     if (this.destroyed) return;
+    if (this._leftPanelStack?.dataset.railMode === 'flyout') {
+      this._syncLeftRailFlyoutBar();
+      return;
+    }
     layoutLeftPanelRail({
       stack: this._leftPanelStack,
       obstacles: document.querySelectorAll(LEFT_STACK_OBSTACLE_SELECTOR),

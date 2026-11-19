@@ -1,67 +1,132 @@
+<!-- gev:template context -->
+<style>
+  :root {
+    --gev-panel-bg: rgba(10, 10, 20, 0.6);
+    --gev-panel-bg-hover: rgba(15, 15, 30, 0.7);
+    --gev-panel-border: rgba(255, 255, 255, 0.15);
+    --gev-panel-border-focus: rgba(255, 255, 255, 0.4);
+    --gev-panel-fg: #e0e0e8;
+    --gev-panel-fg-muted: #808090;
+    --gev-panel-accent: #00d4aa;
+    --gev-radius: 8px;
+    --gev-border-width: 1px;
+    --gev-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --gev-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.4);
+    --gev-transition-base: 180ms ease-out;
+    --gev-transition-hover: 150ms ease-in;
+  }
+
+  #global-context-panel {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+    transition: background var(--gev-transition-base),
+                border var(--gev-transition-base);
+  }
+  #global-context-panel:hover {
+    background: var(--gev-panel-bg-hover);
+    border-color: var(--gev-panel-border-focus);
+  }
+
+  .panel-collapsible {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+    transition: background var(--gev-transition-base),
+                border var(--gev-transition-base);
+  }
+  .panel-collapsible:hover {
+    background: var(--gev-panel-bg-hover);
+  }
+
+  .panel-header {
+    color: var(--gev-panel-fg);
+    transition: color var(--gev-transition-hover);
+  }
+  .panel-header:hover {
+    color: var(--gev-panel-accent);
+  }
+
+  .panel-divider {
+    border-color: var(--gev-panel-border);
+  }
+
+  #context-radio-dock {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+  }
+</style>
   <!-- Global Context is deliberately independent from the left layer accordion. -->
   <aside id="right-context-rail">
     <div id="weather-panel" class="panel-collapsible" data-panel-id="weather-panel" hidden>
       <div class="panel-glow"></div>
-      <div class="weather-panel-inner" data-rail-scroller>
-        <div class="panel-header">
-          <span class="panel-title" data-i18n>WEATHER</span>
-          <span id="weather-panel-count" aria-label="Active weather products" data-i18n-aria-label>0</span>
-          <span class="panel-divider"></span>
-          <button class="panel-collapse-btn" data-collapse-target="weather-panel" type="button" title="Collapse panel" data-i18n-title>▼</button>
-        </div>
+      <div class="panel-header panel-tab" data-panel-tab="weather-panel">
+        <span class="material-symbols-outlined panel-tab-icon" aria-hidden="true">cloud</span>
+        <span class="panel-title" data-i18n>WEATHER</span>
+        <span id="weather-panel-count" aria-label="Active weather products" data-i18n-aria-label>0</span>
+        <span class="panel-divider"></span>
+        <button class="panel-collapse-btn" data-collapse-target="weather-panel" type="button" title="Collapse panel" data-i18n-title>▼</button>
+      </div>
+      <div class="weather-panel-inner panel-flyout-body" data-rail-scroller>
         <div id="weather-panel-body" data-rail-scroller></div>
       </div>
     </div>
     <div id="recent-imagery-panel" class="panel-collapsible" data-panel-id="recent-imagery-panel" hidden>
       <div class="panel-glow"></div>
-      <div class="recent-imagery-panel-inner" data-rail-scroller>
-        <div class="panel-header">
-          <span class="panel-title" data-i18n>RECENT IMAGERY</span>
-          <span id="recent-imagery-panel-count" aria-label="Imagery days in the box" data-i18n-aria-label></span>
-          <span class="panel-divider"></span>
-          <button class="panel-collapse-btn" data-collapse-target="recent-imagery-panel" type="button" title="Collapse panel" data-i18n-title>▼</button>
-        </div>
+      <div class="panel-header panel-tab" data-panel-tab="recent-imagery-panel">
+        <span class="material-symbols-outlined panel-tab-icon" aria-hidden="true">photo_library</span>
+        <span class="panel-title" data-i18n>RECENT IMAGERY</span>
+        <span id="recent-imagery-panel-count" aria-label="Imagery days in the box" data-i18n-aria-label></span>
+        <span class="panel-divider"></span>
+        <button class="panel-collapse-btn" data-collapse-target="recent-imagery-panel" type="button" title="Collapse panel" data-i18n-title>▼</button>
+      </div>
+      <div class="recent-imagery-panel-inner panel-flyout-body" data-rail-scroller>
         <div id="recent-imagery-panel-body" data-rail-scroller></div>
       </div>
     </div>
     <div id="global-context-panel" class="panel-collapsible collapsed" data-panel-id="global-context-panel">
       <div class="panel-glow"></div>
-      <div class="global-context-panel-inner" data-rail-scroller>
-        <div class="panel-header">
-          <span class="panel-title" data-i18n>CONTEXT</span>
-          <span class="panel-divider"></span>
-          <div id="context-radio-dock" class="context-radio-dock">
-            <button id="context-radio-toggle-btn" class="context-radio-toggle" type="button" aria-expanded="false" aria-controls="context-radio-mini" aria-label="Open compact Radio controls" title="Open compact Radio controls" data-i18n-aria-label data-i18n-title>
-              <span class="material-symbols-outlined" aria-hidden="true">radio</span>
-            </button>
-            <div id="context-radio-mini" class="context-radio-mini" role="group" aria-label="Compact Radio controls" hidden data-i18n-aria-label>
-              <div class="context-radio-mini-heading">
-                <span data-i18n>RADIO</span>
-                <strong id="context-radio-mini-station" data-i18n>RADIO READY</strong>
-                <span class="context-radio-mini-actions">
-                  <button id="context-radio-details-btn" type="button" aria-label="Open detailed Radio controls" aria-expanded="false" aria-controls="radio-panel" title="Open detailed Radio controls" data-i18n-aria-label data-i18n-title>
-                    <span class="material-symbols-outlined" aria-hidden="true">open_in_full</span>
-                  </button>
-                  <button id="context-radio-mini-close-btn" type="button" aria-label="Close compact Radio controls" title="Close compact Radio controls" data-i18n-aria-label data-i18n-title>
-                    <span class="material-symbols-outlined" aria-hidden="true">close</span>
-                  </button>
-                </span>
-              </div>
-              <button id="context-radio-mini-enable-btn" class="panel-layer-toggle" type="button" aria-pressed="false" data-i18n>ENABLE</button>
-              <div class="context-radio-mini-transport">
-                <button id="context-radio-mini-prev-btn" type="button" aria-label="Previous filtered radio station" title="Previous station" disabled data-i18n-aria-label data-i18n-title>◀◀</button>
-                <button id="context-radio-mini-play-btn" type="button" aria-label="Play selected radio station" title="Play" disabled data-i18n-aria-label data-i18n-title>▶</button>
-                <button id="context-radio-mini-next-btn" type="button" aria-label="Next filtered radio station" title="Next station" disabled data-i18n-aria-label data-i18n-title>▶▶</button>
-              </div>
-              <label class="context-radio-mini-volume" for="context-radio-mini-volume">
-                <span data-i18n>VOLUME</span>
-                <input id="context-radio-mini-volume" class="gev-quantitative-slider" type="range" min="0" max="100" value="80" aria-label="Compact Radio volume" disabled data-i18n-aria-label />
-                <output id="context-radio-mini-volume-value" class="gev-slider-value" for="context-radio-mini-volume">80%</output>
-              </label>
+      <div class="panel-header panel-tab" data-panel-tab="global-context-panel">
+        <span class="material-symbols-outlined panel-tab-icon" aria-hidden="true">radar</span>
+        <span class="panel-title" data-i18n>CONTEXT</span>
+        <span class="panel-divider"></span>
+        <div id="context-radio-dock" class="context-radio-dock">
+          <button id="context-radio-toggle-btn" class="context-radio-toggle" type="button" aria-expanded="false" aria-controls="context-radio-mini" aria-label="Open compact Radio controls" title="Open compact Radio controls" data-i18n-aria-label data-i18n-title>
+            <span class="material-symbols-outlined" aria-hidden="true">radio</span>
+          </button>
+          <div id="context-radio-mini" class="context-radio-mini" role="group" aria-label="Compact Radio controls" hidden data-i18n-aria-label>
+            <div class="context-radio-mini-heading">
+              <span data-i18n>RADIO</span>
+              <strong id="context-radio-mini-station" data-i18n>RADIO READY</strong>
+              <span class="context-radio-mini-actions">
+                <button id="context-radio-details-btn" type="button" aria-label="Open detailed Radio controls" aria-expanded="false" aria-controls="radio-panel" title="Open detailed Radio controls" data-i18n-aria-label data-i18n-title>
+                  <span class="material-symbols-outlined" aria-hidden="true">open_in_full</span>
+                </button>
+                <button id="context-radio-mini-close-btn" type="button" aria-label="Close compact Radio controls" title="Close compact Radio controls" data-i18n-aria-label data-i18n-title>
+                  <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                </button>
+              </span>
             </div>
+            <button id="context-radio-mini-enable-btn" class="panel-layer-toggle" type="button" aria-pressed="false" data-i18n>ENABLE</button>
+            <div class="context-radio-mini-transport">
+              <button id="context-radio-mini-prev-btn" type="button" aria-label="Previous filtered radio station" title="Previous station" disabled data-i18n-aria-label data-i18n-title>◀◀</button>
+              <button id="context-radio-mini-play-btn" type="button" aria-label="Play selected radio station" title="Play" disabled data-i18n-aria-label data-i18n-title>▶</button>
+              <button id="context-radio-mini-next-btn" type="button" aria-label="Next filtered radio station" title="Next station" disabled data-i18n-aria-label data-i18n-title>▶▶</button>
+            </div>
+            <label class="context-radio-mini-volume" for="context-radio-mini-volume">
+              <span data-i18n>VOLUME</span>
+              <input id="context-radio-mini-volume" class="gev-quantitative-slider" type="range" min="0" max="100" value="80" aria-label="Compact Radio volume" disabled data-i18n-aria-label />
+              <output id="context-radio-mini-volume-value" class="gev-slider-value" for="context-radio-mini-volume">80%</output>
+            </label>
           </div>
-          <button class="panel-collapse-btn" data-collapse-target="global-context-panel" title="Expand panel" data-i18n-title>▶</button>
         </div>
+        <button class="panel-collapse-btn" data-collapse-target="global-context-panel" title="Expand panel" data-i18n-title>▶</button>
+      </div>
+      <div class="global-context-panel-inner panel-flyout-body" data-rail-scroller>
         <div class="cyber-panel-body" data-rail-scroller>
         <div class="global-context-modes" role="tablist" aria-label="Context mode" data-i18n-aria-label>
           <button id="global-context-flights-btn" class="context-mode-button" type="button" role="tab" tabindex="0" aria-selected="false" aria-controls="context-flights-view" aria-label="CONTACTS" title="Cycles the nearest contacts of whatever type you select — planes, vessels, installations. Satellites track independently." data-i18n-aria-label data-i18n-title>

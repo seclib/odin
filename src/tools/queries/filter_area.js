@@ -14,7 +14,7 @@ export const filterArea = defineTool({
   name: 'filter_area',
   title: 'Filtrer par aire',
   description:
-    'Retourne les entités géographiques qui se trouvent à l\'intérieur d\'une aire donnée.',
+    "Retourne les entités géographiques qui se trouvent à l'intérieur d'une aire donnée.",
   inputSchema: {
     type: 'object',
     properties: {
@@ -22,7 +22,7 @@ export const filterArea = defineTool({
       features: {
         type: 'array',
         description:
-          'Liste d\'entités à filtrer. Chaque entité doit posséder des coordonnées lat/lon.',
+          "Liste d'entités à filtrer. Chaque entité doit posséder des coordonnées lat/lon.",
         items: {
           type: 'object',
           properties: {
@@ -87,7 +87,8 @@ export const filterArea = defineTool({
     ].filter((type) => {
       return limited.rows.some(
         (row) =>
-          row.id !== undefined || (row.lat !== undefined && typeof row.lat === 'number')
+          row.id !== undefined ||
+          (row.lat !== undefined && typeof row.lat === 'number'),
       );
     });
 
@@ -98,7 +99,7 @@ export const filterArea = defineTool({
     }
     if (limited.truncated) {
       limitations.push(
-        `Seulement ${limited.returned} sur ${limited.total} entités retournées (limit appliqué)`
+        `Seulement ${limited.returned} sur ${limited.total} entités retournées (limit appliqué)`,
       );
     }
 

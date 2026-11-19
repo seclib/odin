@@ -123,7 +123,11 @@ export { frustumPlanes, sphereOutside, poseProjector } from './frustum.js';
 
 export { rhumbLine, densifyRhumb } from './rhumb.js';
 
-export { rectangleWidth, rectangleHeight, rectangleCenter } from './rectangle.js';
+export {
+  rectangleWidth,
+  rectangleHeight,
+  rectangleCenter,
+} from './rectangle.js';
 
 export { sphereFromPoints, sphereUnion } from './sphere.js';
 

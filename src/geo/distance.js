@@ -94,7 +94,7 @@ export function wrapLongitude(longitude) {
   if (!Number.isFinite(longitude)) {
     throw new TypeError('Longitude must be a finite number');
   }
-  const normalized = ((longitude + 180) % 360 + 360) % 360 - 180;
+  const normalized = ((((longitude + 180) % 360) + 360) % 360) - 180;
   return normalized;
 }
 
@@ -212,7 +212,10 @@ export function polygonAreaKm2(ring) {
       // Antipodal / coincident configuration: no well-defined interior.
       return 0;
     }
-    const cosine = Math.min(1, Math.max(-1, dotProduct(tangentToPrevious, tangentToNext)));
+    const cosine = Math.min(
+      1,
+      Math.max(-1, dotProduct(tangentToPrevious, tangentToNext)),
+    );
     sum += Math.acos(cosine);
   }
   const excess = sum - (n - 2) * Math.PI;
@@ -298,5 +301,7 @@ export function circularAreaKm2(radiusKm) {
     return 0;
   }
   const angular = radiusKm / EARTH_RADIUS_KM;
-  return 2 * Math.PI * EARTH_RADIUS_KM * EARTH_RADIUS_KM * (1 - Math.cos(angular));
+  return (
+    2 * Math.PI * EARTH_RADIUS_KM * EARTH_RADIUS_KM * (1 - Math.cos(angular))
+  );
 }

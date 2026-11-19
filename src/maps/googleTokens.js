@@ -6,6 +6,18 @@
  */
 export const GOOGLE_TOKEN_PATH = '/api/google/tiles-token';
 
+/**
+ * Whether the browser should ask this server for short-lived Google tokens.
+ *
+ * A direct browser key or a Cesium ion token already authorizes the 3D Tiles
+ * route; consulting a token endpoint that this deployment does not implement
+ * would only add a futile request (and console noise). The source stays
+ * available for deployments that really mint tokens on the server.
+ */
+export function shouldRequestServerTokens({ googleApiKey = '', cesiumToken = '' } = {}) {
+  return !String(googleApiKey || '').trim() && !String(cesiumToken || '').trim();
+}
+
 /** Renew a token this long before it expires. */
 const RENEW_EARLY_MS = 60_000;
 

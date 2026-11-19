@@ -1,5 +1,8 @@
 import * as Cesium from 'cesium';
-import { cumulativeGeodesicDistanceMeters, geodesicSurfaceDistanceMeters } from './geometryDistance.js';
+import {
+  cumulativeGeodesicDistanceMeters,
+  geodesicSurfaceDistanceMeters,
+} from './geometryDistance.js';
 
 function pointsDistanceMeters(points) {
   const result = cumulativeGeodesicDistanceMeters(points.map((p) => p));
@@ -8,19 +11,24 @@ function pointsDistanceMeters(points) {
 
 export function createMeasurementController(options = {}) {
   const viewer = options.viewer;
-  const onDistanceChange = typeof options.onDistanceChange === "function"
-    ? options.onDistanceChange
-    : () => {};
-  const onPointsChange = typeof options.onPointsChange === "function"
-    ? options.onPointsChange
-    : () => {};
-  const onStateChange = typeof options.onStateChange === "function"
-    ? options.onStateChange
-    : () => {};
+  const onDistanceChange =
+    typeof options.onDistanceChange === 'function'
+      ? options.onDistanceChange
+      : () => {};
+  const onPointsChange =
+    typeof options.onPointsChange === 'function'
+      ? options.onPointsChange
+      : () => {};
+  const onStateChange =
+    typeof options.onStateChange === 'function'
+      ? options.onStateChange
+      : () => {};
 
   const points = [];
   const entities = [];
-  const handler = viewer ? new Cesium.ScreenSpaceEventHandler(viewer.canvas) : null;
+  const handler = viewer
+    ? new Cesium.ScreenSpaceEventHandler(viewer.canvas)
+    : null;
   const ellipsoid = viewer?.scene?.globe?.ellipsoid ?? Cesium.Ellipsoid.default;
   let active = false;
   let disposed = false;
@@ -37,11 +45,16 @@ export function createMeasurementController(options = {}) {
   }
 
   function totalMeters() {
-    return points.length >= 2 ? (cumulativeGeodesicDistanceMeters(points) ?? 0) : 0;
+    return points.length >= 2
+      ? (cumulativeGeodesicDistanceMeters(points) ?? 0)
+      : 0;
   }
 
   function addPoint(cartesian) {
-    const cartographic = Cesium.Cartographic.fromCartesian(cartesian, ellipsoid);
+    const cartographic = Cesium.Cartographic.fromCartesian(
+      cartesian,
+      ellipsoid,
+    );
     if (
       !cartographic ||
       !Number.isFinite(cartographic.latitude) ||

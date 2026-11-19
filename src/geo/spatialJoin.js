@@ -113,8 +113,7 @@ function coordEqual(a, b) {
 
 /** Orientation of the ordered triplet (p, q, r): 0 collinear, 1 cw, 2 ccw. */
 function orientation(p, q, r) {
-  const value =
-    (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
+  const value = (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
   if (Math.abs(value) <= COORD_TOLERANCE) return 0;
   return value > 0 ? 1 : 2;
 }
@@ -203,18 +202,22 @@ function pointOnRingBoundary(point, ring) {
 function pointInPolygon(point, polygon) {
   const rings = polygon.coordinates;
   if (!rings || !rings.length) return false;
-  
+
   // Handle extra-nested GeoJSON format: coordinates may be [[ring]] instead of [ring].
   // Standard: polygon.coordinates = [ring]           -> rings[0] is the ring
   // Extra-nested: polygon.coordinates = [[ring]]     -> rings[0][0] is the ring
   let outer = rings[0];
-  if (rings.length === 1 && Array.isArray(rings[0]) && Array.isArray(rings[0][0])) {
+  if (
+    rings.length === 1 &&
+    Array.isArray(rings[0]) &&
+    Array.isArray(rings[0][0])
+  ) {
     // Extra-nested format: rings[0][0] is the ring
     outer = rings[0][0];
   }
-  
+
   if (!Array.isArray(outer) || outer.length < 3) return false;
-  
+
   const inOuter = pointInRing(point.coordinates, outer);
   const onBoundary = pointOnRingBoundary(point.coordinates, outer);
   if (!inOuter && !onBoundary) return false;
@@ -324,7 +327,10 @@ function lineStringsIntersect(a, b) {
 
 function lineStringIntersectsMultiPoint(lineString, multiPoint) {
   return multiPoint.coordinates.some((coord) =>
-    pointOnLineString({ type: GeometryType.Point, coordinates: coord }, lineString),
+    pointOnLineString(
+      { type: GeometryType.Point, coordinates: coord },
+      lineString,
+    ),
   );
 }
 
@@ -342,14 +348,7 @@ function lineStringIntersectsPolygon(lineString, polygon) {
   for (let i = 1; i < coords.length; i += 1) {
     for (const ring of rings) {
       for (let r = 1; r < ring.length; r += 1) {
-        if (
-          segmentsIntersect(
-            coords[i - 1],
-            coords[i],
-            ring[r - 1],
-            ring[r],
-          )
-        )
+        if (segmentsIntersect(coords[i - 1], coords[i], ring[r - 1], ring[r]))
           return true;
       }
     }
@@ -363,15 +362,11 @@ function polygonsIntersect(a, b) {
   if (!ringsA.length || !ringsB.length) return false;
   // Any vertex of either polygon inside the other.
   for (const coord of ringsA[0]) {
-    if (
-      pointInPolygon({ type: GeometryType.Point, coordinates: coord }, b)
-    )
+    if (pointInPolygon({ type: GeometryType.Point, coordinates: coord }, b))
       return true;
   }
   for (const coord of ringsB[0]) {
-    if (
-      pointInPolygon({ type: GeometryType.Point, coordinates: coord }, a)
-    )
+    if (pointInPolygon({ type: GeometryType.Point, coordinates: coord }, a))
       return true;
   }
   // Any edge of either polygon crossing any edge of the other.
@@ -379,14 +374,7 @@ function polygonsIntersect(a, b) {
   const outerB = ringsB[0];
   for (let i = 1; i < outerA.length; i += 1) {
     for (let j = 1; j < outerB.length; j += 1) {
-      if (
-        segmentsIntersect(
-          outerA[i - 1],
-          outerA[i],
-          outerB[j - 1],
-          outerB[j],
-        )
-      )
+      if (segmentsIntersect(outerA[i - 1], outerA[i], outerB[j - 1], outerB[j]))
         return true;
     }
   }
@@ -409,18 +397,12 @@ function geometriesIntersect(a, b) {
   // MultiPoint: any member point.
   if (a.type === GeometryType.MultiPoint) {
     return a.coordinates.some((coord) =>
-      geometriesIntersect(
-        { type: GeometryType.Point, coordinates: coord },
-        b,
-      ),
+      geometriesIntersect({ type: GeometryType.Point, coordinates: coord }, b),
     );
   }
   if (b.type === GeometryType.MultiPoint) {
     return b.coordinates.some((coord) =>
-      geometriesIntersect(
-        a,
-        { type: GeometryType.Point, coordinates: coord },
-      ),
+      geometriesIntersect(a, { type: GeometryType.Point, coordinates: coord }),
     );
   }
   // MultiLineString: any member line.
@@ -434,10 +416,10 @@ function geometriesIntersect(a, b) {
   }
   if (b.type === GeometryType.MultiLineString) {
     return b.coordinates.some((coords) =>
-      geometriesIntersect(
-        a,
-        { type: GeometryType.LineString, coordinates: coords },
-      ),
+      geometriesIntersect(a, {
+        type: GeometryType.LineString,
+        coordinates: coords,
+      }),
     );
   }
   // MultiPolygon: any member polygon.
@@ -451,10 +433,10 @@ function geometriesIntersect(a, b) {
   }
   if (b.type === GeometryType.MultiPolygon) {
     return b.coordinates.some((rings) =>
-      geometriesIntersect(
-        a,
-        { type: GeometryType.Polygon, coordinates: rings },
-      ),
+      geometriesIntersect(a, {
+        type: GeometryType.Polygon,
+        coordinates: rings,
+      }),
     );
   }
   // Base cases.
@@ -473,7 +455,10 @@ function geometriesIntersect(a, b) {
   if (a.type === GeometryType.Polygon && b.type === GeometryType.Point) {
     return pointInPolygon(b, a);
   }
-  if (a.type === GeometryType.LineString && b.type === GeometryType.LineString) {
+  if (
+    a.type === GeometryType.LineString &&
+    b.type === GeometryType.LineString
+  ) {
     return lineStringsIntersect(a, b);
   }
   if (a.type === GeometryType.LineString && b.type === GeometryType.Polygon) {
@@ -497,9 +482,7 @@ function lineStringWithin(line, target) {
   if (coords.length === 0) return false;
   // Every vertex must lie in the target.
   for (const coord of coords) {
-    if (
-      !pointInGeom({ type: GeometryType.Point, coordinates: coord }, target)
-    )
+    if (!pointInGeom({ type: GeometryType.Point, coordinates: coord }, target))
       return false;
   }
   // For a polygonal target, no segment may cross the boundary.
@@ -508,14 +491,7 @@ function lineStringWithin(line, target) {
     for (let i = 1; i < coords.length; i += 1) {
       for (const ring of rings) {
         for (let r = 1; r < ring.length; r += 1) {
-          if (
-            segmentsIntersect(
-              coords[i - 1],
-              coords[i],
-              ring[r - 1],
-              ring[r],
-            )
-          )
+          if (segmentsIntersect(coords[i - 1], coords[i], ring[r - 1], ring[r]))
             return false;
         }
       }
@@ -529,7 +505,7 @@ function polygonWithin(polyA, polyB) {
   const ringsA = polyA.coordinates;
   const ringsB = polyB.coordinates;
   if (!ringsA.length || !ringsB.length) return false;
-  
+
   // Helper: extract the actual ring from potentially extra-nested coordinates.
   // Standard: coordinates = [ring] -> ring is rings[0]
   // Extra-nested: coordinates = [[ring]] -> rings[0][0] is the ring
@@ -541,12 +517,18 @@ function polygonWithin(polyA, polyB) {
     // Standard: ring is ringData[0]
     return ringData[0];
   };
-  
+
   const outerA = extractRing(ringsA);
   const outerB = extractRing(ringsB);
-  
-  if (!Array.isArray(outerA) || !Array.isArray(outerB) || outerA.length < 3 || outerB.length < 3) return false;
-  
+
+  if (
+    !Array.isArray(outerA) ||
+    !Array.isArray(outerB) ||
+    outerA.length < 3 ||
+    outerB.length < 3
+  )
+    return false;
+
   // Every outer-ring vertex of A inside B.
   for (const coord of outerA) {
     if (
@@ -557,14 +539,7 @@ function polygonWithin(polyA, polyB) {
   // No edge of A crosses any edge of B's outer ring.
   for (let i = 1; i < outerA.length; i += 1) {
     for (let j = 1; j < outerB.length; j += 1) {
-      if (
-        segmentsIntersect(
-          outerA[i - 1],
-          outerA[i],
-          outerB[j - 1],
-          outerB[j],
-        )
-      )
+      if (segmentsIntersect(outerA[i - 1], outerA[i], outerB[j - 1], outerB[j]))
         return false;
     }
   }
@@ -586,10 +561,7 @@ function geometryWithin(a, b) {
   }
   if (a.type === GeometryType.MultiLineString) {
     return a.coordinates.every((coords) =>
-      geometryWithin(
-        { type: GeometryType.LineString, coordinates: coords },
-        b,
-      ),
+      geometryWithin({ type: GeometryType.LineString, coordinates: coords }, b),
     );
   }
   if (a.type === GeometryType.MultiPolygon) {
@@ -655,7 +627,7 @@ function geometryRelates(geomA, geomB, predicate) {
 export function spatialJoin(collectionA, collectionB, predicate) {
   // Normalize predicate to lowercase string for consistent handling
   const pred = String(predicate).toLowerCase();
-  
+
   const empty = { type: 'FeatureCollection', features: [] };
   if (
     !isValidFeatureCollection(collectionA) ||

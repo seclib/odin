@@ -619,7 +619,11 @@ export function isContactOccluded(layerId, sourceId) {
     // Reuse the same hidden logic as the scheduler.
     const now = _occlusion.now;
     if (now < contact.hiddenUntil) return true;
-    if (!contact.answered && _occlusionProbe?.mode === 'async' && now - contact.firstSeenAt < _occlusion.firstAnswerMs)
+    if (
+      !contact.answered &&
+      _occlusionProbe?.mode === 'async' &&
+      now - contact.firstSeenAt < _occlusion.firstAnswerMs
+    )
       return true;
     return false;
   } catch {
@@ -1322,7 +1326,11 @@ function _drawOverlay(frame) {
     let hidden = false;
     if (_occlusion && obj.position) {
       try {
-        hidden = _occlusion.isHidden(obj._layerId || 'detection', obj.sourceId, obj.position);
+        hidden = _occlusion.isHidden(
+          obj._layerId || 'detection',
+          obj.sourceId,
+          obj.position,
+        );
       } catch {
         hidden = false;
       }

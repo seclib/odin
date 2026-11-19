@@ -44,21 +44,13 @@ export const MILITARY_DETECTION_PRESET = Object.freeze({
 /** Baseline post-processing settings applied on first load (before share-link restore). */
 export const GLOBAL_POST_DEFAULTS = {
   bloom: { enabled: false, intensity: BLOOM_INTENSITY_DEFAULT },
-  sharpen: { enabled: true, intensity: 49 },
+  // First load is a clean globe: no post-processing, HUD or detection until
+  // the operator switches them on. Style presets and share links still apply
+  // their own values afterwards, so manual activations keep working.
+  sharpen: { enabled: false, intensity: 49 },
   hudVariant: 'tactical',
-  hudVisible: true,
-  // Detection is ON for EVERY style on a first run, Normal included (owner
-  // directive 2026-08-22: "detect should also be on by default"). It is the
-  // same preset object the military styles and Contacts already apply, so there
-  // is one tactical look, not several that can drift.
-  //
-  // This is a first-LOAD baseline, not an override: `_applyGlobalPostDefaults`
-  // runs before any share-link restore, so a link's `dm`/`dd` still lands on top
-  // of it. It also deliberately leaves `_detectionUserOverridden` alone — the
-  // flag means the OPERATOR hand-edited detection, and a factory default is not
-  // that. Turning detection off by hand therefore still sets the flag and still
-  // suppresses the military-style auto-enable for the rest of the session.
-  detectionMode: MILITARY_DETECTION_PRESET.mode.toUpperCase(),
+  hudVisible: false,
+  detectionMode: 'OFF',
   detectionDensity: MILITARY_DETECTION_PRESET.densityPct,
   detectionAllocation: 'ELASTIC',
   detectionFadePct: 7,

@@ -30,6 +30,10 @@ function fixture(theme = 'cyber') {
     _rightPanelStack: rail,
     _panelLayout: {},
     _lifetime: { frame() {} },
+    // These fixtures model the legacy accordion rail, which has no
+    // `data-rail-mode="flyout"`; the exclusive one-panel-per-side rule must
+    // stay out of their way.
+    _isRailFlyoutPanel: () => false,
     _syncPanelCollapseButton() {}, _scheduleRightPanelLayout() {},
     _scheduleLeftPanelLayout() {}, _layoutRightPanels() {}, _syncCctvPanelViewport() {},
     _savePanelCollapsedState: (...args) => saved.push(args),

@@ -11,13 +11,17 @@ export function createOsmImagery() {
   });
 }
 
-
-
-
+// NOTE: `{r}` (retina) is NOT a supported UrlTemplateImageryProvider tag —
+// it stayed literal in the request path and the CDN answered 200 with a
+// 256×256 "API KEY REQUIRED" placeholder tile, so the Dark stack rendered a
+// black globe. Plain tiles only; the retina path is gone with the tag.
 export function createCartoDarkImagery() {
   return new Cesium.UrlTemplateImageryProvider({
-    url: 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    credit: new Cesium.Credit('Labels and cartography: CARTO; map data: © OpenStreetMap contributors', true),
+    url: 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+    credit: new Cesium.Credit(
+      'Labels and cartography: CARTO; map data: © OpenStreetMap contributors',
+      true,
+    ),
     tilingScheme: new Cesium.WebMercatorTilingScheme(),
     maximumLevel: 20,
     enablePickFeatures: false,

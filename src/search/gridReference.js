@@ -274,4 +274,3 @@ export function parseGridReference(text) {
   if (!trimmed || trimmed.length > 40) return null;
   return parseUtm(trimmed) ?? parseMgrs(trimmed);
 }
-

@@ -114,6 +114,8 @@
   --text-dim: rgba(180, 198, 202, 0.58);
   --panel-radius: 1px;
   --btn-radius: 1px;
+  /* Same chrome tokens as the default theme, with the Cyber corner cut. */
+  --chrome-radius: 1px;
   --cyber-panel-frame: polygon(
     0 10px,
     10px 0,
@@ -1629,6 +1631,35 @@
     width: 300px;
     padding-left: 10px;
     border-left: 1px solid rgba(196, 84, 84, 0.72);
+  }
+
+  /* Flyout mode turns both rails into icon bars. The mission-deck measure
+     would leave a 300 px lane that is mostly empty and would push the panel
+     away from the icon it belongs to, so the rail box follows the compact
+     composition while the Cyber surfaces keep their own frame. */
+  :root[data-ui-theme='cyber'] #left-panel-stack[data-rail-mode='flyout'],
+  :root[data-ui-theme='cyber'] #right-context-rail[data-rail-mode='flyout'] {
+    width: 58px;
+    min-width: 58px;
+    max-width: 58px;
+    /* Cyber's mission-deck top override must not win here: both icon bars
+       share the viewport-vertical centre like the default theme. */
+    top: 0 !important;
+    bottom: 0 !important;
+    height: fit-content !important;
+    margin-block: auto;
+    padding-left: 0;
+  }
+
+  /* The Cyber mission-deck rails are asymmetric (54 / 62 px). In flyout mode
+     both icon bars use one shared inset, so the pair reads as a symmetric
+     frame pulled inward off the globe edge. */
+  :root[data-ui-theme='cyber'] #left-panel-stack[data-rail-mode='flyout'] {
+    left: max(72px, env(safe-area-inset-left, 0px));
+  }
+
+  :root[data-ui-theme='cyber'] #right-context-rail[data-rail-mode='flyout'] {
+    right: max(72px, env(safe-area-inset-right, 0px));
   }
 
   :root[data-ui-theme='cyber']

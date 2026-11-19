@@ -1,4 +1,5 @@
 {
+  "CARTO basemaps require an API key from carto.com; anonymous tiles return placeholder images": "CARTO-baskartor kräver en API-nyckel från carto.com; anonyma tiles returnerar platshållarbilder.",
   "General settings": "Allmänna inställningar",
   "GROUND STATION · SETTINGS": "GROUND STATION · INSTÄLLNINGAR",
   "Close settings": "Stäng inställningar",
@@ -2170,8 +2171,6 @@
   "Decoder feeds: {feeds}": "Avkodarflöden: {feeds}",
   "Language: {language}": "Språk: {language}",
   "Change the interface language": "Byt språk för gränssnittet",
-  "Interface language": "Gränssnittsspråk",
-  "Search languages": "Sök språk",
   "No matching languages": "Inga matchande språk",
   "Detailed outline unavailable": "Detaljerad kontur otillgänglig",
   "Austin": "Austin",
@@ -2953,7 +2952,6 @@
   "NEW": "NEW",
   "CAPTURE SHOT": "CAPTURE SHOT",
   "START": "START",
-  "EXPORT PRESETS": "EXPORT PRESETS",
   "Buildings": "Byggnader",
   "GROUND STATION · LOCAL DATA": "GROUND STATION · LOKALA DATA",
   "DISABLED": "INAKTIVERAD",

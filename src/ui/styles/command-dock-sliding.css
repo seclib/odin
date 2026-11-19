@@ -30,18 +30,23 @@
   display: flex;
   flex-direction: column;
   width: var(--dock-location-open);
+  max-height: min(70vh, calc(100vh - 8rem));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1.55rem 0.6rem 0.6rem;
   visibility: hidden;
   opacity: 0;
-  background: rgba(8, 20, 30, 0.94);
-  border: 1px solid rgba(123, 189, 211, 0.32);
-  border-radius: 0.42rem;
+  background: var(--chrome-surface);
+  border: 1px solid var(--chrome-border);
+  border-radius: var(--chrome-radius);
   box-shadow:
-    0 0.9rem 2.4rem rgba(0, 0, 0, 0.58),
-    0 0 1.5rem rgba(0, 212, 255, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.025) inset;
-  backdrop-filter: blur(28px) saturate(1.3);
-  -webkit-backdrop-filter: blur(28px) saturate(1.3);
+    var(--chrome-shadow),
+    0 0 18px var(--chrome-glow),
+    0 0 0 1px rgba(255, 255, 255, 0.035) inset;
+  /* 9px keeps text crisp even against the globe; the surface is 0.96 opaque,
+     so the frost barely needs to do any work. */
+  backdrop-filter: blur(9px) saturate(1.15);
+  -webkit-backdrop-filter: blur(9px) saturate(1.15);
   pointer-events: none;
   transform: translateY(0.55rem) scale(0.985);
   transform-origin: bottom left;
@@ -60,6 +65,11 @@
   left: auto;
   width: var(--dock-presets-open);
   transform-origin: bottom right;
+  /* The pin straddles the corner by design; this tray's content is a fixed
+     menu that never needs to scroll. `overflow-y: auto` computes
+     `overflow-x` to auto as well, which turned the pin's overhang into a
+     horizontal scrollbar. The location tray keeps its scroller. */
+  overflow: visible;
 }
 
 #command-dock #location-bar:not(.collapsed) .dock-popover-content,
@@ -132,11 +142,26 @@
 }
 
 #command-dock .dock-pin-btn:hover,
+#command-dock .dock-pin-btn:focus-visible,
 #command-dock .dock-pin-btn[aria-pressed='true'] {
   color: var(--accent);
   border-color: rgba(0, 212, 255, 0.62);
-  background: rgba(0, 212, 255, 0.1);
-  box-shadow: 0 0 0.55rem rgba(0, 212, 255, 0.12);
+  background: rgba(0, 212, 255, 0.14);
+  box-shadow: 0 0 0.8rem rgba(0, 212, 255, 0.28);
+}
+
+#command-dock .dock-pin-btn:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Pinned: an unmistakable lit state, not a subtle tint. */
+#command-dock .dock-pin-btn[aria-pressed='true'] {
+  background: rgba(0, 212, 255, 0.18);
+  border-color: rgba(0, 212, 255, 0.75);
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 255, 0.35),
+    0 0 1.1rem rgba(0, 212, 255, 0.4);
 }
 
 #command-dock .panel-divider {
@@ -284,7 +309,7 @@
 
 /* Final top-right positioning for the floating SVG tray pins. */
 #command-dock .dock-popover-content {
-  padding: 0.7rem;
+  padding: 0.75rem;
 }
 
 #command-dock .dock-popover-content .button-grid {
@@ -322,6 +347,7 @@
   padding: 0;
   border-radius: 50%;
   background: rgba(8, 24, 34, 0.96);
+  border: 1px solid rgba(123, 189, 211, 0.4);
   box-shadow: 0 0.35rem 0.9rem rgba(0, 0, 0, 0.5);
   transform: none;
 }
@@ -339,6 +365,16 @@
 #command-dock #location-bar:not(.collapsed) .dock-pin-btn,
 #command-dock #control-panel:not(.collapsed) .dock-pin-btn {
   display: grid;
+}
+
+/* Narrow screens: keep the badge inside the bubble so it never leaves the
+   viewport (the tray hugs the screen edges here). */
+@media (max-width: 760px) {
+  #command-dock .dock-pin-btn,
+  #command-dock #location-bar .dock-pin-btn,
+  #command-dock #control-panel .dock-pin-btn {
+    right: 0.3rem;
+  }
 }
 
 #command-dock .dock-pin-btn img {
@@ -700,4 +736,49 @@ html:not([lang='en']) #gev-voice-control .gev-voice-help-detail {
     rgba(232, 234, 237, 0),
     rgba(232, 234, 237, 0.24)
   );
+}
+
+/* ── Dock tray legibility ───────────────────────────────────────────────────
+   City names, preset labels and the pin share the sidebars' blue chrome and
+   keep their full contrast; only the background glass is translucent. */
+#command-dock .location-pill,
+#command-dock .poi-pill {
+  color: var(--text-primary);
+  font-size: 0.66rem;
+  opacity: 1;
+}
+
+#command-dock .location-mini-city {
+  color: #d6f4ff;
+  font-size: 0.7rem;
+  opacity: 1;
+}
+
+#command-dock .dock-popover-content .btn-label {
+  color: var(--text-primary);
+  font-size: 0.68rem;
+  opacity: 1;
+  text-shadow: none;
+}
+
+#command-dock .dock-popover-content .style-btn {
+  filter: none;
+  opacity: 1;
+}
+
+/* The floating pin keeps its corner position; the img rules only tune rest
+   and interaction contrast. Geometry lives in the "Final top-right
+   positioning" block above. */
+#command-dock .dock-pin-btn img {
+  /* Visible at rest against the dark disc (the glyph is self-coloured
+     cyan); interactions below bring it to full strength. */
+  opacity: 0.85;
+  filter: drop-shadow(0 0 0.22rem rgba(0, 212, 255, 0.5));
+}
+
+#command-dock .dock-pin-btn:hover img,
+#command-dock .dock-pin-btn:focus-visible img,
+#command-dock .dock-pin-btn[aria-pressed='true'] img {
+  opacity: 1;
+  filter: drop-shadow(0 0 0.3rem rgba(0, 212, 255, 0.75)) brightness(1.25);
 }

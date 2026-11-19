@@ -77,6 +77,9 @@ test('a view is applied through the app actions in order', async () => {
     ],
   );
   assert.equal(viewer.flights.length, 1);
+  // Camera transitions into an embedded view use the same eased flight as
+  // world focus and share restoration, so the globe never snaps to a place.
+  assert.equal(typeof viewer.flights[0].easingFunction, 'function');
   assert.ok(steps.every((step) => step.ok));
   assert.ok(steps.some((step) => step.step === 'camera'));
 });

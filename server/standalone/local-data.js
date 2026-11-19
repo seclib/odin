@@ -54,7 +54,10 @@ const DEPLOY_CONFIRM = 'COPY TO DIST';
 // overridable per process via ODIN_STORAGE_DIR (absolute) for isolated
 // fixtures. The local runtime config defaults to <repo>/config/local-data.json
 // (overridable via ODIN_LOCAL_DATA_CONFIG).
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const repoRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../..',
+);
 
 export function resolveStorageRoot(env = process.env) {
   const explicit = String(env?.ODIN_STORAGE_DIR || '').trim();
@@ -69,7 +72,10 @@ export function defaultStoreDir(env = process.env, storageRoot) {
 
 export function defaultConfigPath(env = process.env) {
   const explicit = String(env?.ODIN_LOCAL_DATA_CONFIG || '').trim();
-  const dir = explicit && path.isAbsolute(explicit) ? path.dirname(explicit) : path.join(repoRoot, 'config');
+  const dir =
+    explicit && path.isAbsolute(explicit)
+      ? path.dirname(explicit)
+      : path.join(repoRoot, 'config');
   return path.join(dir, 'local-data.json');
 }
 
@@ -103,7 +109,9 @@ const admit = (req, env = process.env) => {
     method: req.method,
     remoteAddress: req.socket?.remoteAddress,
     hostHeader: header('host'),
-    protocol: header('x-forwarded-proto') ? `${header('x-forwarded-proto')}:` : 'http:',
+    protocol: header('x-forwarded-proto')
+      ? `${header('x-forwarded-proto')}:`
+      : 'http:',
     origin: header('origin'),
     contentType: header('content-type'),
     proxyHeaders: {
@@ -135,8 +143,21 @@ const errorPayload = (code, error) => ({ error, code });
 
 // Roots a local build must never use as its storage home.
 const SYSTEM_ROOTS = [
-  '/', '/bin', '/boot', '/dev', '/etc', '/lib', '/lib64',
-  '/proc', '/root', '/run', '/sbin', '/sys', '/tmp', '/usr', '/var',
+  '/',
+  '/bin',
+  '/boot',
+  '/dev',
+  '/etc',
+  '/lib',
+  '/lib64',
+  '/proc',
+  '/root',
+  '/run',
+  '/sbin',
+  '/sys',
+  '/tmp',
+  '/usr',
+  '/var',
 ];
 
 /**
@@ -148,10 +169,14 @@ const SYSTEM_ROOTS = [
  * @param {{ storageRoot?: string, repoRoot?: string, fsImpl?: typeof fs }} [options]
  * @returns {{ ok: true, path: string } | { ok: false, code: string, reason: string }}
  */
-export function validateStorePath(candidate, { storageRoot, repoRoot: repo, fsImpl } = {}) {
+export function validateStorePath(
+  candidate,
+  { storageRoot, repoRoot: repo, fsImpl } = {},
+) {
   const fsx = fsImpl ?? fs;
   const text = String(candidate || '').trim();
-  if (!text) return { ok: false, code: 'path-required', reason: 'Path is required' };
+  if (!text)
+    return { ok: false, code: 'path-required', reason: 'Path is required' };
   if (!path.isAbsolute(text))
     return { ok: false, code: 'not-absolute', reason: 'Path must be absolute' };
 
@@ -168,7 +193,10 @@ export function validateStorePath(candidate, { storageRoot, repoRoot: repo, fsIm
       }
       continue;
     }
-    if (resolved === rootResolved || resolved.startsWith(rootResolved + path.sep)) {
+    if (
+      resolved === rootResolved ||
+      resolved.startsWith(rootResolved + path.sep)
+    ) {
       return {
         ok: false,
         code: 'system-directory',
@@ -176,16 +204,22 @@ export function validateStorePath(candidate, { storageRoot, repoRoot: repo, fsIm
       };
     }
   }
-  const allowedRoot = storageRoot ? path.resolve(storageRoot) : resolveStorageRoot();
+  const allowedRoot = storageRoot
+    ? path.resolve(storageRoot)
+    : resolveStorageRoot();
   const repoResolved = repo ? path.resolve(repo) : repoRoot;
-  const withSep = repoResolved.endsWith(path.sep) ? repoResolved : `${repoResolved}${path.sep}`;
-  const insideStore = resolved === allowedRoot || resolved.startsWith(allowedRoot + path.sep);
+  const withSep = repoResolved.endsWith(path.sep)
+    ? repoResolved
+    : `${repoResolved}${path.sep}`;
+  const insideStore =
+    resolved === allowedRoot || resolved.startsWith(allowedRoot + path.sep);
   const insideRepo = resolved === repoResolved || resolved.startsWith(withSep);
   if (insideRepo && !insideStore) {
     return {
       ok: false,
       code: 'inside-repo',
-      reason: 'Storage must live inside the ODIN storage root (repository storage/ by default)',
+      reason:
+        'Storage must live inside the ODIN storage root (repository storage/ by default)',
     };
   }
 
@@ -202,14 +236,26 @@ export function validateStorePath(candidate, { storageRoot, repoRoot: repo, fsIm
     try {
       const ancStat = fsx.statSync(ancestor);
       if (!ancStat.isDirectory())
-        return { ok: false, code: 'not-a-directory', reason: `${ancestor} is not a directory` };
+        return {
+          ok: false,
+          code: 'not-a-directory',
+          reason: `${ancestor} is not a directory`,
+        };
     } catch {
-      return { ok: false, code: 'unreachable', reason: `Cannot reach ${ancestor}` };
+      return {
+        ok: false,
+        code: 'unreachable',
+        reason: `Cannot reach ${ancestor}`,
+      };
     }
     return { ok: true, path: resolved };
   }
   if (!stat.isDirectory())
-    return { ok: false, code: 'not-a-directory', reason: `${resolved} is a file, not a directory` };
+    return {
+      ok: false,
+      code: 'not-a-directory',
+      reason: `${resolved} is a file, not a directory`,
+    };
   return { ok: true, path: resolved };
 }
 
@@ -226,9 +272,13 @@ export async function readLocalDataConfig(env = process.env) {
 }
 
 function sanitizeConfig(parsed) {
-  if (!isPlain(parsed)) return { enabled: false, path: null, updatedAt: null, migrated: false };
+  if (!isPlain(parsed))
+    return { enabled: false, path: null, updatedAt: null, migrated: false };
   const enabled = parsed.enabled === true;
-  const p = typeof parsed.path === 'string' && parsed.path.trim() ? parsed.path.trim() : null;
+  const p =
+    typeof parsed.path === 'string' && parsed.path.trim()
+      ? parsed.path.trim()
+      : null;
   return {
     enabled,
     path: p,
@@ -252,7 +302,9 @@ export async function writeLocalDataConfig(config, env = process.env) {
   const tmp = `${target}.${process.pid}.tmp`;
   try {
     await fsp.mkdir(path.dirname(target), { recursive: true });
-    await fsp.writeFile(tmp, JSON.stringify(doc, null, 2) + '\n', { mode: 0o600 });
+    await fsp.writeFile(tmp, JSON.stringify(doc, null, 2) + '\n', {
+      mode: 0o600,
+    });
     await fsp.rename(tmp, target);
   } catch (error) {
     try {
@@ -433,8 +485,12 @@ async function summarizeStoreInternal(storeRoot) {
     ).length;
     // source listing
     try {
-      const srcEntries = await fsp.readdir(paths.source, { withFileTypes: true });
-      result.counts.sourceFiles = srcEntries.filter((e) => /\.csv\.gz$/i.test(e.name)).length;
+      const srcEntries = await fsp.readdir(paths.source, {
+        withFileTypes: true,
+      });
+      result.counts.sourceFiles = srcEntries.filter((e) =>
+        /\.csv\.gz$/i.test(e.name),
+      ).length;
     } catch {
       result.counts.sourceFiles = 0;
     }
@@ -442,9 +498,13 @@ async function summarizeStoreInternal(storeRoot) {
     // tiles
     try {
       const tileFiles = [];
-      await walk(paths.tiles, (name) => {
-        if (/\.b3dm$/i.test(name)) tileFiles.push(name);
-      }, 10_000);
+      await walk(
+        paths.tiles,
+        (name) => {
+          if (/\.b3dm$/i.test(name)) tileFiles.push(name);
+        },
+        10_000,
+      );
       result.counts.tiles = tileFiles.length;
     } catch {
       result.counts.tiles = 0;
@@ -456,7 +516,9 @@ async function summarizeStoreInternal(storeRoot) {
       const doc = safeJsonParse(raw);
       const extras = doc && typeof doc === 'object' ? doc.extras : null;
       const featureCount = Number(extras?.featureCount);
-      result.counts.buildings = Number.isFinite(featureCount) ? featureCount : null;
+      result.counts.buildings = Number.isFinite(featureCount)
+        ? featureCount
+        : null;
       result.manifest = {
         featureCount: Number.isFinite(featureCount) ? featureCount : null,
         tilesetGenerator: extras?.generator ?? null,
@@ -510,7 +572,9 @@ async function summarizeStoreInternal(storeRoot) {
   try {
     const raw = await fsp.readFile(paths.checksums, 'utf8');
     result.checksumsPresent = true;
-    result.checksumsCount = raw.split('\n').filter((line) => line.trim()).length;
+    result.checksumsCount = raw
+      .split('\n')
+      .filter((line) => line.trim()).length;
   } catch {
     /* no checksums — fine */
   }
@@ -662,7 +726,11 @@ export async function deleteStoreScope(storeRoot, scope) {
     manifest: [paths.manifest, paths.checksums],
   }[scope];
   if (!targets) {
-    return { ok: false, code: 'unknown-scope', error: `Unknown delete scope: ${scope}` };
+    return {
+      ok: false,
+      code: 'unknown-scope',
+      error: `Unknown delete scope: ${scope}`,
+    };
   }
   let freedBy = 0;
   for (const target of targets) {
@@ -688,20 +756,40 @@ export async function deleteStoreScope(storeRoot, scope) {
  */
 export async function deployTilesToDist(storeRoot, repoRoot) {
   const source = storePaths(storeRoot).tiles;
-  const target = path.join(path.resolve(repoRoot), 'dist', 'odin-local-buildings');
-  const sourceStat = await fsp.stat(path.join(source, 'tileset.json')).catch(() => null);
+  const target = path.join(
+    path.resolve(repoRoot),
+    'dist',
+    'odin-local-buildings',
+  );
+  const sourceStat = await fsp
+    .stat(path.join(source, 'tileset.json'))
+    .catch(() => null);
   if (!sourceStat?.isFile())
-    return { ok: false, code: 'tileset-missing', error: 'No tileset in the local store' };
+    return {
+      ok: false,
+      code: 'tileset-missing',
+      error: 'No tileset in the local store',
+    };
   const resolvedSource = path.resolve(source);
-  if (resolvedSource === path.resolve(target) || resolvedSource.startsWith(path.resolve(target) + path.sep))
-    return { ok: false, code: 'target-is-store', error: 'dist target overlaps the master store' };
+  if (
+    resolvedSource === path.resolve(target) ||
+    resolvedSource.startsWith(path.resolve(target) + path.sep)
+  )
+    return {
+      ok: false,
+      code: 'target-is-store',
+      error: 'dist target overlaps the master store',
+    };
   let files = 0;
   let bytes = 0;
   const count = async (dir) => {
     for (const entry of await fsp.readdir(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) await count(full);
-      else if (entry.isFile()) { files += 1; bytes += (await fsp.stat(full)).size; }
+      else if (entry.isFile()) {
+        files += 1;
+        bytes += (await fsp.stat(full)).size;
+      }
     }
   };
   await count(source);
@@ -713,13 +801,25 @@ export async function deployTilesToDist(storeRoot, repoRoot) {
 
 /* ── config resolution ────────────────────────────────────────────────── */
 
-export async function resolveLocalData(env = process.env, homedir = os.homedir, scan = summarizeStore) {
+export async function resolveLocalData(
+  env = process.env,
+  homedir = os.homedir,
+  scan = summarizeStore,
+) {
   const config = await readLocalDataConfig(env);
   const storeRoot = config.path ?? defaultStoreDir(env);
   const paths = storePaths(storeRoot);
   const summary = config.enabled
     ? await scan(storeRoot)
-    : { exists: false, state: 'disabled', counts: null, manifest: null, checksumsPresent: false, updatedAt: null, reason: null };
+    : {
+        exists: false,
+        state: 'disabled',
+        counts: null,
+        manifest: null,
+        checksumsPresent: false,
+        updatedAt: null,
+        reason: null,
+      };
   return {
     enabled: config.enabled,
     path: storeRoot,
@@ -746,7 +846,10 @@ const sendFile = async (req, res, filePath) => {
     if (!stat.isFile()) return false;
     const ext = path.extname(filePath).toLowerCase();
     res.statusCode = 200;
-    res.setHeader('Content-Type', CONTENT_TYPES[ext] ?? 'application/octet-stream');
+    res.setHeader(
+      'Content-Type',
+      CONTENT_TYPES[ext] ?? 'application/octet-stream',
+    );
     res.setHeader('Content-Length', String(stat.size));
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.end(await fsp.readFile(filePath));
@@ -809,236 +912,330 @@ export function localDataEndpoint(options = {}) {
 
   const jsonBody = async (req) => {
     const { body, overflowed } = await readBody(req);
-    if (overflowed) return { ok: false, status: 413, code: 'too-large', error: 'Request too large' };
+    if (overflowed)
+      return {
+        ok: false,
+        status: 413,
+        code: 'too-large',
+        error: 'Request too large',
+      };
     try {
       const parsed = JSON.parse(body || '{}');
-      if (!isPlain(parsed)) return { ok: false, status: 400, code: 'not-object', error: 'Body must be a JSON object' };
+      if (!isPlain(parsed))
+        return {
+          ok: false,
+          status: 400,
+          code: 'not-object',
+          error: 'Body must be a JSON object',
+        };
       return { ok: true, value: parsed };
     } catch {
-      return { ok: false, status: 400, code: 'invalid-json', error: 'Invalid JSON' };
+      return {
+        ok: false,
+        status: 400,
+        code: 'invalid-json',
+        error: 'Invalid JSON',
+      };
     }
   };
 
   const registerMiddleware = (server) => {
-      server.middlewares.use('/api/local-data/status', async (req, res) => {
-        if (req.method !== 'GET')
-          return respond(res, 405, errorPayload('method', 'Method not allowed'));
-        const admission = admit(req, env);
-        if (!admission.ok) return respond(res, admission.status, refusalPayload(admission));
-        const resolved = await resolveLocalData(env, undefined, scanStore);
-        respond(res, 200, { ok: true, ...resolved });
-      });
-      server.middlewares.use('/api/local-data/configure', async (req, res) => {
-        if (req.method !== 'POST')
-          return respond(res, 405, errorPayload('method', 'Method not allowed'));
-        const admission = admit(req, env);
-        if (!admission.ok) return respond(res, admission.status, refusalPayload(admission));
-        const parsed = await jsonBody(req);
-        if (!parsed.ok) return respond(res, parsed.status, errorPayload(parsed.code, parsed.error));
-        const body = parsed.value;
-        const wantsEnabled = Object.prototype.hasOwnProperty.call(body, 'enabled');
-        const wantsPath = typeof body.path === 'string' && body.path.trim()
+    server.middlewares.use('/api/local-data/status', async (req, res) => {
+      if (req.method !== 'GET')
+        return respond(res, 405, errorPayload('method', 'Method not allowed'));
+      const admission = admit(req, env);
+      if (!admission.ok)
+        return respond(res, admission.status, refusalPayload(admission));
+      const resolved = await resolveLocalData(env, undefined, scanStore);
+      respond(res, 200, { ok: true, ...resolved });
+    });
+    server.middlewares.use('/api/local-data/configure', async (req, res) => {
+      if (req.method !== 'POST')
+        return respond(res, 405, errorPayload('method', 'Method not allowed'));
+      const admission = admit(req, env);
+      if (!admission.ok)
+        return respond(res, admission.status, refusalPayload(admission));
+      const parsed = await jsonBody(req);
+      if (!parsed.ok)
+        return respond(
+          res,
+          parsed.status,
+          errorPayload(parsed.code, parsed.error),
+        );
+      const body = parsed.value;
+      const wantsEnabled = Object.prototype.hasOwnProperty.call(
+        body,
+        'enabled',
+      );
+      const wantsPath =
+        typeof body.path === 'string' && body.path.trim()
           ? body.path.trim()
           : null;
-        if (!wantsEnabled && !wantsPath) {
-          return respond(
-            res,
-            400,
-            errorPayload('nothing-to-configure', 'Provide enabled and/or path'),
-          );
-        }
+      if (!wantsEnabled && !wantsPath) {
+        return respond(
+          res,
+          400,
+          errorPayload('nothing-to-configure', 'Provide enabled and/or path'),
+        );
+      }
 
-        const previous = await resolveLocalData(env, undefined, scanStore);
-        // Missing `enabled` keeps the current state; explicit false disables.
-        const enabled = wantsEnabled ? body.enabled === true : previous.enabled;
+      const previous = await resolveLocalData(env, undefined, scanStore);
+      // Missing `enabled` keeps the current state; explicit false disables.
+      const enabled = wantsEnabled ? body.enabled === true : previous.enabled;
 
-        // ── path resolution & validation ──
-        let newRoot = wantsPath ?? previous.path ?? previous.defaultPath;
-        const verdict = validateStorePath(newRoot, { storageRoot: resolveStorageRoot(env), repoRoot: root });
-        if (!verdict.ok)
-          return respond(res, 400, errorPayload(verdict.code, verdict.reason));
-        newRoot = verdict.path;
+      // ── path resolution & validation ──
+      let newRoot = wantsPath ?? previous.path ?? previous.defaultPath;
+      const verdict = validateStorePath(newRoot, {
+        storageRoot: resolveStorageRoot(env),
+        repoRoot: root,
+      });
+      if (!verdict.ok)
+        return respond(res, 400, errorPayload(verdict.code, verdict.reason));
+      newRoot = verdict.path;
 
-        // Ensure it exists & is writable (create missing dirs).
-        try {
-          await fsp.mkdir(newRoot, { recursive: true });
-          const probe = path.join(newRoot, `.odin-write-probe-${process.pid}`);
-          await fsp.writeFile(probe, 'ok');
-          await fsp.rm(probe, { force: true });
-        } catch (error) {
-          return respond(
-            res,
-            400,
-            errorPayload(
-              'not-writable',
-              `Storage path is not writable: ${error?.message ?? 'unknown error'}`,
-            ),
-          );
-        }
+      // Ensure it exists & is writable (create missing dirs).
+      try {
+        await fsp.mkdir(newRoot, { recursive: true });
+        const probe = path.join(newRoot, `.odin-write-probe-${process.pid}`);
+        await fsp.writeFile(probe, 'ok');
+        await fsp.rm(probe, { force: true });
+      } catch (error) {
+        return respond(
+          res,
+          400,
+          errorPayload(
+            'not-writable',
+            `Storage path is not writable: ${error?.message ?? 'unknown error'}`,
+          ),
+        );
+      }
 
-        const newSummary = await scanStore(newRoot);
-        const oldRoot = previous.path ?? previous.defaultPath;
-        const oldSummary = await scanStore(oldRoot);
+      const newSummary = await scanStore(newRoot);
+      const oldRoot = previous.path ?? previous.defaultPath;
+      const oldSummary = await scanStore(oldRoot);
 
-        // Case analysis — never overwrite non-empty foreign content.
-        const newHasData =
-          newSummary.counts.tiles > 0 ||
-          newSummary.counts.sourceFiles > 0 ||
-          newSummary.counts.enrichedLines > 0;
-        const newIsReady = newSummary.state === 'ready';
-        const oldHasData =
-          oldSummary.counts.tiles > 0 ||
-          oldSummary.counts.sourceFiles > 0 ||
-          oldSummary.counts.enrichedLines > 0;
-        const oldIsReady = oldSummary.state === 'ready';
+      // Case analysis — never overwrite non-empty foreign content.
+      const newHasData =
+        newSummary.counts.tiles > 0 ||
+        newSummary.counts.sourceFiles > 0 ||
+        newSummary.counts.enrichedLines > 0;
+      const newIsReady = newSummary.state === 'ready';
+      const oldHasData =
+        oldSummary.counts.tiles > 0 ||
+        oldSummary.counts.sourceFiles > 0 ||
+        oldSummary.counts.enrichedLines > 0;
+      const oldIsReady = oldSummary.state === 'ready';
 
-        let moveResult = null;
-        if (newHasData && !newIsReady && oldIsReady && path.resolve(newRoot) !== path.resolve(oldRoot)) {
-          // Partial foreign content in target + working data elsewhere — refuse.
+      let moveResult = null;
+      if (
+        newHasData &&
+        !newIsReady &&
+        oldIsReady &&
+        path.resolve(newRoot) !== path.resolve(oldRoot)
+      ) {
+        // Partial foreign content in target + working data elsewhere — refuse.
+        return respond(
+          res,
+          409,
+          errorPayload(
+            'target-not-empty',
+            'Target directory already contains partial data and cannot be adopted. Choose an empty directory or the existing store.',
+          ),
+        );
+      }
+
+      // If the new path is empty and the old store has data, move it over.
+      if (
+        !newHasData &&
+        oldHasData &&
+        path.resolve(newRoot) !== path.resolve(oldRoot)
+      ) {
+        moveResult = await moveStoreContents(oldRoot, newRoot);
+        if (!moveResult.ok)
           return respond(
             res,
             409,
-            errorPayload(
-              'target-not-empty',
-              'Target directory already contains partial data and cannot be adopted. Choose an empty directory or the existing store.',
-            ),
+            errorPayload(moveResult.code, moveResult.error),
           );
-        }
+      }
 
-        // If the new path is empty and the old store has data, move it over.
-        if (
-          !newHasData &&
-          oldHasData &&
-          path.resolve(newRoot) !== path.resolve(oldRoot)
-        ) {
-          moveResult = await moveStoreContents(oldRoot, newRoot);
-          if (!moveResult.ok)
-            return respond(res, 409, errorPayload(moveResult.code, moveResult.error));
-        }
-
-        await writeLocalDataConfig(
-          { enabled, path: newRoot, updatedAt: null },
-          env,
+      await writeLocalDataConfig(
+        { enabled, path: newRoot, updatedAt: null },
+        env,
+      );
+      // The pre-move scans are cached for 30 s. Without invalidating both
+      // roots, the response would still report the OLD empty target and the
+      // UI would claim the data vanished right after a successful move.
+      bustSummary(newRoot);
+      bustSummary(oldRoot);
+      const fresh = await resolveLocalData(env, undefined, scanStore);
+      respond(res, 200, {
+        ok: true,
+        moved: moveResult?.moved ?? [],
+        adopted: newIsReady,
+        ...fresh,
+      });
+    });
+    server.middlewares.use('/api/local-data/delete', async (req, res) => {
+      if (req.method !== 'POST')
+        return respond(res, 405, errorPayload('method', 'Method not allowed'));
+      const admission = admit(req, env);
+      if (!admission.ok)
+        return respond(res, admission.status, refusalPayload(admission));
+      const parsed = await jsonBody(req);
+      if (!parsed.ok)
+        return respond(
+          res,
+          parsed.status,
+          errorPayload(parsed.code, parsed.error),
         );
-        // The pre-move scans are cached for 30 s. Without invalidating both
-        // roots, the response would still report the OLD empty target and the
-        // UI would claim the data vanished right after a successful move.
-        bustSummary(newRoot);
-        bustSummary(oldRoot);
-        const fresh = await resolveLocalData(env, undefined, scanStore);
+      const scope =
+        typeof parsed.value.scope === 'string' ? parsed.value.scope : '';
+      const phrase = CONFIRM_PHRASES[scope];
+      if (!phrase)
+        return respond(
+          res,
+          400,
+          errorPayload('unknown-scope', `Unknown scope: ${scope}`),
+        );
+      if (parsed.value.confirm !== phrase)
+        return respond(
+          res,
+          400,
+          errorPayload('confirm-phrase', `Type exactly "${phrase}" to confirm`),
+        );
+      const resolved = await resolveLocalData(env, undefined, scanStore);
+      if (!resolved.enabled)
+        return respond(
+          res,
+          409,
+          errorPayload('disabled', 'Local storage is disabled'),
+        );
+      const result = await deleteStoreScope(resolved.path, scope);
+      if (!result.ok)
+        return respond(res, 409, errorPayload(result.code, result.error));
+      bustSummary(resolved.path);
+      const fresh = await resolveLocalData(env, undefined, scanStore);
+      respond(res, 200, { ok: true, freedBy: result.freedBy, ...fresh });
+    });
+    server.middlewares.use('/api/local-data/verify', async (req, res) => {
+      if (req.method !== 'POST')
+        return respond(res, 405, errorPayload('method', 'Method not allowed'));
+      const admission = admit(req, env);
+      if (!admission.ok)
+        return respond(res, admission.status, refusalPayload(admission));
+      const parsed = await jsonBody(req);
+      if (!parsed.ok)
+        return respond(
+          res,
+          parsed.status,
+          errorPayload(parsed.code, parsed.error),
+        );
+      const resolved = await resolveLocalData(env, undefined, scanStore);
+      if (!resolved.enabled)
+        return respond(
+          res,
+          409,
+          errorPayload('disabled', 'Local storage is disabled'),
+        );
+      const checksumsPath = storePaths(resolved.path).checksums;
+      try {
+        const raw = await fsp.readFile(checksumsPath, 'utf8');
+        const lines = raw
+          .split('\n')
+          .map((l) => l.trim())
+          .filter(Boolean);
+        const mismatches = [];
+        let verified = 0;
+        for (const line of lines) {
+          const match = /^([a-f0-9]{64})\s{2}(.+)$/.exec(line);
+          if (!match) {
+            mismatches.push({ file: line, code: 'bad-line' });
+            continue;
+          }
+          const [, expected, rel] = match;
+          const file = path.join(resolved.path, rel);
+          try {
+            const hash = await hashFile(file);
+            if (hash !== expected)
+              mismatches.push({ file: rel, code: 'mismatch' });
+            else verified += 1;
+          } catch {
+            mismatches.push({ file: rel, code: 'missing' });
+          }
+        }
+        respond(res, 200, {
+          ok: mismatches.length === 0,
+          present: true,
+          total: lines.length,
+          verified,
+          mismatches,
+        });
+      } catch {
         respond(res, 200, {
           ok: true,
-          moved: moveResult?.moved ?? [],
-          adopted: newIsReady,
-          ...fresh,
+          present: false,
+          total: 0,
+          verified: 0,
+          mismatches: [],
         });
-      });
-      server.middlewares.use('/api/local-data/delete', async (req, res) => {
-        if (req.method !== 'POST')
-          return respond(res, 405, errorPayload('method', 'Method not allowed'));
-        const admission = admit(req, env);
-        if (!admission.ok) return respond(res, admission.status, refusalPayload(admission));
-        const parsed = await jsonBody(req);
-        if (!parsed.ok) return respond(res, parsed.status, errorPayload(parsed.code, parsed.error));
-        const scope = typeof parsed.value.scope === 'string' ? parsed.value.scope : '';
-        const phrase = CONFIRM_PHRASES[scope];
-        if (!phrase)
-          return respond(res, 400, errorPayload('unknown-scope', `Unknown scope: ${scope}`));
-        if (parsed.value.confirm !== phrase)
-          return respond(
-            res,
-            400,
-            errorPayload('confirm-phrase', `Type exactly "${phrase}" to confirm`),
-          );
-        const resolved = await resolveLocalData(env, undefined, scanStore);
-        if (!resolved.enabled)
-          return respond(res, 409, errorPayload('disabled', 'Local storage is disabled'));
-        const result = await deleteStoreScope(resolved.path, scope);
-        if (!result.ok) return respond(res, 409, errorPayload(result.code, result.error));
-        bustSummary(resolved.path);
-        const fresh = await resolveLocalData(env, undefined, scanStore);
-        respond(res, 200, { ok: true, freedBy: result.freedBy, ...fresh });
-      });
-      server.middlewares.use('/api/local-data/verify', async (req, res) => {
-        if (req.method !== 'POST')
-          return respond(res, 405, errorPayload('method', 'Method not allowed'));
-        const admission = admit(req, env);
-        if (!admission.ok) return respond(res, admission.status, refusalPayload(admission));
-        const parsed = await jsonBody(req);
-        if (!parsed.ok) return respond(res, parsed.status, errorPayload(parsed.code, parsed.error));
-        const resolved = await resolveLocalData(env, undefined, scanStore);
-        if (!resolved.enabled)
-          return respond(res, 409, errorPayload('disabled', 'Local storage is disabled'));
-        const checksumsPath = storePaths(resolved.path).checksums;
-        try {
-          const raw = await fsp.readFile(checksumsPath, 'utf8');
-          const lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
-          const mismatches = [];
-          let verified = 0;
-          for (const line of lines) {
-            const match = /^([a-f0-9]{64})\s{2}(.+)$/.exec(line);
-            if (!match) {
-              mismatches.push({ file: line, code: 'bad-line' });
-              continue;
-            }
-            const [, expected, rel] = match;
-            const file = path.join(resolved.path, rel);
-            try {
-              const hash = await hashFile(file);
-              if (hash !== expected) mismatches.push({ file: rel, code: 'mismatch' });
-              else verified += 1;
-            } catch {
-              mismatches.push({ file: rel, code: 'missing' });
-            }
-          }
-          respond(res, 200, {
-            ok: mismatches.length === 0,
-            present: true,
-            total: lines.length,
-            verified,
-            mismatches,
-          });
-        } catch {
-          respond(res, 200, { ok: true, present: false, total: 0, verified: 0, mismatches: [] });
-        }
-      });
-      server.middlewares.use('/api/local-data/deploy', async (req, res) => {
-        if (req.method !== 'POST')
-          return respond(res, 405, errorPayload('method', 'Method not allowed'));
-        const admission = admit(req, env);
-        if (!admission.ok) return respond(res, admission.status, refusalPayload(admission));
-        const parsed = await jsonBody(req);
-        if (!parsed.ok) return respond(res, parsed.status, errorPayload(parsed.code, parsed.error));
-        if (parsed.value.confirm !== DEPLOY_CONFIRM)
-          return respond(
-            res,
-            400,
-            errorPayload('confirm-phrase', `Type exactly "${DEPLOY_CONFIRM}" to confirm`),
-          );
-        const resolved = await resolveLocalData(env, undefined, scanStore);
-        if (!resolved.enabled)
-          return respond(res, 409, errorPayload('disabled', 'Local storage is disabled'));
-        if (resolved.summary?.state !== 'ready')
-          return respond(res, 409, errorPayload('not-ready', 'The store is not ready'));
-        const result = await deployTilesToDist(resolved.path, root);
-        if (!result.ok) return respond(res, 409, errorPayload(result.code, result.error));
-        respond(res, 200, { ok: true, ...result });
-      });
-      // Tileset files — exactly <store>/tiles/, nothing else.
-      server.middlewares.use('/local-data/buildings', async (req, res) => {
-        if (req.method !== 'GET' && req.method !== 'HEAD')
-          return respond(res, 405, errorPayload('method', 'Method not allowed'));
-        const resolved = await resolveLocalData(env, undefined, scanStore);
-        if (!resolved.enabled) {
-          res.statusCode = 404;
-          res.end('local buildings disabled');
-          return;
-        }
-        await serveTileset(resolved.path)(req, res);
-      });
+      }
+    });
+    server.middlewares.use('/api/local-data/deploy', async (req, res) => {
+      if (req.method !== 'POST')
+        return respond(res, 405, errorPayload('method', 'Method not allowed'));
+      const admission = admit(req, env);
+      if (!admission.ok)
+        return respond(res, admission.status, refusalPayload(admission));
+      const parsed = await jsonBody(req);
+      if (!parsed.ok)
+        return respond(
+          res,
+          parsed.status,
+          errorPayload(parsed.code, parsed.error),
+        );
+      if (parsed.value.confirm !== DEPLOY_CONFIRM)
+        return respond(
+          res,
+          400,
+          errorPayload(
+            'confirm-phrase',
+            `Type exactly "${DEPLOY_CONFIRM}" to confirm`,
+          ),
+        );
+      const resolved = await resolveLocalData(env, undefined, scanStore);
+      if (!resolved.enabled)
+        return respond(
+          res,
+          409,
+          errorPayload('disabled', 'Local storage is disabled'),
+        );
+      if (resolved.summary?.state !== 'ready')
+        return respond(
+          res,
+          409,
+          errorPayload('not-ready', 'The store is not ready'),
+        );
+      const result = await deployTilesToDist(resolved.path, root);
+      if (!result.ok)
+        return respond(res, 409, errorPayload(result.code, result.error));
+      respond(res, 200, { ok: true, ...result });
+    });
+    // Tileset files — exactly <store>/tiles/, nothing else.
+    server.middlewares.use('/local-data/buildings', async (req, res) => {
+      if (req.method !== 'GET' && req.method !== 'HEAD')
+        return respond(res, 405, errorPayload('method', 'Method not allowed'));
+      const resolved = await resolveLocalData(env, undefined, scanStore);
+      if (!resolved.enabled) {
+        res.statusCode = 404;
+        res.end('local buildings disabled');
+        return;
+      }
+      await serveTileset(resolved.path)(req, res);
+    });
   };
-    // Preview builds keep the same surface — ODIN deploys through the preview
-    // of the production build in some setups.
+  // Preview builds keep the same surface — ODIN deploys through the preview
+  // of the production build in some setups.
   return {
     name: 'gev-local-data',
     configureServer(server) {

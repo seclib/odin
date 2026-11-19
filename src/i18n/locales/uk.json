@@ -1,4 +1,5 @@
 {
+  "CARTO basemaps require an API key from carto.com; anonymous tiles return placeholder images": "Базові карти CARTO потребують ключа API від carto.com; анонімні тайли повертають зображення-заглушки.",
   "General settings": "Загальні налаштування",
   "GROUND STATION · SETTINGS": "GROUND STATION · НАЛАШТУВАННЯ",
   "Close settings": "Закрити налаштування",
@@ -1905,8 +1906,6 @@
   "Decoder feeds: {feeds}": "Потоки декодера: {feeds}",
   "Language: {language}": "Мова: {language}",
   "Change the interface language": "Змінити мову інтерфейсу",
-  "Interface language": "Мова інтерфейсу",
-  "Search languages": "Пошук мови",
   "No matching languages": "Відповідних мов немає",
   "📍 Location: --": "📍 Розташування: --",
   "Landmark: --": "Орієнтир: --",
@@ -3089,7 +3088,6 @@
   "NEW": "NEW",
   "CAPTURE SHOT": "CAPTURE SHOT",
   "START": "START",
-  "EXPORT PRESETS": "EXPORT PRESETS",
   "Buildings": "Будівлі",
   "GROUND STATION · LOCAL DATA": "GROUND STATION · ЛОКАЛЬНІ ДАНІ",
   "DISABLED": "ВИМКНЕНО",

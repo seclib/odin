@@ -210,19 +210,19 @@ test('an explicit OUTSIDE opacity still wins over the new default', () => {
 // 3. Detection — on for every style on a first run, Normal included
 // ---------------------------------------------------------------------------
 
-test('first run opens with detection on, in every style, using the one tactical preset', () => {
-  // Normal used to start OFF while only CRT/NVG/FLIR auto-applied the preset.
-  // It is now the baseline for all of them, reusing the SAME frozen object, so
-  // "the tactical look" cannot fork into two definitions.
+test('first run opens clean: detection off, while styles keep their own tactical preset', () => {
+  // The baseline is now a clean globe. Style presets still reuse the SAME
+  // frozen object, so "the tactical look" cannot fork into two definitions
+  // when the operator picks a military style.
   assert.match(uiSource, /const MILITARY_DETECTION_PRESET = Object\.freeze\(\{\s*mode: 'dense',\s*densityPct: 75,?\s*\}\);/,
     'the tactical look is still Dense @ 75%');
   const baseline = uiBlock('const GLOBAL_POST_DEFAULTS = {', '\n};');
-  assert.match(baseline, /detectionMode: MILITARY_DETECTION_PRESET\.mode\.toUpperCase\(\),/,
-    'the first-load baseline reads the preset rather than restating it');
+  assert.match(baseline, /detectionMode: 'OFF',/,
+    'the first-load baseline keeps detection off');
   assert.match(baseline, /detectionDensity: MILITARY_DETECTION_PRESET\.densityPct,/,
     'density comes from the same object, so the two cannot drift');
-  assert.doesNotMatch(baseline, /detectionMode: 'OFF'/,
-    'the retired OFF baseline is gone, not shadowed');
+  assert.doesNotMatch(baseline, /detectionMode: MILITARY_DETECTION_PRESET\.mode/,
+    'the first-load baseline no longer inherits the tactical preset');
 
   // `const` has no hoisted value: the baseline can only READ the preset if the
   // preset is declared first. Getting this backwards is a startup TDZ crash,

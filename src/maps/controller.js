@@ -14,6 +14,25 @@ const FALLBACK_RETRY_MS = 30_000;
 const FALLBACK_RETRY_MAX_MS = 600_000;
 /** A retry attempt still unsettled after a minute counts as failed. */
 const FALLBACK_ATTEMPT_MS = 60_000;
+/** Consecutive 3D-tile failures before a tileset stack is judged unusable. */
+const TILESET_FAILURE_THRESHOLD = 3;
+
+/**
+ * Provider errors and tile payloads can carry credential-bearing URLs. Keep
+ * only the human part before a message reaches a toast, state or log; the
+ * static fallback messages already carry all the meaning an operator needs.
+ * @param {unknown} value
+ * @returns {string}
+ */
+function safeMessage(value) {
+  return String(value ?? '')
+    .replace(/https?:\/\/[^\s"'<>]+/gi, '[url]')
+    .replace(
+      /\b(access_token|api[_-]?key|apikey|token|key)\s*[:=]\s*[^\s,;]+/gi,
+      '$1=[REDACTED]',
+    )
+    .trim();
+}
 
 const resolved = (provider, effectiveStackId) => ({
   provider,
@@ -60,6 +79,8 @@ export class MapSourceController {
     this._activeImageryProvider = null;
     this._activeResolution = null;
     this._removeImageryErrorListener = null;
+    /** Removers of the active tileset's load/failure listeners. */
+    this._removeTilesetListeners = [];
     this._terrainMode = null;
     this._terrainFallback = null;
     this._retryTimer = null;
@@ -213,7 +234,7 @@ export class MapSourceController {
       if (!silent) this._emitChange('ready');
     } catch (error) {
       if (gen !== this._switchGen) return this.getState();
-      const message = error?.message || String(error);
+      const message = safeMessage(error?.message || String(error));
       this._lastError = message;
       this._onError?.(message, stack);
       const recovery = this.getStack(this._registry.recoveryId);
@@ -230,7 +251,9 @@ export class MapSourceController {
           this._activeId = activation?.effectiveStackId || recovery.id;
         } catch (recoveryError) {
           if (gen !== this._switchGen) return this.getState();
-          this._lastError = recoveryError?.message || String(recoveryError);
+          this._lastError = safeMessage(
+            recoveryError?.message || String(recoveryError),
+          );
           this._onError?.(this._lastError, recovery);
         }
       }
@@ -272,6 +295,7 @@ export class MapSourceController {
     this._credits.show(source.credit || null);
     this._showTileset(tileset);
     this.viewer.scene.globe.show = false;
+    this._watchTileset(tileset, source, gen);
     // Terrain is intentionally untouched while the globe is hidden.
   }
 
@@ -282,7 +306,71 @@ export class MapSourceController {
       tileset.show = tileset === active;
   }
 
+  _clearTilesetWatch() {
+    for (const remove of this._removeTilesetListeners) remove();
+    this._removeTilesetListeners = [];
+  }
+
+  /**
+   * A 3D tileset is "available" as soon as its object is built, before any
+   * tile is fetched. When its tiles keep failing there is nothing to draw
+   * behind the hidden globe, so leave that stack for a globe imagery source.
+   * A successful first load retires the watcher: later isolated tile failures
+   * must not throw away a working globe.
+   */
+  _watchTileset(tileset, source, gen) {
+    this._clearTilesetWatch();
+    const fallback = source.tilesetFailureFallback;
+    const failureEvent = tileset?.tileFailed;
+    if (
+      !fallback ||
+      !this.isStackAvailable(fallback.id) ||
+      !failureEvent?.addEventListener
+    )
+      return;
+    let failures = 0;
+    let settled = false;
+    let pending = false;
+    const loadedEvent = tileset.initialTilesLoaded;
+    if (loadedEvent?.addEventListener) {
+      this._removeTilesetListeners.push(
+        loadedEvent.addEventListener(() => {
+          settled = true;
+          this._clearTilesetWatch();
+        }),
+      );
+    }
+    this._removeTilesetListeners.push(
+      failureEvent.addEventListener(() => {
+        if (settled || pending || this._destroyed) return;
+        if (gen !== this._switchGen || this._activeId !== source.descriptor.id)
+          return;
+        failures += 1;
+        if (failures < (fallback.threshold ?? TILESET_FAILURE_THRESHOLD))
+          return;
+        pending = true;
+        // The failure payload holds a credential-bearing tile URL: use only
+        // the source's static, human-readable message.
+        const message = fallback.message;
+        this._lastError = message;
+        this._onError?.(message, this.getStack(source.descriptor.id));
+        void this.setStack(fallback.id, { [AUTOMATIC]: true })
+          .then((state) => {
+            if (this._destroyed || state?.activeId !== fallback.id) return;
+            // setStack clears lastError for its own generation; restore the
+            // reason so the UI status keeps its warning and the toast fires.
+            this._lastError = message;
+            this._emitChange('error');
+          })
+          .finally(() => {
+            pending = false;
+          });
+      }),
+    );
+  }
+
   async _activateGlobeStack(stack, gen) {
+    this._clearTilesetWatch();
     const resolution = await this._getImageryProvider(stack);
     if (gen !== this._switchGen) return;
     // Scene shots reapply their map stack at every handoff. Keep the live
@@ -585,6 +673,7 @@ export class MapSourceController {
     this._dispose(this._replacedTerrain?.provider);
     this._replacedTerrain = null;
     this._isSwitching = false;
+    this._clearTilesetWatch();
     this._removeImageryLayer();
     this._credits.destroy();
     for (const promise of this._imageryProviders.values())

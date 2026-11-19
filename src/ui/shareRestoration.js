@@ -83,7 +83,9 @@ export class ShareRestoration {
   }
   attachLinks(shareLinkManager) {
     this.shareLinkManager = shareLinkManager;
-    this._initialShareState = shareLinkManager.parseInitialHash();
+    this._initialShareState = shareLinkManager.parseInitialHash({
+      requireShareIntent: true,
+    });
   }
   start() {
     // Restore from URL hash if present
@@ -195,9 +197,10 @@ export class ShareRestoration {
       this._layerStateRestorePromise = this._layerStateCoordinator.start({
         shareLayerState: this._initialShareState?.layerState || null,
         shareCreatedAtMs: this._initialShareState?.sharedAtMs ?? null,
-        // Any valid camera/style share isolates recipient-local preferences,
-        // including legacy and malformed-v2 layer payloads.
-        allowLocalState: !this._initialShareState,
+        // A clean boot never auto-enables layers from a previous session's
+        // browser storage. Only an explicit shared view carries layer state;
+        // the stored copy is preserved for the operator but not replayed.
+        allowLocalState: false,
       });
       if (this._initialShareSelectionSuperseded) {
         this._layerStateCoordinator.cancelPendingShareTracking(

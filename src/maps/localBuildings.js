@@ -55,7 +55,9 @@ let _serverAvailability = null; // null | true | false
  */
 export async function refreshLocalBuildingsAvailability(deps = {}) {
   if (_serverAvailability !== null && !deps.force) return _serverAvailability;
-  const fetchFn = deps.fetchImpl ?? (typeof fetch === 'function' ? fetch.bind(globalThis) : null);
+  const fetchFn =
+    deps.fetchImpl ??
+    (typeof fetch === 'function' ? fetch.bind(globalThis) : null);
   if (!fetchFn) {
     _serverAvailability = false;
     return _serverAvailability;
@@ -128,9 +130,7 @@ async function createFromUrl(url, options = {}) {
 
 export async function createLocalBuildingsTileset(options = {}) {
   const explicit = options && typeof options === 'object' && 'url' in options;
-  const pinned = explicit
-    ? String(options.url ?? '').trim()
-    : envUrl();
+  const pinned = explicit ? String(options.url ?? '').trim() : envUrl();
   options.signal?.throwIfAborted();
   if (pinned) return createFromUrl(pinned, options);
   if (explicit) return null; // explicit empty url → caller declared "not configured"

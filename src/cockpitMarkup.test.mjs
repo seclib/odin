@@ -317,7 +317,7 @@ test('share startup isolates panel defaults from recipient-local collapse prefer
   );
   assert.match(
     shellMethod('attachLinks').toString(),
-    /this\._initialShareState = shareLinkManager\.parseInitialHash\(\)/,
+    /this\._initialShareState = shareLinkManager\.parseInitialHash\(\{\s*requireShareIntent: true,?\s*\}\)/,
   );
   const panelChromeIndex = ui.indexOf('this._initPanelChrome();');
   assert.ok(
@@ -329,7 +329,7 @@ test('share startup isolates panel defaults from recipient-local collapse prefer
     'share state must be known before panel chrome can read recipient-local preferences',
   );
   assert.equal(
-    (ui.match(/shareLinkManager\.parseInitialHash\(\)/g) || []).length,
+    (ui.match(/shareLinkManager\.parseInitialHash\(/g) || []).length,
     1,
     'startup must parse the incoming share exactly once',
   );

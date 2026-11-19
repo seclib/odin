@@ -5,6 +5,7 @@ import { createBrowserViteConfig } from '../../build/vite.js';
 import { localProviderPlugins } from '../providers/local.js';
 import { localMcpPlugin } from '../mcp/plugin.js';
 import { apiNotFoundPlugin } from './api-not-found.js';
+import { googleTokenUnavailablePlugin } from './google-token-unavailable.js';
 import { standaloneVoiceTools } from './voiceTools.js';
 import { unwatchedRuntimeDirsPlugin } from './unwatched-cache.js';
 
@@ -20,6 +21,8 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       ...localProviderPlugins({ realtime: { tools: standaloneVoiceTools() } }),
       localMcpPlugin(),
+      // Explicit "no server-minted token" answer before the unknown-route 404.
+      googleTokenUnavailablePlugin(),
       apiNotFoundPlugin(),
       unwatchedRuntimeDirsPlugin(),
     ],

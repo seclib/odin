@@ -34,15 +34,20 @@ export const IGN_LIDAR_HILLSHADE_LAYER =
 
 export const IGN_ATTRIBUTION_HTML =
   '<a href="https://www.ign.fr" target="_blank" rel="noopener">IGN</a> — Géoplateforme (Licence Ouverte 2.0)';
-export const IGN_CREDIT = () =>
-  new Cesium.Credit(IGN_ATTRIBUTION_HTML, true);
+export const IGN_CREDIT = () => new Cesium.Credit(IGN_ATTRIBUTION_HTML, true);
 
 /**
  * Shared option builder for the Web Mercator ("PM_…") tile matrix sets: all
  * these layers tile exactly like the standard 256px web-mercator grid — the
  * sets only differ by a starting zoom matrix.
  */
-function baseOptions({ layer, format, tileMatrixSetID, maximumLevel, minimumLevel }) {
+function baseOptions({
+  layer,
+  format,
+  tileMatrixSetID,
+  maximumLevel,
+  minimumLevel,
+}) {
   return {
     url: IGN_WMTS_URL,
     format,

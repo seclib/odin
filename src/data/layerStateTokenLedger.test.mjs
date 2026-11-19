@@ -288,7 +288,10 @@ test('PR B manually replaces provisional 5 with 6 after PR A publishes 5', () =>
 
 test('allocation batches cross the last digit and base-36 pair boundaries in order', () => {
   // '5' is claimed by `local-buildings`; the synthetic retired digits start at '6'.
-  const digitRows = ['6', '7', '8', '9'].map((digit) => [`retired-${digit}`, digit]);
+  const digitRows = ['6', '7', '8', '9'].map((digit) => [
+    `retired-${digit}`,
+    digit,
+  ]);
   const allDigits = parseLayerStateTokenReservations([
     ...reservationRows,
     ...digitRows,

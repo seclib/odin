@@ -1,0 +1,117 @@
+- generic [ref=e1]:
+  - region "Visible map targets" [ref=e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=e8]:
+    - button "Clear selected data layers" [ref=e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e10]: layers_clear
+    - button "Copy share link" [ref=e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e12]: 🔗
+    - button "Tilt map to oblique view" [ref=e143] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e14]: view_in_ar
+    - button "Reset map to north up. Current heading 0 degrees" [ref=e144] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e16]: "N"
+      - generic [aria-hidden] [ref=e17]: navigation
+    - button "Reset to full globe view" [ref=e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e19]: public
+    - button "General settings" [ref=e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e21]: settings
+    - 'button "Language: English" [ref=e72] [cursor=pointer]':
+      - generic [aria-hidden] [ref=e77]: EN
+  - generic: syncing road network
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic "Navigation, voice, and visual preset controls" [ref=e27]:
+    - button "Expand LOCATION" [ref=e145] [cursor=pointer]:
+      - generic [ref=e37]: LOCATION
+    - generic [ref=e99]:
+      - generic [ref=e100]:
+        - generic: AI AGENT
+        - generic [ref=e101]: "OFF"
+        - generic [ref=e102]:
+          - button "STD" [ref=e103] [cursor=pointer]
+          - generic "Estimated session cost on gpt-realtime-2 — 0 response(s). Warns at ~$2.00, ends the session at ~$5.00." [ref=e104]: ~$0.00
+      - button "Voice control — activate to toggle voice; hold Space to speak" [ref=e105] [cursor=pointer]:
+        - generic [ref=e107]: ON/OFF
+      - generic [ref=e124]: VOICE STANDBY
+    - generic [ref=e29]:
+      - button "Collapse VISUAL PRESETS" [expanded] [active] [ref=e146] [cursor=pointer]:
+        - generic [ref=e31]: VISUAL PRESETS
+      - generic [ref=e147]:
+        - button "Pin visual presets" [ref=e148] [cursor=pointer]
+        - generic [ref=e149]:
+          - button "◯ Normal" [ref=e150] [cursor=pointer]:
+            - generic [ref=e151]: ◯
+            - generic [ref=e152]: Normal
+          - button "▦ CRT" [ref=e153] [cursor=pointer]:
+            - generic [ref=e154]: ▦
+            - generic [ref=e155]: CRT
+          - button "🌙 NVG" [ref=e156] [cursor=pointer]:
+            - generic [ref=e157]: 🌙
+            - generic [ref=e158]: NVG
+          - button "🌡️ FLIR" [ref=e159] [cursor=pointer]:
+            - generic [ref=e160]: 🌡️
+            - generic [ref=e161]: FLIR
+          - button "✦ Anime" [ref=e162] [cursor=pointer]:
+            - generic [ref=e163]: ✦
+            - generic [ref=e164]: Anime
+          - button "◐ Noir" [ref=e165] [cursor=pointer]:
+            - generic [ref=e166]: ◐
+            - generic [ref=e167]: Noir
+          - button "❄ Snow" [ref=e168] [cursor=pointer]:
+            - generic [ref=e169]: ❄
+            - generic [ref=e170]: Snow
+        - region "MAP SOURCE" [ref=e171]:
+          - generic [ref=e172]:
+            - generic [ref=e173]: MAP SOURCE
+            - generic [ref=e174]: 3D
+          - group "Map source" [ref=e175]:
+            - button "Google 3D" [pressed] [ref=e176] [cursor=pointer]
+            - button "Bing Aerial" [ref=e178] [cursor=pointer]
+            - button "Bing Labels" [ref=e180] [cursor=pointer]
+            - button "Esri Satellite" [ref=e182] [cursor=pointer]
+            - button "OSM" [ref=e184] [cursor=pointer]
+            - 'button "CARTO Dark unavailable: CARTO basemaps require an API key from carto.com; anonymous tiles return placeholder images" [disabled] [ref=e186]':
+              - generic [ref=e187]: CARTO Dark
+            - button "IGN" [ref=e188] [cursor=pointer]
+            - button "ORTHO" [ref=e190] [cursor=pointer]
+            - button "BDO" [ref=e192] [cursor=pointer]
+            - 'button "OFM unavailable: OpenFreeMap is experimental (MVT rasterization unverified) — set VITE_OPENFREEMAP=1 to enable" [disabled] [ref=e194]':
+              - generic [ref=e195]: OFM
+            - button "RELIEF" [ref=e196] [cursor=pointer]
+  - generic [ref=e127]:
+    - button "DATA LAYERS" [ref=e128] [cursor=pointer]:
+      - generic [aria-hidden]: database
+      - text: DATA LAYERS
+    - button "SCENES" [ref=e129] [cursor=pointer]:
+      - generic [aria-hidden]: movie
+      - text: SCENES
+  - complementary [ref=e130]:
+    - button "DISPLAY" [ref=e131] [cursor=pointer]:
+      - generic [aria-hidden]: tune
+      - text: DISPLAY
+    - button "CCTV" [ref=e132] [cursor=pointer]:
+      - generic [aria-hidden]: videocam
+      - text: CCTV
+    - text: WEATHER RECENT IMAGERY
+    - button "STREET LEVEL" [ref=e134] [cursor=pointer]:
+      - generic [aria-hidden]: my_location
+      - text: STREET LEVEL
+    - button "CONTEXT" [ref=e135] [cursor=pointer]:
+      - generic [aria-hidden]: radar
+      - text: CONTEXT
+  - generic: NORMAL
+  - text: ●
+  - generic [ref=e64]:
+    - link [ref=e67] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=e68]
+    - generic [ref=e136]:
+      - link "Upgrade for commercial use." [ref=e138] [cursor=pointer]:
+        - /url: https://cesium.com/pricing/
+      - text: •
+      - img "Google" [ref=e140]
+    - button "Data attribution" [ref=e141] [cursor=pointer]

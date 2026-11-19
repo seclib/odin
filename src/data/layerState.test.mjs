@@ -665,11 +665,10 @@ test('compact URL omits absent-meaning option state and still resolves to it', (
   assert.deepEqual(roundTrip.options.satellites.selectedSatTrackingId, null);
 });
 
-test('a fresh boot starts 3D aircraft ON in proximity — codec, both layers, and the rail agree', async () => {
-  // Owner directive 2026-08-22: the DISPLAY-rail 3D toggle defaults ON with mode
-  // `proximity`, because proximity is itself the budget — models materialize only
-  // below the fleet altitude ceiling and only for the nearest MODEL_MAX in view,
-  // so "on" costs nothing at globe scale and `all` stays a deliberate opt-in.
+test('a fresh boot starts 3D aircraft OFF in proximity — codec, both layers, and the rail agree', async () => {
+  // Clean first load: the DISPLAY-rail 3D toggle defaults OFF. Proximity stays
+  // the mode it adopts when switched on, so enabling remains cheap and `all`
+  // stays a deliberate opt-in.
   //
   // The reason this is one test rather than four is the early return in `start()`
   // below: with no share payload and no stored state, restoration NEVER RUNS, so
@@ -678,7 +677,7 @@ test('a fresh boot starts 3D aircraft ON in proximity — codec, both layers, an
   // one alone ships a lit button over an unarmed layer, or an armed layer under a
   // dark button. Pinning them together is what makes "state and UI agree" a fact.
   const defaults = createDefaultLayerState().options.flights;
-  assert.equal(defaults.models3d, true, 'the durable default is 3D ON');
+  assert.equal(defaults.models3d, false, 'the durable default is 3D OFF');
   assert.equal(defaults.models3dMode, 'proximity', 'and proximity, never all');
 
   const paramsCalls = [];
@@ -701,7 +700,7 @@ test('a fresh boot starts 3D aircraft ON in proximity — codec, both layers, an
   });
   await coordinator.start();
   assert.equal(coordinator.source, 'defaults');
-  assert.equal(coordinator.getDurableState().options.flights.models3d, true);
+  assert.equal(coordinator.getDurableState().options.flights.models3d, false);
   assert.equal(
     coordinator.getDurableState().options.flights.models3dMode,
     'proximity',
@@ -720,8 +719,8 @@ test('a fresh boot starts 3D aircraft ON in proximity — codec, both layers, an
     const source = readLayerSource(new URL(`./${name}`, import.meta.url));
     assert.match(
       source,
-      /^\s*(?:let |flightState\.)_models3dEnabled = true;$/m,
-      `${name}: the fleet starts armed, matching the codec default`,
+      /^\s*(?:let |flightState\.)_models3dEnabled = false;$/m,
+      `${name}: the fleet starts unarmed, matching the codec default`,
     );
     assert.match(
       source,
@@ -732,8 +731,8 @@ test('a fresh boot starts 3D aircraft ON in proximity — codec, both layers, an
   const ui = await readShellSource();
   assert.match(
     ui,
-    /^\s*this\.(?:flightState\.)?_models3dEnabled = true;$/m,
-    'ui.js: the DISPLAY rail believes 3D is on before any layer-state sync arrives',
+    /^\s*this\.(?:flightState\.)?_models3dEnabled = false;$/m,
+    'ui.js: the DISPLAY rail believes 3D is off before any layer-state sync arrives',
   );
   assert.match(
     ui,
@@ -745,8 +744,8 @@ test('a fresh boot starts 3D aircraft ON in proximity — codec, both layers, an
   );
   assert.match(
     html,
-    /class="pp-toggle-btn active" id="models3d-toggle" aria-pressed="true"/,
-    'index.html: the 3D button paints lit on first paint, before ui.js runs — and says so',
+    /class="pp-toggle-btn" id="models3d-toggle" aria-pressed="false"/,
+    'index.html: the 3D button paints dark on first paint, before ui.js runs',
   );
   assert.match(
     ui,
@@ -755,8 +754,8 @@ test('a fresh boot starts 3D aircraft ON in proximity — codec, both layers, an
   );
   assert.match(
     html,
-    /class="pp-slider-row visible" id="models3d-mode-row"/,
-    'index.html: and the Proximity/All row paints open with it',
+    /class="pp-slider-row" id="models3d-mode-row"/,
+    'index.html: the Proximity/All row stays closed until 3D is switched on',
   );
   assert.match(
     html,
@@ -800,17 +799,16 @@ test('a v2 link written before the flip still means what its author saw: 3D OFF'
   );
 });
 
-test('the new default is written EXPLICITLY, so no omission is ambiguous', () => {
-  // Because an absent `e` is pinned to the historical OFF above, the new ON
-  // default cannot ride in on the omission — it has to be emitted. This is the
-  // other half of the same invariant: break it and fresh ON links silently become
-  // OFF links for their recipients.
+test('an explicit ON is written, while OFF stays the absent token', () => {
+  // OFF is the boot default and the omission. An operator turning 3D on must
+  // emit `f.e.1` explicitly, so recipients of the link see the same state.
   const on = createDefaultLayerState();
   on.enabledLayerIds = ['flights'];
+  on.options.flights = { ...on.options.flights, models3d: true };
   assert.equal(
     on.options.flights.models3d,
     true,
-    'precondition: ON is the default',
+    'precondition: the operator has switched ON',
   );
   const onEncoded = encode(on);
   assert.match(

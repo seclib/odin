@@ -1,6 +1,5 @@
-
 export function createLiveSourceController({
-  id = "live-source",
+  id = 'live-source',
   fetchEntities,
   signal = null,
   pollIntervalMs = 10000,
@@ -10,11 +9,11 @@ export function createLiveSourceController({
   setIntervalFn = globalThis.setInterval,
   clearIntervalFn = globalThis.clearInterval,
 } = {}) {
-  if (typeof fetchEntities !== "function") {
-    throw new TypeError("fetchEntities must be a function");
+  if (typeof fetchEntities !== 'function') {
+    throw new TypeError('fetchEntities must be a function');
   }
-  if (typeof applyBatch !== "function") {
-    throw new TypeError("applyBatch must be a function");
+  if (typeof applyBatch !== 'function') {
+    throw new TypeError('applyBatch must be a function');
   }
 
   let running = false;
@@ -32,7 +31,10 @@ export function createLiveSourceController({
     const controller = new AbortController();
     abortController = controller;
     try {
-      const batch = await fetchEntities({ signal: controller.signal, now: now() });
+      const batch = await fetchEntities({
+        signal: controller.signal,
+        now: now(),
+      });
       if (controller.signal.aborted || destroyed) return;
       await applyBatch(batch, controller.signal);
       lastSuccessAt = now();
@@ -42,7 +44,7 @@ export function createLiveSourceController({
       if (controller.signal.aborted || destroyed) return;
       attempts += 1;
       lastError = error instanceof Error ? error : new Error(String(error));
-      if (typeof onError === "function") onError(lastError);
+      if (typeof onError === 'function') onError(lastError);
     } finally {
       abortController = null;
       if (!pauseRequested && running && !destroyed) schedule();
