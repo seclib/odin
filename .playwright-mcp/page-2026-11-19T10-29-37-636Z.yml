@@ -1,0 +1,241 @@
+- generic [ref=e1]:
+  - region "Visible map targets" [ref=e7]:
+    - status
+  - status:
+    - generic: LOAD COMPLETE
+  - region "Aircraft cockpit view":
+    - generic [aria-hidden]:
+      - generic:
+        - generic: −30
+        - generic: −20
+        - generic: −10
+        - generic: "0"
+        - generic: "+10"
+        - generic: "+20"
+        - generic: "+30"
+      - generic:
+        - generic: "+20"
+        - generic: "+10"
+        - generic: "00"
+        - generic: −10
+        - generic: −20
+      - generic:
+        - generic: "+20"
+        - generic: "+10"
+        - generic: "00"
+        - generic: −10
+        - generic: −20
+      - generic: LEVEL
+      - generic: OPTICAL PLANE · 01
+      - generic: VISOR LOCK · ACTIVE
+    - generic:
+      - generic: GROUND SPEED · KTS
+      - generic:
+        - generic: "325"
+        - generic: "350"
+        - generic: "375"
+        - generic: "400"
+        - generic: "425"
+        - generic: "450"
+        - generic: "475"
+        - generic: "500"
+        - generic: "525"
+      - generic:
+        - generic: arrow_right
+        - strong: "444"
+    - generic:
+      - generic: ALTITUDE · FT
+      - generic:
+        - generic: "30000"
+        - generic: "30500"
+        - generic: "31000"
+        - generic: "31500"
+        - generic: "32000"
+        - generic: "32500"
+        - generic: "33000"
+        - generic: "33500"
+        - generic: "34000"
+      - generic:
+        - strong: "32000"
+        - generic: arrow_left
+    - generic:
+      - generic:
+        - generic: FIRST PERSON
+        - strong: P0024
+        - generic: COMMERCIAL · LIVE TRACK · COURSE ALIGNED
+      - group "Cockpit vision style" [ref=e392]:
+        - button "Previous cockpit vision style" [ref=e393] [cursor=pointer]:
+          - generic [aria-hidden] [ref=e394]: chevron_left
+          - generic [ref=e395]: PREV
+        - 'button "Current cockpit vision style: Normal. Activate for next style." [ref=e396] [cursor=pointer]':
+          - generic [ref=e397]: CURRENT
+          - strong [ref=e398]: NORMAL
+        - button "Next cockpit vision style" [ref=e399] [cursor=pointer]:
+          - generic [ref=e400]: NEXT
+          - generic [aria-hidden] [ref=e401]: chevron_right
+    - generic [aria-hidden]: my_location
+    - generic "Current aircraft heading":
+      - generic:
+        - generic:
+          - generic: GROUND SPEED
+          - strong:
+            - generic [aria-hidden]: "4"
+            - generic [aria-hidden]: "4"
+            - generic [aria-hidden]: "4"
+          - generic: KTS
+        - generic:
+          - generic "166":
+            - generic [aria-hidden]: "1"
+            - generic [aria-hidden]: "6"
+            - generic [aria-hidden]: "6"
+          - text: °
+        - generic:
+          - generic: ALTITUDE
+          - strong:
+            - generic [aria-hidden]: "3"
+            - generic [aria-hidden]: "2"
+            - generic [aria-hidden]: ","
+            - generic [aria-hidden]: "0"
+            - generic [aria-hidden]: "0"
+            - generic [aria-hidden]: "0"
+          - generic: FT
+      - generic [aria-hidden]: arrow_drop_down
+      - generic [aria-hidden]:
+        - generic: E
+        - generic: "120"
+        - generic: "150"
+        - generic: S
+        - generic: "210"
+        - generic: "240"
+        - generic: W
+    - generic:
+      - generic: 10:29:37Z
+      - generic: 23.595°S · 28.555°E
+    - complementary "Contact cockpit summary" [ref=e402]:
+      - generic [ref=e403]:
+        - generic [ref=e404]:
+          - generic [ref=e405]: CONTACT
+          - strong [ref=e406]: P0024 · 250 KM AIR/SEA WINDOW · INSTALLATIONS WITHIN 100 KM
+        - navigation "Contact navigation" [ref=e407]:
+          - button "Previous — prior visited contact in the 250 km window" [disabled] [ref=e408]:
+            - generic [aria-hidden] [ref=e409]: skip_previous
+          - button "Next — nearest unvisited contact in the 250 km window" [ref=e410] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e411]: skip_next
+          - button "Collapse Contact panel" [expanded] [ref=e412] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e413]: chevron_left
+        - generic [ref=e414]: CONTEXT ONLY
+      - list "Nearby cohort counts" [ref=e415]:
+        - listitem [ref=e416]:
+          - generic [ref=e417]: FLT
+          - strong [ref=e418]: "6"
+          - generic [ref=e419]: OpenSky
+        - listitem [ref=e420]:
+          - generic [ref=e421]: MIL
+          - strong [ref=e422]: "0"
+          - generic [ref=e423]: adsb.lol
+        - listitem [ref=e424]:
+          - generic [ref=e425]: AIS
+          - strong [ref=e426]: "0"
+          - generic [ref=e427]: AISStream
+        - listitem [ref=e428]:
+          - generic [ref=e429]: SITE
+          - strong [ref=e430]: "0"
+          - generic [ref=e431]: OpenStreetMap
+      - generic [ref=e432]:
+        - generic [aria-hidden] [ref=e433]: navigation
+        - generic [ref=e434]:
+          - generic [ref=e435]: NEAREST OBSERVED / MAPPED
+          - strong [ref=e436]: FLIGHTS · ZUJLO
+        - generic [ref=e437]: R 020°
+        - generic "147 KM" [ref=e438]
+      - generic [ref=e439]:
+        - generic [ref=e440]: AVAILABLE INPUTS CURRENT · NOT AN ALL-CLEAR
+        - button "Enable cockpit weather effects" [ref=e441] [cursor=pointer]:
+          - generic [ref=e442]: WX
+          - strong [ref=e443]: "OFF"
+        - time [ref=e444]: 10:29:36Z
+    - complementary "Cockpit briefing carousel" [ref=e445]:
+      - generic [ref=e446]:
+        - generic [ref=e447]:
+          - generic [ref=e448]: LIVE SIGNALS
+          - strong [ref=e450]: OBSERVED / MAPPED PINGS
+        - navigation "Cockpit briefing controls" [ref=e451]:
+          - button "Previous briefing page" [ref=e452] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e453]: chevron_left
+          - generic [ref=e454]: 1 / 3
+          - button "Next briefing page" [ref=e455] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e456]: chevron_right
+          - button "CYCLE OFF" [ref=e457] [cursor=pointer]
+          - button "Collapse cockpit briefing panel" [expanded] [ref=e458] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e459]: right_panel_close
+      - region "Live signals" [ref=e461]:
+        - list [ref=e462]:
+          - listitem [ref=e463]:
+            - time [ref=e464]: 10:29:24Z
+            - generic [ref=e465]:
+              - button "Select flight P0024" [ref=e466] [cursor=pointer]:
+                - generic [ref=e467]: P0024
+                - generic [aria-hidden] [ref=e469]: chevron_right
+              - generic [ref=e470]: COMMERCIAL FLIGHT · CURRENT
+          - listitem [ref=e471]:
+            - time [ref=e472]: 10:29:24Z
+            - generic [ref=e473]:
+              - button "Select flight ZUJLO" [ref=e474] [cursor=pointer]:
+                - generic [ref=e475]: ZUJLO
+                - generic [aria-hidden] [ref=e477]: chevron_right
+              - generic [ref=e478]: COMMERCIAL FLIGHT · 147 KM
+          - listitem [ref=e479]:
+            - time [ref=e480]: 10:29:24Z
+            - generic [ref=e481]:
+              - button "Select flight LNK872T" [ref=e482] [cursor=pointer]:
+                - generic [ref=e483]: LNK872T
+                - generic [aria-hidden] [ref=e485]: chevron_right
+              - generic [ref=e486]: COMMERCIAL FLIGHT · 187 KM
+          - listitem [ref=e487]:
+            - time [ref=e488]: 10:29:24Z
+            - generic [ref=e489]:
+              - button "Select flight LNK306V" [ref=e490] [cursor=pointer]:
+                - generic [ref=e491]: LNK306V
+                - generic [aria-hidden] [ref=e493]: chevron_right
+              - generic [ref=e494]: COMMERCIAL FLIGHT · 222 KM
+          - listitem [ref=e495]:
+            - time [ref=e496]: 10:29:24Z
+            - generic [ref=e497]:
+              - button "Select flight BOT204" [ref=e498] [cursor=pointer]:
+                - generic [ref=e499]: BOT204
+                - generic [aria-hidden] [ref=e501]: chevron_right
+              - generic [ref=e502]: COMMERCIAL FLIGHT · 241 KM
+      - generic [ref=e503]:
+        - generic [ref=e504]: SOURCE-BACKED EVENTS · NO SYNTHETIC NEWS
+        - navigation "Cockpit briefing pages" [ref=e505]:
+          - button "Show Live Signals" [ref=e506] [cursor=pointer]: SIG
+          - button "Show Regional News" [ref=e507] [cursor=pointer]: NEWS
+          - button "Show Local Info" [ref=e508] [cursor=pointer]: LOCAL
+    - complementary "Cockpit display and Radio controls" [ref=e509]:
+      - generic [ref=e511]:
+        - generic [ref=e512]: DISPLAY
+        - button "Expand Cockpit display options" [ref=e514] [cursor=pointer]: ◀
+      - generic [ref=e516]:
+        - generic [ref=e517]: RADIO
+        - button "Expand Cockpit Radio controls" [ref=e519] [cursor=pointer]: ◀
+    - generic: ESC EXIT · C TOGGLE
+  - navigation "View switcher" [ref=e520]:
+    - button "Reset cockpit to full globe view" [ref=e521] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e522]: public
+      - generic [ref=e523]: RESET
+    - button "Exit cockpit view" [active] [ref=e524] [cursor=pointer]:
+      - generic [aria-hidden] [ref=e525]: close_fullscreen
+      - generic [ref=e526]: EXIT COCKPIT
+  - generic [ref=e108]:
+    - button "DATA LAYERS" [ref=e109] [cursor=pointer]:
+      - generic [aria-hidden]: database
+      - text: DATA LAYERS
+    - text: SCENES
+  - text: DISPLAY CCTV WEATHER RECENT IMAGERY STREET LEVEL CONTEXT
+  - generic [ref=e64]:
+    - link [ref=e67] [cursor=pointer]:
+      - /url: https://cesium.com/
+      - img "Cesium ion" [ref=e68]
+    - link "Upgrade for commercial use." [ref=e119] [cursor=pointer]:
+      - /url: https://cesium.com/pricing/
+    - button "Data attribution" [ref=e120] [cursor=pointer]

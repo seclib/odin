@@ -370,7 +370,7 @@
 }
 
 :root[data-ui-theme='cyber']
-  :is(.panel-collapse-btn, body.cockpit-mode .cockpit-utility-glyph) {
+  :is(.panel-collapse-btn, body.cockpit-mode .cockpit-section-toggle) {
   display: grid;
   width: var(--cyber-panel-control-size);
   min-width: var(--cyber-panel-control-size);
@@ -426,17 +426,15 @@
   color: var(--cyber-red-bright);
 }
 
-/* Clip the Display surface, not its shared calibration accent. Data Layers
-   already separates its inner frame from the outer accent in the same way. */
+/* Clip the unified cockpit rail surface, not its shared calibration accent.
+   Data Layers already separates its inner frame from the outer accent in the
+   same way. */
 :root[data-ui-theme='cyber']
   body:not(.cockpit-mode)
   #pp-toggles:not(.collapsed),
 :root[data-ui-theme='cyber']
   #global-context-panel.panel-collapsible
-  .global-context-panel-inner,
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-control.is-expanded:has([data-cockpit-launcher='display']) {
+  .global-context-panel-inner {
   isolation: isolate;
   clip-path: none;
   background: none;
@@ -451,12 +449,7 @@
   #pp-toggles:not(.collapsed)::before,
 :root[data-ui-theme='cyber']
   #global-context-panel.panel-collapsible
-  .global-context-panel-inner::before,
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-control.is-expanded:has(
-    [data-cockpit-launcher='display']
-  )::before {
+  .global-context-panel-inner::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -803,7 +796,7 @@
 /* These controls are clipped to a chamfered tag. Keep focus inside that shape;
    an outside outline/shadow is clipped away, including in cockpit launchers. */
 :root[data-ui-theme='cyber']
-  :is(.panel-collapse-btn, body.cockpit-mode .cockpit-utility-glyph):is(
+  :is(.panel-collapse-btn, body.cockpit-mode .cockpit-section-toggle):is(
     :hover,
     :focus-visible
   ) {
@@ -815,7 +808,7 @@
 :root[data-ui-theme='cyber']
   :is(
     .panel-collapse-btn,
-    body.cockpit-mode .cockpit-utility-glyph
+    body.cockpit-mode .cockpit-section-toggle
   ):focus-visible {
   outline: 2px solid var(--cyber-red-bright) !important;
   outline-offset: -3px;
@@ -1701,22 +1694,17 @@
     overflow: hidden;
   }
 
-  /* Match the collapsed Data Layers frame without shrinking expanded headers
-     or changing the compact-screen cockpit layout. */
+  /* Match the collapsed Data Layers frame: a collapsed cockpit section is one
+     50px tab inside the rail, without shrinking expanded headers or changing
+     the compact-screen cockpit layout. */
   :root[data-ui-theme='cyber']
     body.cockpit-mode
     .cockpit-utility-control:not(.is-expanded)
-    .cockpit-utility-launcher {
+    .cockpit-section-header {
+    box-sizing: border-box;
     height: 50px;
     min-height: 50px;
-    padding: 9px 18px 9px 24px;
-  }
-
-  :root[data-ui-theme='cyber']
-    body.cockpit-mode
-    .cockpit-utility-control:not(.is-expanded)
-    .cockpit-utility-launcher::after {
-    bottom: 6px;
+    padding: 9px 18px 9px 16px;
   }
 
   :root[data-ui-theme='cyber']
@@ -2456,7 +2444,7 @@
 :root[data-ui-theme='cyber']
   body.cockpit-mode
   :is(.cockpit-context-window, .cockpit-signal-window) {
-  top: var(--cockpit-context-top, clamp(255px, 28vh, 300px));
+  top: var(--cockpit-context-top, clamp(255px, 28vh, 320px));
   bottom: auto;
   max-height: min(44vh, 410px);
   border-color: rgba(105, 203, 209, 0.34);
@@ -2464,13 +2452,19 @@
   border-radius: 0;
   background:
     linear-gradient(135deg, rgba(105, 203, 209, 0.07), transparent 38%),
-    rgba(8, 23, 27, 0.78);
+    rgba(3, 8, 10, 0.96);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.025),
     0 12px 30px rgba(0, 0, 0, 0.24);
   text-shadow: none;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:root[data-ui-theme='cyber']
+  body.cockpit-mode
+  :is(.cockpit-context-window, .cockpit-signal-window) {
+  color: rgba(244, 251, 255, 0.74);
 }
 
 :root[data-ui-theme='cyber'] body.cockpit-mode .cockpit-context-window {
@@ -2499,6 +2493,8 @@
     0 100%,
     0 14px
   );
+  background: rgba(13, 17, 23, 0.92);
+  color: rgba(244, 251, 255, 0.74);
 }
 
 :root[data-ui-theme='cyber']
@@ -2524,165 +2520,18 @@
   top: var(--cockpit-utility-top, clamp(164px, 19vh, 204px));
   right: 30px;
   width: var(--cyber-right-panel-width);
-  gap: var(--cyber-panel-gap);
-}
-
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  #cockpit-hud:has(.cockpit-utility-control.is-expanded)
-  .cockpit-signal-window[data-collapsed='true'] {
-  top: auto;
-  bottom: 80px;
-  visibility: visible;
-  pointer-events: auto;
-  z-index: 12;
-}
-
-:root[data-ui-theme='cyber'] body.cockpit-mode .cockpit-utility-launcher {
-  position: relative;
-  box-sizing: border-box;
-  width: var(--cyber-panel-width);
-  min-height: 60px;
-  padding: 14px 18px 20px 24px;
-  gap: 9px;
-  border-color: var(--glass-border);
-  border-radius: 0;
-  background-color: var(--cyber-panel-surface);
-  background-image: var(--cyber-panel-surface-detail);
-  box-shadow: var(--cyber-panel-shadow);
-  clip-path: var(--cyber-panel-frame);
-  color: var(--cyber-red-bright);
-  font-size: 8px;
-  font-weight: 600;
-  letter-spacing: 1.8px;
-}
-
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-control:not(.is-expanded)
-  .cockpit-utility-launcher {
-  width: var(--cyber-panel-collapsed-width);
-}
-
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-launcher::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: calc(50% - 25px);
-  width: 50px;
-  height: 6px;
-  background: rgba(196, 84, 84, 0.22);
-  pointer-events: none;
-}
-
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-launcher::after {
-  content: '';
-  position: absolute;
-  right: 16px;
-  bottom: 12px;
-  left: 16px;
-  border-bottom: 1px solid rgba(206, 222, 226, 0.08);
-  pointer-events: none;
-}
-
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-launcher
-  > span:first-child {
-  position: relative;
-}
-
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-launcher
-  > span:first-child::before {
-  position: absolute;
-  top: 50%;
-  left: -8px;
-  width: 3px;
-  height: 11px;
-  background: var(--cyber-red);
-  clip-path: polygon(0 0, 100% 2px, 100% calc(100% - 2px), 0 100%);
-  content: '';
-  transform: translateY(-50%);
-}
-
-:root[data-ui-theme='cyber'] body.cockpit-mode .cockpit-utility-divider {
-  background: linear-gradient(
-    90deg,
-    rgba(196, 84, 84, 0.62),
-    rgba(206, 222, 226, 0.08)
-  );
-  box-shadow: none;
-}
-
-:root[data-ui-theme='cyber'] body.cockpit-mode .cockpit-utility-glyph {
-  border-color: rgba(206, 222, 226, 0.22);
-  border-radius: 0;
-  background: rgba(255, 255, 255, 0.03);
-  color: #f2f5f4;
-  font-size: 0;
-}
-
-/* Keep the existing button labels/expanded semantics; match Data Layers' glyph. */
-:root[data-ui-theme='cyber'] body.cockpit-mode .cockpit-utility-glyph::after {
-  content: '+';
-  font-size: 13px;
-}
-
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-glyph[aria-expanded='true']::after {
-  content: '−';
-}
-
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-control.is-expanded
-  .cockpit-utility-launcher {
-  width: 100%;
-  min-height: 42px;
-  padding: 6px 2px 8px 14px;
-  clip-path: none;
-  background: transparent;
-  box-shadow: none;
-}
-
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-control.is-expanded
-  .cockpit-utility-launcher::before,
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-control.is-expanded
-  .cockpit-utility-launcher::after {
-  display: none;
-}
-
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-control.is-expanded {
-  position: relative;
-  width: var(--cyber-right-panel-width);
-  padding: 8px;
   border-color: rgba(105, 203, 209, 0.34);
   border-radius: 0;
   background-color: var(--cyber-panel-surface);
   background-image: var(--cyber-panel-surface-detail);
   box-shadow: var(--cyber-panel-shadow);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   clip-path: var(--cyber-panel-frame);
 }
-
-/* Expanded utility panels are full panel surfaces, not floating popovers.
-   Reuse the same centered calibration tab as Data Layers so Display and Radio
-   read as equal members of the cockpit rail. */
-:root[data-ui-theme='cyber']
-  body.cockpit-mode
-  .cockpit-utility-control.is-expanded::after {
+/* The rail wears the same centered calibration tab as Data Layers, so the
+   pair reads as equal members of the cockpit frame. */
+:root[data-ui-theme='cyber'] body.cockpit-mode .cockpit-utility-controls::after {
   position: absolute;
   z-index: 4;
   top: 0;
@@ -2701,26 +2550,121 @@
   pointer-events: none;
   transform: translateX(-50%);
 }
-
 :root[data-ui-theme='cyber']
   body.cockpit-mode
-  .cockpit-utility-control.is-expanded:has([data-cockpit-launcher='display']),
+  .cockpit-section-header {
+  position: relative;
+  box-sizing: border-box;
+  min-height: 60px;
+  padding: 14px 16px 18px 18px;
+  gap: 9px;
+  color: var(--cyber-red-bright);
+  background: transparent;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+}
 :root[data-ui-theme='cyber']
   body.cockpit-mode
-  .cockpit-utility-control.is-expanded:has([data-cockpit-launcher='radio']) {
-  width: var(--cyber-right-panel-width);
+  .cockpit-section-icon {
+  color: var(--cyber-red-bright);
+}
+:root[data-ui-theme='cyber']
+  body.cockpit-mode
+  .cockpit-section-body {
+  border-top-color: rgba(105, 203, 209, 0.2);
+  scrollbar-color: rgba(196, 84, 84, 0.45) transparent;
+}
+:root[data-ui-theme='cyber']
+  body.cockpit-mode
+  .cockpit-section-body::-webkit-scrollbar-thumb {
+  background: rgba(196, 84, 84, 0.4);
+}
+:root[data-ui-theme='cyber']
+  body.cockpit-mode
+  .cockpit-section-title {
+  color: var(--cyber-red-bright);
+  font-size: 8px;
+  letter-spacing: 1.8px;
+}
+:root[data-ui-theme='cyber']
+  body.cockpit-mode
+  .cockpit-section-divider {
+  background: linear-gradient(
+    90deg,
+    rgba(196, 84, 84, 0.62),
+    rgba(206, 222, 226, 0.08)
+  );
+  box-shadow: none;
+}
+:root[data-ui-theme='cyber'] body.cockpit-mode .cockpit-command-separator {
+  margin: 7px 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(196, 84, 84, 0.4) 18% 82%,
+    transparent
+  );
+}
+/* Chamfered tab toggle, matching the Data Layers control language. */
+:root[data-ui-theme='cyber']
+  body.cockpit-mode
+  .cockpit-section-toggle {
+  box-sizing: border-box;
+  width: var(--cyber-panel-control-size);
+  min-width: var(--cyber-panel-control-size);
+  height: var(--cyber-panel-control-size);
+  border-color: rgba(206, 222, 226, 0.22);
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #f2f5f4;
+  font-size: 0;
+  clip-path: polygon(
+    5px 0,
+    calc(100% - 5px) 0,
+    100% 5px,
+    100% calc(100% - 5px),
+    calc(100% - 5px) 100%,
+    5px 100%,
+    0 calc(100% - 5px),
+    0 5px
+  );
+}
+/* Keep the existing button labels/expanded semantics; match Data Layers' glyph. */
+:root[data-ui-theme='cyber']
+  body.cockpit-mode
+  .cockpit-section-toggle::after {
+  content: '+';
+  font-size: 13px;
+}
+:root[data-ui-theme='cyber']
+  body.cockpit-mode
+  .cockpit-section-toggle[aria-expanded='true']::after {
+  content: '−';
+}
+:root[data-ui-theme='cyber']
+  body.cockpit-mode
+  .cockpit-utility-control.is-expanded
+  .cockpit-section-header {
+  width: 100%;
+  min-height: 42px;
+  height: auto;
+  padding: 6px 2px 8px 14px;
 }
 
 :root[data-ui-theme='cyber']
   body.cockpit-mode
-  .cockpit-utility-control.is-expanded:has([data-cockpit-launcher='display']) {
-  overflow: hidden;
+  #cockpit-hud:has(.cockpit-utility-control.is-expanded)
+  .cockpit-signal-window[data-collapsed='true'] {
+  top: auto;
+  bottom: 80px;
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 12;
 }
 
-:root[data-ui-theme='cyber'] body.cockpit-mode #cockpit-display-panel {
-  max-height: calc(var(--cockpit-utility-expanded-max-height, 72vh) - 62px);
-}
-
+/* The unified rail scrolls inside its corridor cap; the sections scroll on
+   their own. No expanded-specific cap override here. */
 :root[data-ui-theme='cyber'] body.cockpit-mode #left-panel-stack {
   top: clamp(164px, 19vh, 204px) !important;
   bottom: auto;
@@ -2767,20 +2711,32 @@
   }
 }
 
-/* Both expanded side panels occupy the same slot; footers clear the frame. */
+/* The expanded section occupies the shared Cyber lane height, like the left
+   Data Layers panel; its body scrolls inside the fixed slot. */
 @media (min-width: 761px) {
+  :root[data-ui-theme='cyber']
+    body.cockpit-mode
+    .cockpit-utility-control.is-expanded {
+    flex: 0 0 var(--cyber-cockpit-panel-height, 40vh);
+    height: var(--cyber-cockpit-panel-height, 40vh);
+    max-height: var(--cyber-cockpit-panel-height, 40vh);
+    overflow: hidden;
+  }
+
+  :root[data-ui-theme='cyber']
+    body.cockpit-mode
+    .cockpit-utility-control.is-expanded
+    .cockpit-section-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+  }
+
   :root[data-ui-theme='cyber']
     body.cockpit-mode
     #left-panel-stack
     > #data-panel:not(.collapsed) {
     flex: 0 0 var(--cyber-cockpit-panel-height, 40vh);
-    height: var(--cyber-cockpit-panel-height, 40vh);
-    max-height: var(--cyber-cockpit-panel-height, 40vh);
-  }
-
-  :root[data-ui-theme='cyber']
-    body.cockpit-mode
-    .cockpit-utility-control.is-expanded {
     height: var(--cyber-cockpit-panel-height, 40vh);
     max-height: var(--cyber-cockpit-panel-height, 40vh);
   }
@@ -2852,14 +2808,15 @@
     top: 92px !important;
     right: 12px;
     bottom: auto;
+    width: min(300px, calc(100vw - 24px));
   }
-
   :root[data-ui-theme='cyber']
     body.cockpit-mode
     .cockpit-utility-control:not(.is-expanded)
-    .cockpit-utility-launcher {
-    width: min(150px, calc((100vw - 32px) / 2));
+    .cockpit-section-header {
+    box-sizing: border-box;
+    height: 54px;
     min-height: 54px;
-    padding: 10px 12px 18px 18px;
+    padding: 10px 18px 12px 16px;
   }
 }

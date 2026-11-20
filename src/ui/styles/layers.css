@@ -2495,7 +2495,7 @@ body.recording-mode #right-context-rail > [data-panel-id] {
    glass rules. This shared, higher-specificity surface keeps every flyout on
    the same chrome as the top bar instead of drifting per panel. */
 #left-panel-stack[data-rail-mode="flyout"]
-  > :is(#data-panel, #scene-panel)
+  > :is(#data-panel, #scene-panel, #terrain-panel)
   > .panel-flyout-body,
 #right-context-rail[data-rail-mode="flyout"]
   > :is(

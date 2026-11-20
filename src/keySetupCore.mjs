@@ -98,6 +98,22 @@ export const KEY_SETUP_KEYS = Object.freeze([
     clientExposed: true,
   }),
   Object.freeze({
+    id: 'arcgis-world-elevation',
+    title: 'ARCGIS WORLD ELEVATION', // i18n-ignore: provider product name
+    unlocks: msg('ArcGIS World Elevation 3D terrain'),
+    getUrl: 'https://developers.arcgis.com/',
+    envVars: Object.freeze(['ARCGIS_API_KEY']),
+    tier: 'free',
+  }),
+  Object.freeze({
+    id: 'opentopography',
+    title: 'OPENTOPOGRAPHY', // i18n-ignore: provider product name
+    unlocks: msg('OpenTopography DEM elevation data'),
+    getUrl: 'https://portal.opentopography.org/',
+    envVars: Object.freeze(['OPENTOPOGRAPHY_API_KEY']),
+    tier: 'free',
+  }),
+  Object.freeze({
     id: 'opensky',
     title: 'OPENSKY', // i18n-ignore: provider product name
     unlocks: msg('More flight-polling credits (anonymous works without)'),

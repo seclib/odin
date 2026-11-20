@@ -407,16 +407,19 @@ export class MapSourceController {
       const latest = this._terrainProviders.get(terrain.id);
       if (latest !== pending) result = await latest;
       if (gen !== this._switchGen) return;
-      this._applyTerrain(result);
+      this._applyTerrain(result, terrain.maxScreenSpaceError ?? null);
       this._terrainMode = terrain.id;
     }
     if (resolution.fallbackFor || this._terrainFallback) this._scheduleRetry();
     return resolution;
   }
 
-  _applyTerrain(result) {
+  _applyTerrain(result, maxScreenSpaceError = null) {
     if (result.terrain) this.viewer.scene.setTerrain(result.terrain);
     else this.viewer.terrainProvider = result.provider;
+    if (maxScreenSpaceError != null && this.viewer.scene.globe) {
+      this.viewer.scene.globe.maximumScreenSpaceError = maxScreenSpaceError;
+    }
     this._terrainFallback = result.fallback ? result : null;
     if (this._replacedTerrain && this._replacedTerrain !== result) {
       this._dispose(this._replacedTerrain.provider);

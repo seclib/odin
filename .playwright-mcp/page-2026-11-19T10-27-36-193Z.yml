@@ -1,0 +1,54 @@
+- generic [active] [ref=f2e1]:
+  - region "Visible map targets" [ref=f2e7]:
+    - status
+  - generic:
+    - heading "ODIN" [level=1]
+  - navigation "Globe actions" [ref=f2e8]:
+    - button "Clear selected data layers" [ref=f2e9] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e10]: layers_clear
+    - button "Copy share link" [ref=f2e11] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e12]: 🔗
+    - button "Tilt map to oblique view" [ref=f2e13] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e14]: view_in_ar
+    - button "Reset map to north up" [ref=f2e15] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e16]: "N"
+      - generic [aria-hidden] [ref=f2e17]: navigation
+    - button "Reset to full globe view" [ref=f2e18] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e19]: public
+    - button "General settings" [ref=f2e20] [cursor=pointer]:
+      - generic [aria-hidden] [ref=f2e21]: settings
+  - generic:
+    - generic: syncing road network
+    - generic: 0%
+  - generic:
+    - generic: loading frames
+    - generic: 0/0
+  - navigation "View switcher"
+  - generic [ref=f2e23]:
+    - generic [aria-hidden] [ref=f2e24]: tune
+    - generic [ref=f2e25]: DISPLAY
+    - button "◀" [ref=f2e26] [cursor=pointer]
+  - generic "Navigation, voice, and visual preset controls" [ref=f2e27]:
+    - button "Expand Visual Presets" [ref=f2e30] [cursor=pointer]:
+      - generic [ref=f2e31]: VISUAL PRESETS
+    - button "Expand LOCATION" [ref=f2e36] [cursor=pointer]:
+      - generic [ref=f2e37]: LOCATION
+  - generic:
+    - generic [ref=f2e40]:
+      - generic [aria-hidden] [ref=f2e41]: database
+      - generic [ref=f2e42]: DATA LAYERS
+      - button "+" [ref=f2e44] [cursor=pointer]
+    - button "+" [ref=f2e48] [cursor=pointer]
+    - generic:
+      - generic:
+        - button "◀"
+    - button "+" [ref=f2e52] [cursor=pointer]
+  - complementary:
+    - button "▶" [ref=f2e56] [cursor=pointer]
+  - generic: NORMAL
+  - generic [ref=f2e61]:
+    - heading "ODIN" [level=2] [ref=f2e62]
+    - paragraph [ref=f2e63]: Loading Google 3D Tiles...
+  - link [ref=f2e67] [cursor=pointer]:
+    - /url: https://cesium.com/
+    - img "Cesium ion" [ref=f2e68]

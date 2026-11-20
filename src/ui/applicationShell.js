@@ -15,6 +15,7 @@ import { readShellElements } from './shellElements.js';
 import { CockpitCoordinator } from './cockpitCoordinator.js';
 import { ContextControls } from './context.js';
 import { CctvControls } from './cctv.js';
+import { CamerasControls } from './cameras.js';
 import { StreetLevelControls } from './streetLevelControls.js';
 import { RadioControls } from './radio.js';
 import { LocalSdrControls } from './localSdrControls.js';
@@ -585,6 +586,7 @@ export class StyleManager extends ShellFacade {
     this._initRightPanelAdaptiveLayout();
     this._initRadioPanel();
     this._initCctvPanel();
+    this._initCamerasPanel();
     this._initStreetLevelPanel();
     this._initGlobalContextPanel();
     this._initLocationBar();
@@ -1121,6 +1123,60 @@ export class StyleManager extends ShellFacade {
       },
     });
     this._streetLevelControls.connect();
+  }
+
+  /**
+   * Compose le panneau Caméras (catalogue local, fiches sources, filtres)
+   * depuis la couche Caméras enregistrée dans le catalogue applicatif.
+   * Aucun flux n'est chargé : la couche ne place que des repères Cesium pour
+   * les sources dont les coordonnées sont vérifiées.
+   */
+  _initCamerasPanel() {
+    const { camerasLayer } = this.services;
+    this._camerasControls?.destroy();
+    this._camerasControls = null;
+    if (!this._camerasPanel || !camerasLayer) return;
+    this._camerasControls = new CamerasControls({
+      elements: {
+        _camSearchInput: this._camSearchInput,
+        _camCategoryFilter: this._camCategoryFilter,
+        _camLegalFilter: this._camLegalFilter,
+        _camTechFilter: this._camTechFilter,
+        _camSourceList: this._camSourceList,
+        _camDetailPanel: this._camDetailPanel,
+        _camDetailName: this._camDetailName,
+        _camDetailOperator: this._camDetailOperator,
+        _camDetailCategory: this._camDetailCategory,
+        _camDetailRegion: this._camDetailRegion,
+        _camDetailCoords: this._camDetailCoords,
+        _camDetailDescription: this._camDetailDescription,
+        _camDetailLegal: this._camDetailLegal,
+        _camDetailTech: this._camDetailTech,
+        _camDetailMedia: this._camDetailMedia,
+        _camDetailUpdate: this._camDetailUpdate,
+        _camDetailAttribution: this._camDetailAttribution,
+        _camDetailSourceLink: this._camDetailSourceLink,
+        _camMapToggle: this._camMapToggle,
+        _camMapHint: this._camMapHint,
+        _camEmptyState: this._camEmptyState,
+      },
+      layer: camerasLayer,
+      actions: {
+        setMapDisplay: (show) => {
+          if (this._dataManager?.layers?.has('cameras')) {
+            this._dataManager.setEnabled('cameras', show === true, {
+              origin: 'user',
+            });
+          } else if (show) {
+            camerasLayer.enable?.();
+          } else {
+            camerasLayer.disable?.();
+          }
+        },
+        onSourceSelected: (sourceId) => camerasLayer.selectSource?.(sourceId),
+      },
+    });
+    this._camerasControls.connect();
   }
 
   /** Compose camera panel controls from the existing camera port and application actions. */
@@ -1739,6 +1795,7 @@ export class StyleManager extends ShellFacade {
     this._cameraOrientationControls?.destroy();
     this._clearLayersControl?.destroy();
     this._cctvControls?.destroy();
+    this._camerasControls?.destroy();
     this.services?.streetLevelLayer?.attachNavigation?.(null);
     this._streetLevelControls?.destroy();
     this._radioControls?.destroy();

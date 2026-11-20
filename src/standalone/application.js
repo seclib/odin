@@ -12,6 +12,7 @@ import {
   createGoogleTokenSource,
   shouldRequestServerTokens,
 } from '../maps/googleTokens.js';
+import { setOnProviderSelect } from '../ui/terrainPanel.js';
 
 // The existing controls and layer catalog contain page-scoped state.
 let constructed = false;
@@ -63,6 +64,8 @@ export function createStandaloneApplication({
         cesiumToken,
         loaderStatus,
       });
+      // Connect the Terrain panel provider selector to the terrain engine.
+      setOnProviderSelect((providerId, opts) => scene.terrainEngine.createProvider(providerId, opts));
       catalog = createStandaloneCatalog({
         sources,
         streetLevelProviders,

@@ -100,6 +100,23 @@ def test_glb_b3dm_roundtrip():
     assert np.isfinite(nrm).all()
 
 
+def test_pack_glb_buffer_views_are_4_byte_aligned():
+    """Cesium rejects an index accessor whose bufferView offset is not 4-byte
+    aligned ('The index array is not aligned to a 4-byte boundary'). An odd
+    number of uint16 batch ids makes the following uint32 index view land on
+    offset 2 mod 4 unless each view is padded before the next one starts."""
+    pos = np.zeros((5, 3), dtype=np.float32)
+    nrm = np.tile(np.array([0.0, 0.0, 1.0], dtype=np.float32), (5, 1))
+    bid = np.arange(5, dtype=np.uint16)  # 10 bytes -> misaligns the next view
+    ind = np.arange(12, dtype=np.uint32)
+    glb = g.pack_glb(pos, nrm, bid, ind)
+    jlen = struct.unpack_from("<I", glb, 12)[0]
+    gltf = json.loads(glb[20:20 + jlen])
+    offsets = [v["byteOffset"] for v in gltf["bufferViews"]]
+    assert all(o % 4 == 0 for o in offsets), offsets
+    assert [v["byteLength"] for v in gltf["bufferViews"]] == [60, 60, 10, 48]
+
+
 def test_full_pipeline_synthetic():
     with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as fh:
         for ring in (SQUARE, L_SHAPE, TRI):

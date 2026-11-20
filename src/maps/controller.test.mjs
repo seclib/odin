@@ -1393,6 +1393,86 @@ test('destroy during a hung retry attempt clears its deadline at once', async (t
   assert.equal(live.size, 0, 'and nothing re-arms');
 });
 
+/** Scène avec globe.supportant maximumScreenSpaceError pour les tests de terrain. */
+function makeSseScene() {
+  let maximumScreenSpaceError = undefined;
+  const globe = {
+    show: true,
+    get maximumScreenSpaceError() {
+      return maximumScreenSpaceError;
+    },
+    set maximumScreenSpaceError(value) {
+      maximumScreenSpaceError = value;
+    },
+  };
+  const scene = { globe, frameState: { creditDisplay: {} } };
+  const viewer = {
+    scene,
+    imageryLayers: {
+      add() {},
+      remove() {},
+    },
+    primitives: {
+      add() {},
+      remove() {},
+    },
+  };
+  return { viewer, getMse: () => maximumScreenSpaceError };
+}
+
+test('maxScreenSpaceError du terrain est appliqué au globe à l’activation', async () => {
+  const { viewer, getMse } = makeSseScene();
+  const provider = { id: 'terrain-keyless' };
+  const terrain = {
+    id: 'keyless',
+    maxScreenSpaceError: 4,
+    create: async () => ({ provider, fallback: false }),
+  };
+  const source = {
+    descriptor: { id: 'custom', label: 'custom', kind: 'imagery' },
+    imagery: async () => ({}),
+    terrain,
+  };
+  const registry = {
+    defaultId: 'custom',
+    sources: [source],
+  };
+  const controller = new MapSourceController(viewer, {
+    registry,
+    createImageryLayer: () => ({}),
+    requestRender: () => {},
+  });
+  await controller.setStack('custom');
+  assert.equal(getMse(), 4, 'maximumScreenSpaceError appliqué depuis la config terrain');
+  controller.destroy();
+});
+
+test('maxScreenSpaceError null n’écrit pas sur le globe', async () => {
+  const { viewer, getMse } = makeSseScene();
+  const provider = { id: 'terrain-keyless' };
+  const terrain = {
+    id: 'keyless',
+    create: async () => ({ provider, fallback: false }),
+  };
+  const source = {
+    descriptor: { id: 'custom', label: 'custom', kind: 'imagery' },
+    imagery: async () => ({}),
+    terrain,
+  };
+  const registry = {
+    defaultId: 'custom',
+    sources: [source],
+  };
+  const controller = new MapSourceController(viewer, {
+    registry,
+    createImageryLayer: () => ({}),
+    requestRender: () => {},
+  });
+  await controller.setStack('custom');
+  assert.equal(getMse(), undefined, 'aucun maxScreenSpaceError n’est écrit quand non configuré');
+  controller.destroy();
+});
+
 function destroyableFlat(n) {
   const provider = { id: `flat-${n}` };
   provider.destroy = () => (provider.destroyed = true);

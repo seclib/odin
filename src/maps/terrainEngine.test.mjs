@@ -138,6 +138,38 @@ test('createProvider world succeeds with token and injected factory', async () =
   engine.destroy();
 });
 
+test('createProvider applies the resolved provider to the scene globe', async () => {
+  const { scene } = makeScene();
+  const keylessProvider = makeProvider('keyless');
+  const engine = createTerrainEngine({
+    scene,
+    createKeylessTerrain: async () => ({
+      provider: keylessProvider,
+      fallback: false,
+    }),
+  });
+  const result = await engine.createProvider('keyless');
+  assert.equal(result.provider, keylessProvider);
+  assert.equal(result.fallback, false);
+  assert.equal(scene.globe.terrainProvider, keylessProvider);
+  engine.destroy();
+});
+
+test('createProvider does not apply a null provider to the scene', async () => {
+  const { scene } = makeScene();
+  const engine = createTerrainEngine({
+    scene,
+    createKeylessTerrain: async () => ({
+      provider: null,
+      fallback: false,
+    }),
+  });
+  const result = await engine.createProvider('keyless');
+  assert.equal(result.provider, null);
+  assert.equal(scene.globe.terrainProvider, undefined);
+  engine.destroy();
+});
+
 test('provider replacement destroys previous provider', async () => {
   const { scene } = makeScene();
   const first = makeProvider('first');

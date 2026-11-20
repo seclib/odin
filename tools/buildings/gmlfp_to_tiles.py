@@ -243,6 +243,12 @@ def pack_glb(position: np.ndarray, normal: np.ndarray, batch_ids: np.ndarray,
         offset = len(bin_blob)
         bin_blob += data
         views.append({"buffer": 0, "byteOffset": offset, "byteLength": len(data), "target": target})
+        # glTF requires every bufferView used by an accessor to start on a
+        # 4-byte boundary. An odd uint16 _BATCHID count otherwise shifts the
+        # following uint32 index view to 2 mod 4 and Cesium refuses to render
+        # the primitive ("index array is not aligned"). Pad the BLOB, not the
+        # view's byteLength, so accessors still describe only real data.
+        bin_blob = _pad(bin_blob, b"\x00", 4)
 
     pmin, pmax = position.min(axis=0), position.max(axis=0)
     gltf = {

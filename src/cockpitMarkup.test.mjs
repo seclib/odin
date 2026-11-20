@@ -355,14 +355,11 @@ test('Cockpit owns a focused shared Display portal and compact Radio controls', 
     css,
     /body\.cockpit-mode #left-panel-stack > #scene-panel\s*\{\s*display:\s*none\s*!important;/,
   );
+  assert.match(html, /id="cockpit-display-toggle-btn"[^>]*aria-controls="cockpit-display-panel"/);
+  assert.match(html, /id="cockpit-display-toggle-btn"[^>]*>\+<\/button>/);
   assert.match(
     html,
-    /id="cockpit-display-toggle-btn"[^>]*aria-controls="cockpit-display-panel"/,
-  );
-  assert.match(html, /id="cockpit-display-toggle-btn"[^>]*>◀<\/button>/);
-  assert.match(
-    html,
-    /data-cockpit-launcher="display"[\s\S]*?id="cockpit-display-toggle-btn"/,
+    /data-cockpit-section="display"[\s\S]*?id="cockpit-display-toggle-btn"/,
   );
   assert.match(html, /data-cockpit-display-slot="hud"/);
   assert.match(
@@ -432,13 +429,13 @@ test('Cockpit owns a focused shared Display portal and compact Radio controls', 
     html,
     /id="cockpit-radio-toggle-btn"[^>]*aria-controls="cockpit-radio-panel"/,
   );
-  assert.match(html, /id="cockpit-radio-toggle-btn"[^>]*>◀<\/button>/);
+  assert.match(html, /id="cockpit-radio-toggle-btn"[^>]*>\+<\/button>/);
   assert.match(
     html,
-    /data-cockpit-launcher="radio"[\s\S]*?id="cockpit-radio-toggle-btn"/,
+    /data-cockpit-section="radio"[\s\S]*?id="cockpit-radio-toggle-btn"/,
   );
   const cockpitRadio = html.match(
-    /id="cockpit-radio-panel"[\s\S]*?<\/div>\s*<\/div>\s*<\/aside>/,
+    /id="cockpit-radio-panel"[\s\S]*?<\/div>\s*<\/section>\s*<\/aside>/,
   );
   assert.ok(cockpitRadio, 'Cockpit compact Radio controls are missing');
   assert.doesNotMatch(
@@ -451,64 +448,55 @@ test('Cockpit owns a focused shared Display portal and compact Radio controls', 
   );
   assert.match(
     css,
-    /\[data-cockpit-launcher='display'\]\s*\{\s*width:\s*var\(\s*--left-collapsed-width, 176px\)/,
+    /\.cockpit-utility-controls\s*\{[\s\S]*?width:\s*min\(272px,\s*calc\(100vw\s*-\s*48px\)\)/,
   );
   assert.match(css, /--display-panel-expanded-width:\s*272px/);
   assert.match(
     css,
     /#pp-toggles\s*\{[\s\S]*?--pp-expanded-width:\s*var\(\s*--display-panel-expanded-width\)/,
   );
-  assert.match(
-    css,
-    /is-expanded:has\(\[data-cockpit-launcher='display'\]\)\s*\{[\s\S]*?width:\s*var\(\s*--display-panel-expanded-width\)/,
-  );
   assert.doesNotMatch(ui, /--cockpit-display-expanded-width|dataPanelWidth/);
+  // The unified Cockpit rail wears the yellow edge shared with the Cockpit
+  // chrome and the normal-mode panel surface: one frame, two sections.
   assert.match(
     css,
-    /is-expanded:has\(\[data-cockpit-launcher='display'\]\)[\s\S]*?box-shadow:\s*0 8px 32px rgba\(0, 0, 0, 0\.42\)/,
+    /\.cockpit-utility-controls\s*\{[\s\S]*?border:\s*1px solid rgba\(255, 184, 0, 0\.42\)/,
   );
   assert.match(
     css,
-    /\.cockpit-utility-control\.is-expanded \.cockpit-utility-launcher\s*\{[\s\S]*?border:\s*0;[\s\S]*?background:\s*transparent;[\s\S]*?box-shadow:\s*none;/,
+    /\.cockpit-section-header\s*\{[\s\S]*?background:\s*transparent/,
   );
   assert.match(
     css,
-    /\.cockpit-utility-control\.is-expanded \.cockpit-utility-divider\s*\{[\s\S]*?linear-gradient\(\s*90deg,\s*rgb\(0 212 255 \/ 28%\),\s*rgba\(0, 212, 255, 0\.18\) 58%,\s*transparent\s*\)[\s\S]*?box-shadow:\s*0 0 7px rgba\(0, 212, 255, 0\.22\);/,
+    /\.cockpit-section-divider\s*\{[\s\S]*?linear-gradient\(\s*90deg,\s*rgba\(255, 184, 0, 0\.4\),\s*rgba\(255, 255, 255, 0\.07\) 70%,\s*transparent\s*\)/,
   );
   assert.match(
     radioBindings,
-    /this\._cockpitDisplayToggleBtn\.textContent = displayOpen \? '▶' : '◀';/,
+    /this\._cockpitDisplayToggleBtn\.textContent = displayOpen \? '−' : '\+';/,
   );
   assert.match(
     radioBindings,
-    /this\._cockpitRadioToggleBtn\.textContent = radioOpen \? '▶' : '◀';/,
+    /this\._cockpitRadioToggleBtn\.textContent = radioOpen \? '−' : '\+';/,
   );
   assert.match(
     css,
-    /#cockpit-display-panel\s*\{[\s\S]*?display:\s*flex;[\s\S]*?gap:\s*7px;[\s\S]*?padding:\s*0;[\s\S]*?border-top:\s*0;/,
+    /#cockpit-display-panel\s*\{[\s\S]*?gap:\s*7px;[\s\S]*?padding:\s*8px 9px;/,
   );
   assert.doesNotMatch(ui, /--cockpit-display-tab-width/);
-  // These two widths size Cockpit Radio and nothing else. They were named for
-  // the Map Stack panel that once shared them; a Radio-specific name is what
-  // keeps a later Map Stack cleanup from silently resizing Radio.
-  assert.match(css, /--cockpit-radio-collapsed-width:\s*148px/);
-  assert.match(css, /--cockpit-radio-expanded-width:\s*232px/);
+  assert.match(
+    css,
+    /\.cockpit-section-body\s*\{[\s\S]*?max-height:\s*min\(44vh,\s*420px\)/,
+  );
   assert.doesNotMatch(css, /--map-stack-(?:collapsed|expanded)-width/);
   assert.doesNotMatch(
     html,
     /id="stack-panel"/,
     'the retired Map Stack panel must not remain in Cockpit layout',
   );
-  assert.match(
-    css,
-    /\[data-cockpit-launcher='radio'\]\s*\{\s*width:\s*var\(\s*--cockpit-radio-collapsed-width, 148px\)/,
-  );
-  assert.match(
-    css,
-    /is-expanded:has\(\[data-cockpit-launcher='radio'\]\)[\s\S]*?--cockpit-radio-expanded-width/,
-  );
+  assert.doesNotMatch(css, /--cockpit-radio-collapsed-width/);
+  assert.doesNotMatch(css, /--cockpit-radio-expanded-width/);
   assert.doesNotMatch(ui, /--cockpit-radio-tab-width/);
-  assert.doesNotMatch(css, /\.cockpit-utility-launcher:hover/);
+  assert.match(css, /\.cockpit-section-toggle:focus-visible/);
   const desktopUtilityCss = css.slice(
     css.indexOf('.cockpit-utility-controls {'),
     css.indexOf(
@@ -1141,7 +1129,7 @@ test('mobile Cockpit prioritizes flight instruments and collision-safe controls'
   );
   assert.match(
     mobileCockpit[1],
-    /body\.cockpit-mode \.cockpit-utility-control\.is-expanded[\s\S]*?top:\s*96px;/,
+    /body\.cockpit-mode \.cockpit-section-body[\s\S]*?max-height:\s*min\(30vh,\s*280px\);/,
   );
   assert.match(
     mobileCockpit[1],

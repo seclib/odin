@@ -45,6 +45,77 @@ RequestScheduler.requestsByServer[GOOGLE_TILES_SERVER_KEY] = Infinity;
 const FOVEATED_TIME_DELAY = 0;
 
 /**
+ * Temps maximal d'attente par tentative de chargement des Google 3D Tiles.
+ * Une indisponibilité du service ne doit pas bloquer le démarrage d'ODIN.
+ * 8 s par route (au lieu de 15 s) réduit le délai de basculement quand
+ * Google ne répond pas.
+ */
+const TILESET_LOAD_TIMEOUT_MS = 8000;
+
+/**
+ * Enveloppe une fonction de création de tileset avec un délai maximal.
+ * Si la création dépasse le délai, une erreur est levée et la requête
+ * originale est abandonnée. Un résultat tardif (tileset créé après le
+ * délai) est transmis à `onLateResult` pour être détruit, évitant qu'un
+ * tileset non sélectionné continue de télécharger des tuiles en arrière-plan.
+ *
+ * @param {Function} createFn - Fonction qui retourne une Promise de tileset
+ * @param {number} timeoutMs - Délai maximal en millisecondes
+ * @param {{onLateResult?: (tileset: object) => void}} [options]
+ * @returns {Promise<object>} Le tileset créé
+ */
+async function createWithTimeout(createFn, timeoutMs, { onLateResult } = {}) {
+  let completed = false;
+  let result = null;
+  let error = null;
+
+  const createPromise = createFn().then(
+    r => {
+      if (!completed) {
+        completed = true;
+        result = r;
+        return r;
+      }
+      // Résultat tardif : l'opération a été abandonnée (timeout), le tileset
+      // n'a pas été sélectionné. Le confier au caller pour destruction.
+      onLateResult?.(r);
+      return r;
+    },
+    e => {
+      if (!completed) {
+        completed = true;
+        error = e;
+      }
+      throw e;
+    }
+  ).catch(() => {}); // Éviter les promesses rejetées non gérées
+
+  let succeeded = false;
+
+  try {
+    await Promise.race([
+      createPromise.then(
+        v => { succeeded = true; return v; },
+        e => { succeeded = true; throw e; }
+      ),
+      new Promise((_, reject) => setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs)),
+    ]);
+  } catch {
+    // Timeout ou rejet de createPromise : marquer comme terminé pour que
+    // les résultats tardifs soient dirigés vers onLateResult (et détruits).
+    completed = true;
+  }
+
+  if (succeeded) {
+    if (error) throw error;
+    return result;
+  }
+
+  if (error) throw error;
+  throw new Error(`Timeout after ${timeoutMs}ms`);
+}
+
+/**
  * Tileset options shared by every route that loads the Google Photorealistic
  * asset. The cache figures match the installed SDK's Google helper so the
  * direct-key, short-lived-token and ion routes all behave identically.
@@ -79,6 +150,16 @@ export function selectMapStartupRoute({
  * server (see googleTokens.js). If direct access fails and an ion token is
  * available, ion is the recovery path.
  *
+ * Les routes sont construites à partir des credentials réellement présents :
+ * - clé browser directe → route direct (prioritaire), puis ion en secours
+ * - pas de clé mais jetons serveur → route token, puis ion
+ * - seulement ion → route ion
+ * - aucun credential → pas de tentative Google, fallback OSM immédiat
+ *
+ * Jamais plus d'une création de tileset n'est acceptée : la première qui
+ * réussit est retenue, les résultats tardifs des routes abandonnées sont
+ * détruits pour ne pas laisser de téléchargements fantômes.
+ *
  * @param {object} Cesium
  * @param {{googleApiKey?: string, cesiumToken?: string, googleTokens?: {token: Function}|null}} credentials
  * @returns {Promise<{tileset: object|null, route: 'google-direct'|'google-token'|'google-ion'|'osm', errors: Error[]}>}
@@ -91,33 +172,55 @@ export async function loadPhotorealisticTileset(
   const ionToken = clean(cesiumToken);
   const errors = [];
 
-  const attempts = [];
-  if (googleKey)
-    attempts.push({
+  // Construire les candidates ordonnés et non redondants selon les credentials.
+  // Une clé browser directe rend la route token redondante (même source Google,
+  // authentification plus simple). Ion est toujours le dernier recours.
+  const candidates = [];
+  if (googleKey) {
+    candidates.push({
       route: 'google-direct',
       create: () => createGoogleDirectTileset(Cesium, googleKey),
     });
-  else if (googleTokens)
-    attempts.push({
+  } else if (googleTokens) {
+    candidates.push({
       route: 'google-token',
       create: () => createGoogleTokenTileset(Cesium, googleTokens),
     });
-  if (ionToken)
-    attempts.push({
+  }
+  if (ionToken) {
+    candidates.push({
       route: 'google-ion',
       create: () => createGoogleIonTileset(Cesium, ionToken),
     });
+  }
 
-  for (const attempt of attempts) {
+  let selectedTileset = null;
+  let selectedRoute = 'osm';
+
+  for (const candidate of candidates) {
     try {
-      const tileset = await attempt.create();
-      return { tileset, route: attempt.route, errors };
+      const tileset = await createWithTimeout(
+        candidate.create,
+        TILESET_LOAD_TIMEOUT_MS,
+        {
+          onLateResult: (ts) => {
+            // Résultat tardif d’une route abandonnée : détruire immédiatement
+            // pour ne pas laisser de téléchargement de tuiles en arrière-plan.
+            if (ts && !ts.isDestroyed?.()) {
+              try { ts.destroy(); } catch {}
+            }
+          },
+        },
+      );
+      selectedTileset = tileset;
+      selectedRoute = candidate.route;
+      break; // Une seule réussite : on ne tente pas les routes suivantes.
     } catch (error) {
       errors.push(error instanceof Error ? error : new Error(String(error)));
     }
   }
 
-  return { tileset: null, route: 'osm', errors };
+  return { tileset: selectedTileset, route: selectedRoute, errors };
 }
 
 /** Pass credentials to the source instead of changing SDK-wide defaults. */

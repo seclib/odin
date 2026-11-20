@@ -48,7 +48,7 @@ export function bindRadioControls() {
     );
     if (displayOpen) this.actions.revealStyleParameters();
     if (this._cockpitDisplayToggleBtn) {
-      this._cockpitDisplayToggleBtn.textContent = displayOpen ? '▶' : '◀';
+      this._cockpitDisplayToggleBtn.textContent = displayOpen ? '−' : '+';
       this._cockpitDisplayToggleBtn.setAttribute(
         'aria-label',
         t(
@@ -64,7 +64,7 @@ export function bindRadioControls() {
       );
     }
     if (this._cockpitRadioToggleBtn) {
-      this._cockpitRadioToggleBtn.textContent = radioOpen ? '▶' : '◀';
+      this._cockpitRadioToggleBtn.textContent = radioOpen ? '−' : '+';
       this._cockpitRadioToggleBtn.setAttribute(
         'aria-label',
         t(

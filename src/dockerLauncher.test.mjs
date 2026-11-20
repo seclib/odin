@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import {
   defaultGatewayFromRouteTable,
+  selectListenAddress,
   unwritableRootWarning,
   resolveTrustedPeers,
 } from '../scripts/docker-start.mjs';
@@ -56,6 +57,22 @@ test('an operator list wins, and no gateway trusts nothing', () => {
   assert.equal(resolveTrustedPeers({ env: {}, routeTable: '' }), '', 'loopback-only when there is no gateway');
 });
 
+test('the container listens on one explicit IPv4, never a wildcard or IPv6', () => {
+  assert.equal(
+    selectListenAddress({
+      lo: [{ family: 'IPv4', address: '127.0.0.1', internal: true }],
+      eth0: [{ family: 'IPv6', address: 'fe80::1', internal: false }, { family: 'IPv4', address: '172.18.0.2', internal: false }],
+    }),
+    '172.18.0.2',
+  );
+  assert.equal(
+    selectListenAddress({ lo: [{ family: 'IPv4', address: '127.0.0.1', internal: true }] }),
+    '127.0.0.1',
+    'no bridge interface means loopback only, unreachable through a published port',
+  );
+  assert.equal(selectListenAddress({}), '127.0.0.1');
+});
+
 test('an unwritable checkout is named at start instead of failing quietly', () => {
   const ids = { owner: { uid: 0, gid: 0 }, runAs: { uid: 1000, gid: 1000 } };
   assert.equal(unwritableRootWarning({ root: '/app', writable: true, ...ids }), null, 'a writable checkout says nothing');
@@ -68,7 +85,12 @@ test('an unwritable checkout is named at start instead of failing quietly', () =
 
 test('the Docker install path keeps its loopback-only, launcher-owned contract', () => {
   const dockerfile = readFileSync(new URL('../Dockerfile', import.meta.url), 'utf8');
+  const launcher = readFileSync(new URL('../scripts/docker-start.mjs', import.meta.url), 'utf8');
   assert.match(dockerfile, /^CMD \["node", "scripts\/docker-start\.mjs"\]$/m, 'the launcher is the container entry point');
+  assert.match(dockerfile, /^ENV HOST=127\.0\.0\.1$/m, 'the Dockerfile never pins HOST to a wildcard');
+  assert.doesNotMatch(launcher, /host:\s*['"]0\.0\.0\.0['"]/, 'the launcher never binds every interface');
+  assert.match(launcher, /host:\s*selectListenAddress\(\)/, 'the launcher binds one explicit IPv4');
+  assert.doesNotMatch(launcher, /family:\s*['"]IPv6['"]/, 'no IPv6 listener is installed');
 
   const compose = readFileSync(new URL('../compose.yaml', import.meta.url), 'utf8');
   assert.match(compose, /^\s+- "127\.0\.0\.1:4173:4173"$/m, 'the port is published on the host loopback only');

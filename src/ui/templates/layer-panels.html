@@ -75,6 +75,212 @@
   .panel-divider {
     border-color: var(--gev-panel-border);
   }
+
+  /* Terrain & Elevation panel */
+  #terrain-panel {
+    background: var(--gev-panel-bg);
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    backdrop-filter: blur(10px);
+    transition: background var(--gev-transition-base),
+                border var(--gev-transition-base);
+  }
+  #terrain-panel.collapsed {
+    background: var(--gev-panel-bg-hover);
+  }
+  .terrain-group {
+    margin-bottom: 8px;
+  }
+  .terrain-group-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    color: var(--gev-panel-fg);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--gev-panel-border);
+  }
+  .terrain-group-icon {
+    font-size: 14px;
+    color: var(--gev-panel-accent);
+  }
+  .terrain-group-count {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--gev-panel-fg-muted);
+  }
+  .terrain-provider-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 8px;
+    margin: 4px 0;
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .terrain-card-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .terrain-card-icon {
+    font-size: 14px;
+    color: var(--gev-panel-accent);
+  }
+  .terrain-card-name {
+    flex: 1 1 auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gev-panel-fg);
+  }
+  .terrain-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .terrain-status-label {
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .terrain-card-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .terrain-detail {
+    font-size: 10px;
+    color: var(--gev-panel-fg-muted);
+    padding: 1px 4px;
+    border: 1px solid var(--gev-panel-border);
+    border-radius: 3px;
+  }
+  .terrain-detail--products {
+    color: var(--gev-panel-accent);
+  }
+  .terrain-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-top: 2px;
+  }
+  .terrain-license {
+    font-size: 9px;
+    color: var(--gev-panel-fg-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1 1 auto;
+  }
+  .terrain-select-btn {
+    font-size: 10px;
+    padding: 2px 8px;
+    border: 1px solid var(--gev-panel-accent);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--gev-panel-accent);
+    cursor: pointer;
+  }
+  .terrain-select-btn:hover {
+    background: var(--gev-panel-accent);
+    color: #000;
+  }
+  .terrain-error {
+    font-size: 10px;
+    line-height: 1.35;
+    color: #ff6b6b;
+  }
+  /* Terrain key config */
+  .terrain-key-config {
+    margin-top: 8px;
+    border-top: 1px solid var(--gev-panel-border);
+    padding-top: 8px;
+  }
+  .terrain-key-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 8px;
+    margin: 4px 0;
+    border: var(--gev-border-width) solid var(--gev-panel-border);
+    border-radius: var(--gev-radius);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .terrain-key-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gev-panel-fg);
+  }
+  .terrain-key-envvars {
+    font-size: 9px;
+    color: var(--gev-panel-fg-muted);
+    font-family: var(--font-mono, monospace);
+  }
+  .terrain-key-status {
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .terrain-key-status--ok { color: #00d4aa; }
+  .terrain-key-status--missing { color: #ffaa00; }
+  .terrain-key-status--error { color: #ff6b6b; }
+  .terrain-key-status--testing { color: #808090; }
+  .terrain-key-input-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .terrain-key-input {
+    flex: 1 1 120px;
+    font-size: 11px;
+    padding: 2px 6px;
+    border: 1px solid var(--gev-panel-border);
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--gev-panel-fg);
+  }
+  .terrain-key-toggle,
+  .terrain-key-save,
+  .terrain-key-test,
+  .terrain-key-delete {
+    font-size: 10px;
+    padding: 2px 6px;
+    border: 1px solid var(--gev-panel-border);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--gev-panel-fg);
+    cursor: pointer;
+  }
+  .terrain-key-save {
+    border-color: var(--gev-panel-accent);
+    color: var(--gev-panel-accent);
+  }
+  .terrain-key-delete {
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+  }
+  .terrain-nokey-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px 0;
+  }
+  .terrain-nokey-item {
+    font-size: 10px;
+    color: var(--gev-panel-fg-muted);
+    padding: 1px 6px;
+    border: 1px solid var(--gev-panel-border);
+    border-radius: 3px;
+  }
+  .terrain-key-empty {
+    font-size: 11px;
+    color: var(--gev-panel-fg-muted);
+    padding: 4px 0;
+  }
 </style>
   <div id="left-panel-stack">
   <!-- Data Layer Toggle Panel -->
@@ -88,6 +294,20 @@
     </div>
     <div class="data-panel-inner panel-flyout-body">
       <div id="data-toggles" class="data-toggle-list"></div>
+    </div>
+  </div>
+
+  <!-- Terrain & Elevation Panel (multi-provider) -->
+  <div id="terrain-panel" class="panel-collapsible collapsed active" data-panel-id="terrain-panel">
+    <div class="panel-glow"></div>
+    <div class="panel-header panel-tab" data-panel-tab="terrain-panel">
+      <span class="material-symbols-outlined panel-tab-icon" aria-hidden="true">terrain</span>
+      <span class="panel-title" data-i18n>TERRAIN</span>
+      <span class="panel-divider"></span>
+      <button class="panel-collapse-btn" data-collapse-target="terrain-panel" title="Collapse panel" data-i18n-title>+</button>
+    </div>
+    <div class="data-panel-inner panel-flyout-body">
+      <div id="terrain-provider-list" class="data-toggle-list"></div>
     </div>
   </div>
 
@@ -149,6 +369,119 @@
       </div>
       <div class="cctv-summary-label" data-i18n>SCENE SUMMARY</div>
       <div id="cctv-summary" data-i18n>Enable CCTV to start camera-linked intelligence summaries.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Caméras Panel (catalogue des sources publiques) -->
+  <div id="cameras-panel" class="panel-collapsible collapsed" data-panel-id="cameras-panel">
+    <div class="panel-glow"></div>
+    <div class="panel-header panel-tab" data-panel-tab="cameras-panel">
+      <span class="material-symbols-outlined panel-tab-icon" aria-hidden="true">photo_library</span>
+      <span class="panel-title" data-i18n>CAMÉRAS</span>
+      <span class="panel-divider"></span>
+      <button class="panel-collapse-btn" data-collapse-target="cameras-panel" title="Collapse panel" data-i18n-title>+</button>
+    </div>
+    <div class="cameras-panel-inner panel-flyout-body" data-rail-scroller>
+      <div class="cam-panel-header">
+        <span class="cam-panel-icon" aria-hidden="true">📹</span>
+        <span class="cam-panel-title" data-i18n>Catalogue des sources</span>
+      </div>
+      <div class="cam-search-row">
+        <input type="search" id="cam-search" class="cam-search-input" placeholder="Nom, opérateur, localisation" aria-label="Rechercher une source caméra" data-i18n-placeholder />
+      </div>
+      <div class="cam-filters">
+        <select id="cam-category-filter" class="cam-filter-select" aria-label="Catégorie" data-i18n-aria-label>
+          <option value="" data-i18n>Toutes catégories</option>
+          <option value="traffic" data-i18n>Trafic routier</option>
+          <option value="weather" data-i18n>Météo</option>
+          <option value="volcanic" data-i18n>Volcanique</option>
+          <option value="maritime" data-i18n>Maritime</option>
+          <option value="tourism" data-i18n>Tourisme</option>
+          <option value="public_webcam" data-i18n>Webcam publique</option>
+          <option value="other" data-i18n>Autre</option>
+        </select>
+        <select id="cam-legal-filter" class="cam-filter-select" aria-label="Statut juridique" data-i18n-aria-label>
+          <option value="" data-i18n>Tous statuts juridiques</option>
+          <option value="approved" data-i18n>Autorisé</option>
+          <option value="permission_required" data-i18n>Autorisation requise</option>
+          <option value="external_only" data-i18n>Page externe uniquement</option>
+          <option value="unknown" data-i18n>Statut non établi</option>
+          <option value="prohibited" data-i18n>Interdit</option>
+        </select>
+        <select id="cam-tech-filter" class="cam-filter-select" aria-label="Statut technique" data-i18n-aria-label>
+          <option value="" data-i18n>Tous statuts techniques</option>
+          <option value="online" data-i18n>En ligne</option>
+          <option value="offline" data-i18n>Hors ligne</option>
+          <option value="untested" data-i18n>Non testé</option>
+          <option value="unavailable" data-i18n>Indisponible</option>
+        </select>
+      </div>
+      <p class="cam-privacy-notice" data-i18n>Direct webcam access may disclose this computer's public IP address to the operator. No anonymity or confidentiality toward the operator is guaranteed.</p>
+      <div id="cam-source-list" class="cam-source-list"></div>
+      <div id="cam-empty" class="cam-empty" hidden>
+        <span aria-hidden="true">🔍</span>
+        <span data-i18n>Aucune source correspondante</span>
+      </div>
+      <hr class="cam-detail-divider" />
+      <div id="cam-detail-panel" class="cam-detail" hidden>
+        <div class="cam-detail-header">
+          <span id="cam-detail-name" class="cam-detail-name"></span>
+          <span id="cam-detail-legal" class="cam-detail-badge"></span>
+        </div>
+        <div class="cam-detail-body">
+          <div class="cam-detail-row">
+            <span class="cam-detail-label" data-i18n>Opérateur</span>
+            <span id="cam-detail-operator" class="cam-detail-value"></span>
+          </div>
+          <div class="cam-detail-row">
+            <span class="cam-detail-label" data-i18n>Catégorie</span>
+            <span id="cam-detail-category" class="cam-detail-value"></span>
+          </div>
+          <div class="cam-detail-row">
+            <span class="cam-detail-label" data-i18n>Région</span>
+            <span id="cam-detail-region" class="cam-detail-value"></span>
+          </div>
+          <div class="cam-detail-row">
+            <span class="cam-detail-label" data-i18n>Position</span>
+            <span id="cam-detail-coords" class="cam-detail-value"></span>
+          </div>
+          <div class="cam-detail-row">
+            <span class="cam-detail-label" data-i18n>Statut juridique</span>
+            <span id="cam-detail-legal-badge" class="cam-detail-badge"></span>
+          </div>
+          <div class="cam-detail-row">
+            <span class="cam-detail-label" data-i18n>Statut technique</span>
+            <span id="cam-detail-tech" class="cam-detail-badge"></span>
+          </div>
+          <div class="cam-detail-row">
+            <span class="cam-detail-label" data-i18n>Type de média</span>
+            <span id="cam-detail-media" class="cam-detail-value"></span>
+          </div>
+          <div class="cam-detail-row">
+            <span class="cam-detail-label" data-i18n>Actualisation</span>
+            <span id="cam-detail-update" class="cam-detail-value"></span>
+          </div>
+          <div class="cam-detail-row">
+            <span class="cam-detail-label" data-i18n>Attribution</span>
+            <span id="cam-detail-attribution" class="cam-detail-value"></span>
+          </div>
+          <div class="cam-detail-row">
+            <span class="cam-detail-label" data-i18n>Description</span>
+            <span id="cam-detail-description" class="cam-detail-value"></span>
+          </div>
+        </div>
+        <div class="cam-detail-link-row">
+          <a id="cam-detail-source-link" class="cam-detail-link" target="_blank" rel="noopener noreferrer" hidden>
+            <span aria-hidden="true">🔗</span>
+            <span data-i18n>Ouvrir la page officielle</span>
+          </a>
+        </div>
+        <div class="cam-map-toggle">
+          <input type="checkbox" id="cam-map-toggle" aria-label="Afficher sur la carte" data-i18n-aria-label />
+          <label class="cam-map-label" for="cam-map-toggle" data-i18n>Afficher sur la carte</label>
+          <div class="cam-map-hint" id="cam-map-hint" data-i18n>Sélectionnez une source pour l'afficher sur la carte</div>
+        </div>
       </div>
     </div>
   </div>

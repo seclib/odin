@@ -21,6 +21,8 @@ import {
   createWorldTerrain as _realCreateWorldTerrain,
   createKeylessTerrain as _realCreateKeylessTerrain,
 } from './terrain.js';
+import { getTerrainProvider } from './terrainCatalog.js';
+import { createTerrainProvider } from './terrainAdapters.js';
 
 const DEFAULT_PROVIDER_ID = 'keyless';
 const DEFAULT_FALLBACK_ENABLED = true;
@@ -381,7 +383,32 @@ export function createTerrainEngine({
   }
 
   /**
-   * Crée un fournisseur de terrain sans l'appliquer au globe.
+   * Applique un provider résolu à la scène Cesium (globe).
+   * Le provider résolu devient le relief actif : l'attribution directe
+   * `globe.terrainProvider` est le chemin Cesium des TerrainProvider ;
+   * `Scene.setTerrain` reste de repli pour les scènes sans globe (objets
+   * Terrain). Un résultat sans provider (échec avec fallback désactivé) n'est
+   * pas appliqué : l'état moteur reste cohérent et l'échec reste signalé.
+   *
+   * @param {{provider?: object|null, fallback?: boolean}} entry Résultat de création
+   * @returns {boolean} true si un provider a été appliqué.
+   */
+  function _applyProviderToScene(entry) {
+    const provider = entry?.provider;
+    if (!provider) return false;
+    // Un TerrainProvider Cesium s'applique via `Globe.terrainProvider` (setter
+    // natif). `Scene.setTerrain` attend un objet Terrain (`readyEvent`) et
+    // échoue sur un provider nu — erreur observée en E2E Firefox.
+    if (scene.globe) {
+      scene.globe.terrainProvider = provider;
+    } else if (typeof scene.setTerrain === 'function') {
+      scene.setTerrain(provider);
+    }
+    return true;
+  }
+
+  /**
+   * Crée un fournisseur de terrain et l'applique au globe Cesium.
    * Retourne `{ provider, fallback, id }` (même forme que les factories
    * `terrain.js`). Quand le provider principal échoue et que le fallback est
    * activé, se résout en `EllipsoidTerrainProvider` (`fallback: true`) plutôt
@@ -391,13 +418,16 @@ export function createTerrainEngine({
    * @param {{signal?: AbortSignal}} [options]
    * @returns {Promise<{provider: object, fallback: boolean, id: string}>}
    */
-  async function createProvider(id = _providerId, { signal } = {}) {
+  async function createProvider(id = _providerId, { signal, ...options } = {}) {
     const requestedId = id || _providerId;
 
     // Vérifier l'état du provider avant création
     const stateBefore = _checkProviderState(requestedId);
 
     let result;
+
+    // Résoudre le descripteur depuis le catalogue multi-providers.
+    const descriptor = getTerrainProvider(requestedId);
 
     if (requestedId === 'world') {
       if (!String(cesiumToken || '').trim()) {
@@ -408,8 +438,26 @@ export function createTerrainEngine({
       signal?.throwIfAborted();
       result = await createWorldTerrain(cesiumToken, { signal });
       signal?.throwIfAborted();
+    } else if (requestedId === 'keyless') {
+      // 'keyless' -> Re:Earth / Mapterhorn (comportement historique).
+      result = await createKeylessTerrain();
+    } else if (descriptor) {
+      // Nouveaux providers multi-providers : délégués à l'adapter registry.
+      // Les providers de type 'terrain' avec URL utilisent cesium-quantized-mesh ;
+      // les autres renvoient un ellipsoïde (données d'élévation exposées via
+      // terrainHeights / couches, pas de globe mesh).
+      signal?.throwIfAborted();
+      const opts = {
+        cesiumToken,
+        googleApiKey,
+        arcgisApiKey: options.arcgisApiKey,
+        url: options.url || descriptor.endpoints?.url,
+        signal,
+      };
+      result = await createTerrainProvider(descriptor, opts);
+      signal?.throwIfAborted();
     } else {
-      // 'keyless' ou tout autre identifiant inconnu -> keyless avec fallback.
+      // Identifiant inconnu -> keyless avec fallback.
       result = await createKeylessTerrain();
     }
 
@@ -428,6 +476,9 @@ export function createTerrainEngine({
     _active = entry;
     _setActiveProvider(entry);
     _providerId = requestedId;
+    // Le provider résolu devient le relief actif : sans application explicite,
+    // l'état moteur (« Actif ») divergerait du relief réellement affiché.
+    _applyProviderToScene(entry);
 
     // En cas d'échec, démarrer le cooldown
     if (!result.provider) {

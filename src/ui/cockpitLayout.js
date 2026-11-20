@@ -221,7 +221,7 @@ export function syncSignalLayout() {
       '.cockpit-utility-control:not(.is-expanded)',
     );
     const collapsedLauncher = collapsedControl?.querySelector(
-      '.cockpit-utility-launcher',
+      '.cockpit-section-header',
     );
     const expandedHeight = expandedControl
       ? Math.max(
@@ -343,7 +343,7 @@ export function syncSignalLayout() {
         control.setAttribute('aria-hidden', String(hiddenSibling));
         if (hiddenSibling && control.contains(document.activeElement)) {
           expandedControl
-            ?.querySelector('.cockpit-utility-glyph')
+            ?.querySelector('.cockpit-section-toggle')
             ?.focus({ preventScroll: true });
         }
       });

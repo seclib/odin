@@ -1,6 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createBuildingsLayer } from './index.js';
+import {
+  createBuildingsLayer,
+  BUILDINGS_HIDE_ABOVE_M,
+  BUILDINGS_SHOW_BELOW_M,
+} from './index.js';
 import {
   LOCAL_BUILDINGS_ATTRIBUTION_HTML,
   LOCAL_BUILDINGS_DISABLED_REASON,
@@ -10,9 +14,12 @@ import {
  * Mock Cesium viewer whose primitives collection records adds/removes.
  * `contains` mirrors PrimitiveCollection semantics exactly.
  */
-function mockViewer() {
+function mockViewer(cameraHeightM = 0) {
   const items = [];
   const calls = [];
+  const camera = {
+    positionCartographic: { height: cameraHeightM },
+  };
   const primitives = {
     add(p) {
       if (!items.includes(p)) items.push(p);
@@ -30,10 +37,14 @@ function mockViewer() {
     },
   };
   return {
-    viewer: { scene: { primitives } },
+    viewer: { scene: { primitives, camera } },
     primitives,
     calls,
     items,
+    camera,
+    setHeight: (h) => {
+      camera.positionCartographic.height = h;
+    },
   };
 }
 
@@ -167,4 +178,209 @@ test('the layer names the source and never claims measured heights', () => {
   assert.match(layer.source, /heights not measured/);
   // attribution is attached to the stats contract for the panel/QA harnesses
   assert.ok(LOCAL_BUILDINGS_ATTRIBUTION_HTML.includes('CDLA-Permissive-2.0'));
+});
+
+test('stats expose height provenance: a default height is never reported as measured', async () => {
+  const { viewer } = mockViewer();
+  const tileset = {
+    extras: {
+      featureCount: 100,
+      heightSource: 'default',
+      defaultHeightM: 6,
+      heightNote: 'visual volume, not a measurement',
+    },
+    destroy() {},
+  };
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => tileset,
+  });
+  await layer.enable(viewer);
+  const stats = layer.getStats();
+  assert.equal(stats.heightSource, 'default');
+  assert.equal(stats.heightsMeasured, false);
+  assert.equal(stats.defaultHeightM, 6);
+  assert.match(stats.heightNote, /not a measurement/);
+});
+
+test('stats expose measured provenance only when the tileset says so', async () => {
+  const { viewer } = mockViewer();
+  const tileset = {
+    extras: { featureCount: 12, heightSource: 'measured' },
+    destroy() {},
+  };
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => tileset,
+  });
+  await layer.enable(viewer);
+  assert.equal(layer.getStats().heightSource, 'measured');
+  assert.equal(layer.getStats().heightsMeasured, true);
+  assert.equal(layer.getStats().defaultHeightM, null);
+});
+
+test('missing height metadata is reported as unknown, never as measured', async () => {
+  const { viewer } = mockViewer();
+  const tileset = { extras: { featureCount: 5 }, destroy() {} };
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => tileset,
+  });
+  await layer.enable(viewer);
+  assert.equal(layer.getStats().heightSource, 'unknown');
+  assert.equal(layer.getStats().heightsMeasured, false);
+  assert.equal(layer.getStats().defaultHeightM, null);
+});
+
+test('buildings are hidden above the camera ceiling and restored below it', async () => {
+  const harness = mockViewer(BUILDINGS_HIDE_ABOVE_M + 1000);
+  const tileset = { show: true, destroy() {} };
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => tileset,
+  });
+  await layer.enable(harness.viewer);
+  await layer.update();
+  assert.equal(tileset.show, false, 'no building tiles drawn on a global view');
+
+  harness.setHeight(BUILDINGS_SHOW_BELOW_M - 1000);
+  await layer.update();
+  assert.equal(tileset.show, true, 'restored on approach');
+});
+
+test('visibility hysteresis avoids flicker around the ceiling', async () => {
+  const harness = mockViewer(BUILDINGS_SHOW_BELOW_M - 100);
+  const tileset = { show: true, destroy() {} };
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => tileset,
+  });
+  await layer.enable(harness.viewer);
+  harness.setHeight((BUILDINGS_SHOW_BELOW_M + BUILDINGS_HIDE_ABOVE_M) / 2);
+  await layer.update();
+  assert.equal(tileset.show, true, 'no change inside the hysteresis band');
+  harness.setHeight(BUILDINGS_HIDE_ABOVE_M + 1);
+  await layer.update();
+  assert.equal(tileset.show, false);
+  harness.setHeight((BUILDINGS_SHOW_BELOW_M + BUILDINGS_HIDE_ABOVE_M) / 2);
+  await layer.update();
+  assert.equal(tileset.show, false, 'still hidden inside the band');
+});
+
+test('visibility policy tolerates a viewer without a camera', async () => {
+  const harness = mockViewer();
+  delete harness.viewer.scene.camera;
+  const tileset = { show: true, destroy() {} };
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => tileset,
+  });
+  await layer.enable(harness.viewer);
+  await assert.doesNotReject(() => layer.update());
+  assert.equal(tileset.show, true, 'no camera means no visibility override');
+});
+
+/** Tileset whose destroy() can be triggered by an external owner. */
+function ownedTileset() {
+  const state = { destroyed: false, show: true, destroyCalls: 0 };
+  return {
+    state,
+    show: true,
+    isDestroyed: () => state.destroyed,
+    destroy() {
+      state.destroyCalls += 1;
+      state.destroyed = true;
+    },
+    externalDestroy() {
+      this.destroy();
+    },
+  };
+}
+
+test('disable never touches a tileset destroyed by an external owner', async () => {
+  const harness = mockViewer();
+  const tileset = ownedTileset();
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => tileset,
+  });
+  await layer.enable(harness.viewer);
+  tileset.externalDestroy();
+
+  await assert.doesNotReject(() => layer.disable());
+  assert.equal(layer.getStats().count, null, 'destroyed tile is not reported');
+  // A third party that destroyed the tileset also owns removing it from the
+  // scene; calling Cesium's remove() on it would raise throwOnDestroyed.
+  assert.equal(harness.items.includes(tileset), true, 'layer does not touch it');
+});
+
+test('destroy is idempotent after an external destroy', async () => {
+  const harness = mockViewer();
+  const tileset = ownedTileset();
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => tileset,
+  });
+  await layer.enable(harness.viewer);
+  tileset.externalDestroy();
+
+  await assert.doesNotReject(() => layer.destroy());
+  await assert.doesNotReject(() => layer.destroy());
+  assert.equal(tileset.state.destroyCalls, 1, 'no double destruction');
+});
+
+test('update does not write show on a destroyed tileset', async () => {
+  const harness = mockViewer(BUILDINGS_HIDE_ABOVE_M + 1000);
+  const tileset = ownedTileset();
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => tileset,
+  });
+  await layer.enable(harness.viewer);
+  tileset.state.show = true;
+  tileset.externalDestroy();
+
+  await assert.doesNotReject(() => layer.update());
+  assert.equal(tileset.state.show, true, 'no write after destruction');
+});
+
+test('enable creates a fresh tileset when the cached one was destroyed', async () => {
+  const harness = mockViewer();
+  const first = Object.assign(ownedTileset(), { extras: { featureCount: 11 } });
+  const second = Object.assign(ownedTileset(), { extras: { featureCount: 22 } });
+  let created = 0;
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => (created++ === 0 ? first : second),
+  });
+  await layer.enable(harness.viewer);
+  first.externalDestroy();
+
+  await layer.enable(harness.viewer);
+  assert.equal(created, 2, 'a destroyed instance is never reused');
+  assert.equal(harness.items.includes(second), true);
+  assert.equal(layer.getStats().count, 22, 'stats reflect the fresh instance');
+});
+
+test('a superseded enable does not publish a tileset after destroy', async () => {
+  const harness = mockViewer();
+  const tileset = ownedTileset();
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const layer = createBuildingsLayer({
+    isEnabled: () => true,
+    createTileset: async () => {
+      await gate;
+      return tileset;
+    },
+  });
+  const pending = layer.enable(harness.viewer);
+  await layer.destroy(); // owner tears down while creation is in flight
+  release(tileset);
+
+  await assert.doesNotReject(() => pending);
+  assert.equal(harness.items.length, 0, 'no late primitive published');
+  assert.equal(layer.getStats().count, null, 'no stale reference retained');
 });

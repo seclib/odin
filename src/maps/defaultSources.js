@@ -33,6 +33,7 @@ export function createDefaultMapSources({
   const hasGoogle = Boolean(String(googleApiKey || '').trim());
   const terrain = {
     id: hasIon ? 'world' : 'keyless',
+    maxScreenSpaceError: hasIon ? 2 : 4,
     create: hasIon
       ? (request) => createWorldTerrain(ionToken, request)
       : createKeylessTerrain,

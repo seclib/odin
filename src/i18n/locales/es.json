@@ -3067,5 +3067,6 @@
   "Re:Earth / Mapterhorn (keyless)": "Re:Earth / Mapterhorn (keyless)",
   "Ellipsoid (flat fallback)": "Ellipsoid (flat fallback)",
   "High resolution": "High resolution",
-  "Local": "Local"
+  "Local": "Local",
+  "Direct webcam access may disclose this computer's public IP address to the operator. No anonymity or confidentiality toward the operator is guaranteed.": "El acceso directo a una webcam puede revelar la dirección IP pública de este equipo a su operador. No se garantiza el anonimato ni la confidencialidad frente al operador."
 }

@@ -1,0 +1,489 @@
+/* ── ODIN Caméras — Panneau catalogue (design system ODIN) ────────────────── */
+
+#cameras-panel {
+  --panel-expanded-width: 380px;
+  position: fixed;
+  top: var(--left-stack-top);
+  left: var(--left-stack-x);
+  right: auto;
+  bottom: auto;
+  z-index: 100;
+  width: var(--panel-expanded-width);
+  max-height: calc(100vh - 24px);
+}
+
+#cameras-panel .panel-glow {
+  position: absolute;
+  inset: -18px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 212, 170, 0.16) 0%,
+    transparent 65%
+  );
+  filter: blur(16px);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.cameras-panel-inner {
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--panel-radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 212, 170, 0.46) rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+}
+
+.cameras-panel-inner::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cameras-panel-inner::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
+.cameras-panel-inner::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 212, 170, 0.6),
+    rgba(0, 212, 170, 0.28)
+  );
+  border: 1px solid rgba(0, 212, 170, 0.4);
+  border-radius: 999px;
+}
+
+/* ── En-tête du panneau ─────────────────────────────────────────────────── */
+
+.cam-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.cam-panel-title {
+  color: var(--odin-text);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cam-panel-icon {
+  color: var(--odin-accent);
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* ── Recherche ──────────────────────────────────────────────────────────── */
+
+.cam-search-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cam-search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 9px;
+  border: 1px solid var(--odin-border);
+  border-radius: var(--odin-radius-sm);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--odin-text);
+  font: 11px var(--font-mono);
+  outline: none;
+}
+
+.cam-search-input:focus {
+  border-color: var(--odin-accent);
+  box-shadow: var(--odin-focus-ring);
+}
+
+.cam-search-input::placeholder {
+  color: var(--odin-text-muted);
+}
+
+/* ── Filtres (chips horizontales) ───────────────────────────────────────── */
+
+.cam-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.cam-filter-select {
+  padding: 5px 8px;
+  border: 1px solid var(--odin-border);
+  border-radius: var(--odin-radius-sm);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--odin-text);
+  font: 10px var(--font-mono);
+  outline: none;
+  cursor: pointer;
+}
+
+.cam-filter-select:focus {
+  border-color: var(--odin-accent);
+  box-shadow: var(--odin-focus-ring);
+}
+
+.cam-filter-select option {
+  background: var(--surface-panel);
+  color: var(--odin-text);
+}
+
+/* ── Liste des sources ──────────────────────────────────────────────────── */
+
+.cam-source-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
+  max-height: 42vh;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.cam-source-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 9px;
+  border: 1px solid var(--odin-border);
+  border-radius: var(--odin-radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.cam-source-card:hover {
+  border-color: var(--odin-border-strong);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cam-source-card.selected {
+  border-color: var(--odin-accent);
+  background: rgba(var(--odin-accent-rgb), 0.12);
+  box-shadow: inset 0 0 0 1px rgba(var(--odin-accent-rgb), 0.2);
+}
+
+.cam-source-card:focus-visible {
+  outline: 2px solid var(--odin-text);
+  outline-offset: -2px;
+}
+
+.cam-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.cam-card-name {
+  color: var(--odin-text);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.cam-card-badge {
+  font-size: 8px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.cam-card-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--odin-text-muted);
+}
+
+.cam-card-coords {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--odin-text-muted);
+}
+
+.cam-coords-label {
+  color: var(--odin-text-muted);
+}
+
+.cam-coords-value {
+  color: var(--odin-text);
+}
+
+.cam-coords-verified {
+  color: var(--odin-accent);
+}
+
+.cam-coords-none {
+  color: var(--odin-text-muted);
+  font-style: italic;
+}
+
+.cam-card-status {
+  margin-top: 2px;
+}
+
+.cam-tech-badge {
+  font-size: 8px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Badges de statut juridique */
+.cam-status-approved {
+  background: rgba(0, 212, 170, 0.15);
+  color: #5cffc6;
+  border: 1px solid rgba(0, 212, 170, 0.35);
+}
+.cam-status-permission {
+  background: rgba(255, 170, 0, 0.15);
+  color: #ffaa00;
+  border: 1px solid rgba(255, 170, 0, 0.35);
+}
+.cam-status-external {
+  background: rgba(255, 220, 120, 0.15);
+  color: #ffdc78;
+  border: 1px solid rgba(255, 220, 120, 0.35);
+}
+.cam-status-unknown {
+  background: rgba(128, 128, 144, 0.15);
+  color: #808090;
+  border: 1px solid rgba(128, 128, 144, 0.3);
+}
+.cam-status-prohibited {
+  background: rgba(255, 92, 110, 0.15);
+  color: #ff5c6e;
+  border: 1px solid rgba(255, 92, 110, 0.35);
+}
+
+/* Badges de statut technique */
+.cam-status-online {
+  background: rgba(0, 212, 170, 0.15);
+  color: #5cffc6;
+  border: 1px solid rgba(0, 212, 170, 0.35);
+}
+.cam-status-offline {
+  background: rgba(255, 92, 110, 0.15);
+  color: #ff5c6e;
+  border: 1px solid rgba(255, 92, 110, 0.35);
+}
+.cam-status-untested {
+  background: rgba(128, 128, 144, 0.15);
+  color: #808090;
+  border: 1px solid rgba(128, 128, 144, 0.3);
+}
+.cam-status-unavailable {
+  background: rgba(255, 170, 0, 0.15);
+  color: #ffaa00;
+  border: 1px solid rgba(255, 170, 0, 0.35);
+}
+
+/* ── Fiche détaillée ────────────────────────────────────────────────────── */
+
+.cam-detail {
+  border: 1px solid var(--odin-border);
+  border-radius: var(--odin-radius-sm);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  margin-top: 4px;
+}
+
+.cam-detail-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cam-detail-name {
+  color: var(--odin-text);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.cam-detail-badge {
+  font-size: 8px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cam-detail-body {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--odin-text-muted);
+  line-height: 1.5;
+}
+
+.cam-detail-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.cam-detail-label {
+  color: var(--odin-text-muted);
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  min-width: 70px;
+}
+
+.cam-detail-value {
+  color: var(--odin-text);
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.cam-detail-divider {
+  border: 0;
+  border-top: 1px solid var(--odin-border);
+  margin: 8px 0;
+}
+
+.cam-detail-link-row {
+  margin-top: 8px;
+}
+
+.cam-detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #78caff;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  text-decoration: none;
+  border: 1px solid rgba(120, 202, 255, 0.3);
+  border-radius: var(--odin-radius-sm);
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.cam-detail-link:hover {
+  color: #fff;
+  border-color: #78caff;
+  background: rgba(120, 202, 255, 0.1);
+}
+
+.cam-detail-link:focus-visible {
+  outline: 2px solid var(--odin-text);
+  outline-offset: -2px;
+}
+
+/* ── Bascule carte ──────────────────────────────────────────────────────── */
+
+.cam-map-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid var(--odin-border);
+}
+
+.cam-map-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--odin-accent);
+}
+
+.cam-map-label {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--odin-text-muted);
+  cursor: pointer;
+}
+
+.cam-map-label:has(input:disabled) {
+  color: var(--odin-text-muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cam-map-hint {
+  font-size: 8px;
+  font-family: var(--font-mono);
+  color: var(--odin-text-muted);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ── État vide ──────────────────────────────────────────────────────────── */
+
+.cam-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px 12px;
+  color: var(--odin-text-muted);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  text-align: center;
+  border: 1px dashed var(--odin-border);
+  border-radius: var(--odin-radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ── Avertissement confidentialité (IP transmise à l'opérateur) ────────── */
+
+.cam-privacy-notice {
+  margin: 4px 0 8px;
+  padding: 6px 8px;
+  border-left: 2px solid #ffaa00;
+  border-radius: 2px;
+  background: rgba(255, 170, 0, 0.06);
+  color: var(--odin-text-muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+/* ── Respect de la réduction de mouvement ───────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .cam-source-card {
+    transition: none;
+  }
+}

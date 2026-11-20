@@ -36,7 +36,10 @@ COPY --chown=node:node . .
 # Bind to all interfaces, otherwise the published port hits nothing. This does
 # not widen the Host allowlist: IP addresses and localhost are accepted, other
 # names only via GEV_ALLOWED_HOSTS (see build/allowedHosts.js).
-ENV HOST=0.0.0.0
+# ODIN Cameras is local-only: never bind the dev server to every interface.
+# A LAN or Internet publication would expose provider keys and the camera
+# catalogue. Docker Compose publishes 127.0.0.1:4173 explicitly.
+ENV HOST=127.0.0.1
 ENV PORT=4173
 EXPOSE 4173
 # The launcher is `npm run dev` plus one step: it trusts the container's

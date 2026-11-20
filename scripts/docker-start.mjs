@@ -11,6 +11,7 @@
  * Vite the way scripts/pinokio-start.mjs does.
  */
 import { accessSync, constants, readFileSync, realpathSync, statSync } from 'node:fs';
+import { networkInterfaces } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { isDirectInvocation } from './pinokio-install.mjs';
@@ -58,6 +59,29 @@ export function resolveTrustedPeers({ env = process.env, routeTable = '' } = {})
   const explicit = String(env.GEV_KEY_SETUP_TRUSTED_PEERS ?? '').trim();
   if (explicit) return explicit;
   return defaultGatewayFromRouteTable(routeTable) ?? '';
+}
+
+/**
+ * Adresse d'écoute du serveur dans le conteneur.
+ *
+ * ODIN Cameras est local-only : jamais `0.0.0.0`, jamais de liaison IPv6.
+ * Le pont Docker a besoin d'une adresse joignable de l'hôte ; on prend
+ * l'IPv4 non-interne de l'interface du conteneur (ex. 172.18.0.2), que
+ * `compose.yaml` publie ensuite cette adresse sur le `127.0.0.1:4173` de
+ * l'hôte uniquement.
+ * Sans interface (réseau `--network none`), on retombe sur le loopback :
+ * aucun port publié ne peut alors atteindre le serveur, ce qui est sûr.
+ *
+ * @param {ReturnType<typeof networkInterfaces>} interfaces
+ * @returns {string} adresse IPv4 précise, jamais un joker
+ */
+export function selectListenAddress(interfaces = networkInterfaces()) {
+  for (const addresses of Object.values(interfaces)) {
+    for (const address of addresses || []) {
+      if (address.family === 'IPv4' && !address.internal) return address.address;
+    }
+  }
+  return '127.0.0.1';
 }
 
 /**
@@ -127,9 +151,9 @@ async function start() {
   const server = await createServer({
     root: ROOT,
     server: {
-      // The container's own namespace. compose publishes this to the host's
-      // 127.0.0.1 only; widening that mapping is the LAN opt-in.
-      host: '0.0.0.0',
+      // Une adresse IPv4 précise du conteneur, jamais un joker : compose ne
+      // publie que 127.0.0.1:4173 sur l'hôte. Aucune liaison IPv6.
+      host: selectListenAddress(),
       port,
       strictPort: true,
     },

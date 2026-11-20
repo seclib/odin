@@ -9,18 +9,74 @@ import {
   resolvePrimaryProvider,
   listTerrainProfiles,
   listTerrainProviders,
+  listTerrainProvidersByKind,
+  listAvailableTerrainProviders,
+  listProvidersForLocation,
 } from './terrainCatalog.js';
 
-test('catalog exposes the three known providers', () => {
-  assert.deepEqual(listTerrainProviders().sort(), ['ellipsoid', 'keyless', 'world'].sort());
-  for (const id of listTerrainProviders()) {
+test('catalog exposes the known providers (terrain + elevation + hybrid)', () => {
+  const ids = listTerrainProviders().sort();
+  // Core providers always present.
+  for (const core of ['ellipsoid', 'keyless', 'world']) assert.ok(ids.includes(core), core);
+  // New global providers added by the multi-provider integration.
+  for (const added of [
+    'aws-terrain-tiles',
+    'copernicus-dem',
+    'arcgis-world-elevation',
+    'opentopography',
+    'ign-rge-alti',
+    'ign-lidar-hd',
+    'cesium-terrain-builder',
+    'personal-terrain-server',
+  ]) assert.ok(ids.includes(added), added);
+  for (const id of ids) {
     const p = getTerrainProvider(id);
     assert.ok(p && p.id === id);
     assert.ok(typeof p.label === 'string');
     assert.ok(p.cache && typeof p.cache.maxTiles === 'number');
     assert.ok(p.resolution && typeof p.resolution.maxScreenSpaceError === 'number');
     assert.ok(p.limits && typeof p.limits.maxConcurrent === 'number');
+    assert.ok(typeof p.kind === 'string');
+    assert.ok(Array.isArray(p.products) && p.products.length > 0);
+    assert.ok(p.auth && typeof p.auth.required === 'boolean');
+    assert.ok(typeof p.status === 'string');
+    assert.ok(typeof p.adapter === 'string');
   }
+});
+
+test('listTerrainProvidersByKind filters by kind', () => {
+  const terrain = listTerrainProvidersByKind('terrain');
+  assert.ok(terrain.includes('world'));
+  assert.ok(terrain.includes('keyless'));
+  assert.ok(terrain.includes('aws-terrain-tiles'));
+  const elevation = listTerrainProvidersByKind('elevation');
+  assert.ok(elevation.includes('copernicus-dem'));
+  assert.ok(elevation.includes('ign-rge-alti'));
+  assert.ok(elevation.includes('opentopography'));
+});
+
+test('listAvailableTerrainProviders returns only available (no key/infra)', () => {
+  const avail = listAvailableTerrainProviders();
+  assert.ok(avail.includes('keyless'));
+  assert.ok(avail.includes('ellipsoid'));
+  assert.ok(avail.includes('aws-terrain-tiles'));
+  assert.ok(avail.includes('copernicus-dem'));
+  assert.ok(avail.includes('ign-rge-alti'));
+  assert.ok(avail.includes('ign-lidar-hd'));
+  assert.ok(!avail.includes('world')); // needs ion token
+  assert.ok(!avail.includes('arcgis-world-elevation')); // needs key
+  assert.ok(!avail.includes('opentopography')); // needs key
+  assert.ok(!avail.includes('cesium-terrain-builder')); // needs infra
+});
+
+test('listProvidersForLocation matches global providers everywhere', () => {
+  const paris = listProvidersForLocation(48.8566, 2.3522);
+  assert.ok(paris.includes('world'));
+  assert.ok(paris.includes('keyless'));
+  assert.ok(paris.includes('aws-terrain-tiles'));
+  const reunion = listProvidersForLocation(-20.8823, 55.4507);
+  assert.ok(reunion.includes('ign-lidar-hd'));
+  assert.ok(reunion.includes('ign-rge-alti'));
 });
 
 test('profiles include global, high-res, local, hybrid', () => {
